@@ -1,3 +1,5 @@
+package com.checkers;
+
 abstract public class Piece {
     private int x; // буква - координата доски
     private int y; // цифра - координата доски
