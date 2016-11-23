@@ -1,7 +1,12 @@
 package com.checkers;
 
 public abstract class Piece {
+    private IUser user;
     private Colour colour;
 
-    public abstract void move();
+    abstract void move();
+
+    abstract void eat();
+
+    abstract void show();
 }
