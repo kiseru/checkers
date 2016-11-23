@@ -1,6 +1,6 @@
 package com.checkers;
 
-abstract public class Piece {
+public abstract class Piece {
     private Colour colour;
 
     abstract void move();
