@@ -5,8 +5,6 @@ public abstract class Piece {
     private Colour colour;
 
     abstract void move();
-
     abstract void eat();
-
     abstract void show();
 }
