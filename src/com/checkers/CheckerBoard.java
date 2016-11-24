@@ -41,4 +41,8 @@ public class CheckerBoard {
             System.out.print("\n");
         }
     }
+
+    public void move(Cell from, Cell to) {
+        from.getPiece().move(to);
+    }
 }
