@@ -23,4 +23,8 @@ public class CheckerBoard {
             }
         }
     }
+
+    public void setCell(Cell cell) {
+        cells[cell.getX()][cell.getY()] = new Cell(cell);
+    }
 }
