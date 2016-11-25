@@ -7,7 +7,11 @@ public class Cell {
     private Piece piece;
 
     public Cell(int _x, int _y) {
-        this(_x, _y, null);
+        x = _x;
+        y = _y;
+        piece = null;
+        if ((x + y) % 2 == 0) colour = Colour.BLACK;
+        else colour = Colour.WHITE;
     }
 
     public int getX() {
