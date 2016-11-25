@@ -13,14 +13,16 @@ public class CheckerBoard {
     }
 
     public void show() {
+        System.out.print("  ");
         for (char i = 'a'; i <= 'h'; i++) {
             System.out.print((char)i + " ");
         }
-        System.out.println("\n");
-        for (int i = 0; i < SIZE_OF_BOARD; i++) {
+        System.out.println();
+        for (int i = SIZE_OF_BOARD - 1; i >= 0; i--) {
+            System.out.print((8 - i) + " ");
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                System.out.print((8 - i) + " ");
                 cells[i][j].show();
+                System.out.print(" ");
             }
             System.out.print("\n");
         }
