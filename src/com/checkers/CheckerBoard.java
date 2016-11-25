@@ -7,15 +7,7 @@ public class CheckerBoard {
     public CheckerBoard() {
         for (int i = 0; i < SIZE_OF_BOARD; i++) {
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                cells[i][j] = new Cell();
-            }
-        }
-    }
-
-    public CheckerBoard(Cell[][] _cells) {
-        for (int i = 0; i < SIZE_OF_BOARD; i++) {
-            for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                cells[i][j] = new Cell(_cells[i][j]);
+                cells[i][j] = new Cell(i + 1, j + 1);
             }
         }
     }
