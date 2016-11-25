@@ -3,6 +3,7 @@ package com.checkers;
 public class Cell {
     private int x;
     private int y;
+    private Colour colour;
     private Piece piece;
 
     public Cell(int _x, int _y) {
@@ -26,16 +27,15 @@ public class Cell {
         this.piece = piece;
     }
 
-    public Cell(int _x, int _y, Piece _piece) {
-        x = _x;
-        y = _y;
-        piece = _piece;
-
-    }
-
     public void show() {
         try {
             piece.show();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+            if (colour == Colour.BLACK) {
+                System.out.print('b');
+            } else {
+                System.out.print('w');
+            }
+        }
     }
 }
