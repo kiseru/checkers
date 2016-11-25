@@ -50,7 +50,12 @@ public class CheckerBoard {
         }
     }
 
-    public void move(Cell from, Cell to) {
-        from.getPiece().move(to);
+    public void move(Cell from, Cell to) throws Exception{
+        if (to.getY() - from.getY() != 1 || Math.abs(to.getX() - from.getX()) != 1) throw new Exception("WrongMove");
+        if (from.getX() < 0 || from.getX() > 7 || from.getY() < 0 || from.getY() > 7) throw new Exception("NonexistentCell");
+        if (to.getX() < 0 || to.getX() > 7 || to.getY() < 0 || to.getY() > 7) throw new Exception("OutOfBoard");
+        if (from.getPiece() == null) throw new Exception("NonexistentPeace");
+        to.setPiece(from.getPiece());
+        from.setPiece(null);
     }
 }
