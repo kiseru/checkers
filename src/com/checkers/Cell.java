@@ -9,10 +9,6 @@ public class Cell {
         this(_x, _y, null);
     }
 
-    public Cell(Cell other) {
-        this(other.getX(), other.getY(), other.getPiece());
-    }
-
     public int getX() {
         return x;
     }
