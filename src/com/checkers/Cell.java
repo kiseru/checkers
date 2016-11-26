@@ -31,6 +31,10 @@ public class Cell {
         this.piece = piece;
     }
 
+    public Colour getColour() {
+        return colour;
+    }
+
     public void show() {
         try {
             piece.show();

@@ -10,6 +10,22 @@ public class CheckerBoard {
                 cells[i][j] = new Cell(i + 1, j + 1);
             }
         }
+
+        for (int i = 0; i < SIZE_OF_BOARD / 2 - 1; i++) {
+            for (int j = 0; j < SIZE_OF_BOARD; j++) {
+                if (cells[i][j].getColour() == Colour.BLACK) {
+                    cells[i][j].setPiece(new Man(Colour.WHITE));
+                }
+            }
+        }
+
+        for (int i = SIZE_OF_BOARD - 1; i > SIZE_OF_BOARD / 2; i--) {
+            for (int j = 0; j < SIZE_OF_BOARD; j++) {
+                if (cells[i][j].getColour() == Colour.BLACK) {
+                    cells[i][j].setPiece(new Man(Colour.BLACK));
+                }
+            }
+        }
     }
 
     public void show() {
@@ -19,7 +35,7 @@ public class CheckerBoard {
         }
         System.out.println();
         for (int i = SIZE_OF_BOARD - 1; i >= 0; i--) {
-            System.out.print((8 - i) + " ");
+            System.out.print((i + 1) + " ");
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
                 cells[i][j].show();
                 System.out.print(" ");
