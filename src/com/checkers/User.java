@@ -15,6 +15,10 @@ public class User implements IUser {
         reader = new BufferedReader(streamReader);
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

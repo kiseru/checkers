@@ -1,35 +1,51 @@
 package com.checkers;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-public static class Game {
-    public static void show() {
+public class Game {
+    private static BufferedReader reader;
+
+    public static void initialize() {
+        InputStreamReader streamReader = new InputStreamReader(System.in);
+        reader = new BufferedReader(streamReader);
+        start();
+    }
+
+    public static void start() {
+        User firstPlayer;
+
+        switch (show()) {
+            case 1:
+                firstPlayer = login();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static int show() {
         System.out.println("Menu");
         System.out.println("1. Login");
         System.out.print("Enter command number: ");
 
-        Scanner scan = new Scanner(System.in);
-        int commandNumber = scan.nextInt();
-
-        switch (commandNumber) {
-            case 1:
-                login();
-                break;
-            default:
-                show();
-                break;
+        try {
+            return Integer.parseInt(reader.readLine());
+        } catch (IOException ex) {
+            return show();
         }
-
-        scan.close();
     }
 
-    public static void login() {
+    public static User login() {
         System.out.println("Enter login");
 
-        Scanner scan = new Scanner(System.in);
-        String login = scan.nextLine();
-        User user = new User(login, Colour.WHITE);
+        User user = new User("Player", Colour.WHITE);
 
-        scan.close();
+        try {
+            String login = reader.readLine();
+            user.setName(login);
+        } catch (Exception ex) {}
+        return user;
     }
 }
