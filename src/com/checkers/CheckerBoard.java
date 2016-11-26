@@ -49,7 +49,6 @@ public class CheckerBoard {
     }
 
     public static void move(Cell from, Cell to) throws Exception {
-        if (to.getColour() == Colour.WHITE) throw new Exception();
         to.setPiece(from.getPiece());
         from.setPiece(null);
     }
