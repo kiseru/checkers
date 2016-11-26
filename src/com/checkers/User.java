@@ -31,6 +31,13 @@ public class User implements IUser {
             input = reader.readLine();
             input = input.toLowerCase();
             Cell to = getCell(input);
+            if (from.getPiece() != null && to.getPiece() == null) {
+                CheckerBoard.move(from, to);
+            } else {
+                throw new Exception("wrong move");
+            }
+
+            CheckerBoard.show();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -38,50 +45,50 @@ public class User implements IUser {
 
     private Cell getCell(String _cell) throws Exception {
         if (_cell.length() != 2) throw new Exception();
-        int x, y;
+        int col, row;
 
         switch (_cell.charAt(0)) {
             case 'a':
-                x = 0;  break;
+                col = 0;  break;
             case 'b':
-                x = 1;  break;
+                col = 1;  break;
             case 'c':
-                x = 2;  break;
+                col = 2;  break;
             case 'd':
-                x = 3;  break;
+                col = 3;  break;
             case 'e':
-                x = 4;  break;
+                col = 4;  break;
             case 'f':
-                x = 5;  break;
+                col = 5;  break;
             case 'g':
-                x = 6;  break;
+                col = 6;  break;
             case 'h':
-                x = 7;  break;
+                col = 7;  break;
             default:
                 throw new Exception();
         }
 
         switch (_cell.charAt(1)) {
             case '1':
-                y = 0;  break;
+                row = 0;  break;
             case '2':
-                y = 1;  break;
+                row = 1;  break;
             case '3':
-                y = 2;  break;
+                row = 2;  break;
             case '4':
-                y = 3;  break;
+                row = 3;  break;
             case '5':
-                y = 4;  break;
+                row = 4;  break;
             case '6':
-                y = 5;  break;
+                row = 5;  break;
             case '7':
-                y = 6;  break;
+                row = 6;  break;
             case '8':
-                y = 7;  break;
+                row = 7;  break;
             default:
                 throw new Exception();
         }
 
-        return new Cell(x, y);
+        return CheckerBoard.getCell(row, col);
     }
 }

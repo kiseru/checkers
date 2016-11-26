@@ -23,8 +23,7 @@ public class Cell {
     }
 
     public Piece getPiece() throws NullPointerException {
-        if (piece == null) throw new NullPointerException();
-        else return piece;
+        return piece;
     }
 
     public void setPiece(Piece piece) {
