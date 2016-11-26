@@ -1,4 +1,8 @@
-package com.checkers;
+package com.checkers.user;
+
+import com.checkers.board.Cell;
+import com.checkers.board.CheckerBoard;
+import com.checkers.utils.Colour;
 
 import java.io.InputStreamReader;
 import java.io.BufferedReader;

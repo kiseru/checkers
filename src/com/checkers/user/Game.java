@@ -1,4 +1,6 @@
-package com.checkers;
+package com.checkers.user;
+
+import com.checkers.utils.Colour;
 
 import java.io.BufferedReader;
 import java.io.IOException;

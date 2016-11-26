@@ -1,6 +1,6 @@
-package com.checkers;
+package com.checkers.board;
 
-import java.io.PrintWriter;
+import com.checkers.utils.Colour;
 
 public class Cell {
     private int x;

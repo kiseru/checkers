@@ -1,4 +1,7 @@
-package com.checkers;
+package com.checkers.board;
+
+import com.checkers.utils.Colour;
+import com.checkers.user.IUser;
 
 public abstract class Piece {
     private IUser user;

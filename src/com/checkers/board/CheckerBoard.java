@@ -1,4 +1,6 @@
-package com.checkers;
+package com.checkers.board;
+
+import com.checkers.utils.Colour;
 
 import java.io.PrintWriter;
 

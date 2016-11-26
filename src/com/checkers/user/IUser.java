@@ -1,4 +1,4 @@
-package com.checkers;
+package com.checkers.user;
 
 public interface IUser {
     void makeTurn();

@@ -1,4 +1,6 @@
-package com.checkers;
+package com.checkers.board;
+
+import com.checkers.utils.Colour;
 
 public class Man extends Piece {
     public Man(Colour colour) {
