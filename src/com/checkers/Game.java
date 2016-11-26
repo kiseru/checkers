@@ -3,20 +3,23 @@ package com.checkers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 public class Game {
-    private static BufferedReader reader;
+    private BufferedReader reader;
+    private PrintWriter writer;
 
-    public static void initialize() {
+    public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
-        start();
+
+        writer = new PrintWriter(System.out);
     }
 
-    public static void start() {
+    public void start() {
         User firstPlayer;
 
-        switch (show()) {
+        switch (showMenu()) {
             case 1:
                 firstPlayer = login();
                 break;
@@ -25,20 +28,20 @@ public class Game {
         }
     }
 
-    public static int show() {
-        System.out.println("Menu");
-        System.out.println("1. Login");
-        System.out.print("Enter command number: ");
+    public int showMenu() {
+        writer.println("Menu");
+        writer.println("1. Login");
+        writer.print("Enter command number: ");
 
         try {
             return Integer.parseInt(reader.readLine());
         } catch (IOException ex) {
-            return show();
+            return showMenu();
         }
     }
 
-    public static User login() {
-        System.out.println("Enter login");
+    public User login() {
+        writer.println("Enter login");
 
         User user = new User("Player", Colour.WHITE);
 

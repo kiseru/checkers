@@ -1,5 +1,7 @@
 package com.checkers;
 
+import java.io.PrintWriter;
+
 public class Cell {
     private int x;
     private int y;
@@ -34,14 +36,15 @@ public class Cell {
         return colour;
     }
 
-    public void show() {
+    @Override
+    public String toString() {
         try {
-            piece.show();
+            return piece.toString();
         } catch (NullPointerException ex) {
             if (colour == Colour.BLACK) {
-                System.out.print('b');
+                return "*";
             } else {
-                System.out.print('w');
+                return "^";
             }
         }
     }
