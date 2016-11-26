@@ -3,22 +3,64 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="43.0" y="0.0">com.checkers.IUser</node>
-    <node x="0.0" y="312.0">com.checkers.CheckerBoard</node>
-    <node x="0.0" y="499.0">com.checkers.Colour</node>
-    <node x="283.0" y="312.0">com.checkers.Piece</node>
-    <node x="0.0" y="102.0">com.checkers.User</node>
-    <node x="273.0" y="0.0">com.checkers.Cell</node>
+    <node x="909.0" y="853.0">com.checkers.exceptions.PieceNotFoundException</node>
+    <node x="488.00000000000006" y="853.0">com.checkers.exceptions.CanEatException</node>
+    <node x="498.00000000000006" y="751.0">com.checkers.exceptions.CheckersException</node>
+    <node x="0.0" y="102.0">com.checkers.user.User</node>
+    <node x="273.0" y="0.0">com.checkers.board.Piece</node>
+    <node x="273.0" y="147.0">com.checkers.board.Man</node>
+    <node x="43.0" y="0.0">com.checkers.user.IUser</node>
+    <node x="310.0" y="312.0">com.checkers.user.Game</node>
+    <node x="260.00000000000006" y="853.0">com.checkers.exceptions.CellDoesNotExistException</node>
+    <node x="0.0" y="542.0">com.checkers.board.Cell</node>
+    <node x="0.0" y="312.0">com.checkers.board.CheckerBoard</node>
+    <node x="0.0" y="950.0">com.checkers.utils.Colour</node>
+    <node x="0.0" y="853.0">com.checkers.exceptions.BlackCellNotFoundException</node>
+    <node x="663.0" y="853.0">com.checkers.exceptions.EmptyCellNotFoundException</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="com.checkers.User" target="com.checkers.IUser">
+    <edge source="com.checkers.exceptions.EmptyCellNotFoundException" target="com.checkers.exceptions.CheckersException">
+      <point x="0.0" y="-26.0" />
+      <point x="776.0" y="833.0" />
+      <point x="592.5" y="833.0" />
+      <point x="27.0" y="26.0" />
+    </edge>
+    <edge source="com.checkers.exceptions.BlackCellNotFoundException" target="com.checkers.exceptions.CheckersException">
+      <point x="0.0" y="-26.0" />
+      <point x="120.0" y="823.0" />
+      <point x="511.50000000000006" y="823.0" />
+      <point x="-54.0" y="26.0" />
+    </edge>
+    <edge source="com.checkers.board.Man" target="com.checkers.board.Piece">
+      <point x="0.0" y="-37.5" />
+      <point x="0.0" y="48.5" />
+    </edge>
+    <edge source="com.checkers.exceptions.PieceNotFoundException" target="com.checkers.exceptions.CheckersException">
+      <point x="0.0" y="-26.0" />
+      <point x="1009.0" y="823.0" />
+      <point x="619.5" y="823.0" />
+      <point x="54.0" y="26.0" />
+    </edge>
+    <edge source="com.checkers.exceptions.CellDoesNotExistException" target="com.checkers.exceptions.CheckersException">
+      <point x="0.0" y="-26.0" />
+      <point x="364.00000000000006" y="833.0" />
+      <point x="538.5" y="833.0" />
+      <point x="-27.0" y="26.0" />
+    </edge>
+    <edge source="com.checkers.exceptions.CanEatException" target="com.checkers.exceptions.CheckersException">
+      <point x="0.0" y="-26.0" />
+      <point x="0.0" y="26.0" />
+    </edge>
+    <edge source="com.checkers.user.User" target="com.checkers.user.IUser">
       <point x="0.0" y="-82.5" />
       <point x="0.0" y="26.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.6104553119730185" x="250.5" y="286.5" />
-  <SelectedNodes />
+  <settings layout="Hierarchic Group" zoom="1.0" x="415.0" y="672.0" />
+  <SelectedNodes>
+    <node>com.checkers.utils.Colour</node>
+  </SelectedNodes>
   <Categories>
     <Category>Fields</Category>
     <Category>Inner Classes</Category>
