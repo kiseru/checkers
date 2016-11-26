@@ -6,11 +6,11 @@ public class Man extends Piece {
     }
 
     @Override
-    void show() {
+    public String toString() {
         if (getColour() == Colour.BLACK) {
-            System.out.print('@');
+            return "@";
         } else {
-            System.out.print('$');
+            return "$";
         }
     }
 }
