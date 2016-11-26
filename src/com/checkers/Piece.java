@@ -12,6 +12,4 @@ public abstract class Piece {
     public Colour getColour() {
         return colour;
     }
-
-    abstract void show();
 }
