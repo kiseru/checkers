@@ -32,6 +32,7 @@ public class Game {
                 showMultiplayer();
                 break;
             case 2:
+                System.exit(0);
                 break;
             default:
                 break;
@@ -53,14 +54,11 @@ public class Game {
     }
 
     public int showMenu() {
-        writer.println("Menu");
-        writer.println("1. Login");
-        writer.println("Enter command number: ");
-        writer.flush();
-
         writer.println("Main menu");
         writer.println("1. Multiplayer");
         writer.println("2. Exit");
+        writer.println("Enter command number");
+        writer.flush();
 
         try {
             return Integer.parseInt(reader.readLine());
@@ -72,6 +70,8 @@ public class Game {
     public int showMultiplayer() {
         writer.println("1. On one computer");
         writer.println("2. Back");
+        writer.println("Enter command number");
+        writer.flush();
 
         try {
             return Integer.parseInt(reader.readLine());
@@ -84,7 +84,7 @@ public class Game {
         writer.println("Enter login");
         writer.flush();
 
-        User user = new User("Player", Colour.WHITE, board);
+        User user = new User("Player", colour, board);
 
         try {
             String login = reader.readLine();
