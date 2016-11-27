@@ -1,5 +1,5 @@
 package com.checkers.user;
 
 public interface IUser {
-    void makeTurn();
+    void makeTurn() throws Exception;
 }

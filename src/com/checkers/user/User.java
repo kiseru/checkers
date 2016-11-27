@@ -2,6 +2,8 @@ package com.checkers.user;
 
 import com.checkers.board.Cell;
 import com.checkers.board.CheckerBoard;
+import com.checkers.exceptions.CellDoesNotExistException;
+import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Colour;
 
 import java.io.InputStreamReader;
@@ -11,10 +13,12 @@ public class User implements IUser {
     private String name;
     private Colour colour;
     private BufferedReader reader;
+    private CheckerBoard board;
 
-    public User(String name, Colour colour) {
-        this.name = name;
-        this.colour = colour;
+    public User(String _name, Colour _colour, CheckerBoard _board) {
+        name = _name;
+        colour = _colour;
+        board = _board;
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
     }
@@ -28,75 +32,37 @@ public class User implements IUser {
     }
 
     @Override
-    public void makeTurn() {
-        try {
-            System.out.println("Choice piece to make turn");
+    public void makeTurn() throws Exception {
+        System.out.println("Choice piece to make turn");
 
-            String input = reader.readLine();
-            input = input.toLowerCase();
-            Cell from = getCell(input);
+        String input = reader.readLine();
+        input = input.toLowerCase();
+        Cell from = getCell(input);
 
-            input = reader.readLine();
-            input = input.toLowerCase();
-            Cell to = getCell(input);
-            if (from.getPiece() != null && to.getPiece() == null) {
-                CheckerBoard.move(from, to);
-            } else {
-                throw new Exception("wrong move");
-            }
+        input = reader.readLine();
+        input = input.toLowerCase();
+        Cell to = getCell(input);
+        board.move(from, to);
 
-            CheckerBoard.show();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        board.show();
     }
 
-    private Cell getCell(String _cell) throws Exception {
-        if (_cell.length() != 2) throw new Exception();
+    private Cell getCell(String _cell) throws CheckersException {
+        if (_cell.length() != 2) throw new CellDoesNotExistException(_cell);
         int col, row;
 
-        switch (_cell.charAt(0)) {
-            case 'a':
-                col = 0;  break;
-            case 'b':
-                col = 1;  break;
-            case 'c':
-                col = 2;  break;
-            case 'd':
-                col = 3;  break;
-            case 'e':
-                col = 4;  break;
-            case 'f':
-                col = 5;  break;
-            case 'g':
-                col = 6;  break;
-            case 'h':
-                col = 7;  break;
-            default:
-                throw new Exception();
+        if (_cell.charAt(0) >= 'a' && _cell.charAt(0) <= 'h') {
+            col = _cell.charAt(0) - 'a';
+        } else {
+            throw new CellDoesNotExistException(_cell);
         }
 
-        switch (_cell.charAt(1)) {
-            case '1':
-                row = 0;  break;
-            case '2':
-                row = 1;  break;
-            case '3':
-                row = 2;  break;
-            case '4':
-                row = 3;  break;
-            case '5':
-                row = 4;  break;
-            case '6':
-                row = 5;  break;
-            case '7':
-                row = 6;  break;
-            case '8':
-                row = 7;  break;
-            default:
-                throw new Exception();
+        if (_cell.charAt(1) >= '1' && _cell.charAt(1) <= '8') {
+            row = _cell.charAt(1) - '1';
+        } else {
+            throw new CellDoesNotExistException(_cell);
         }
 
-        return CheckerBoard.getCell(row, col);
+        return board.getCell(row, col);
     }
 }

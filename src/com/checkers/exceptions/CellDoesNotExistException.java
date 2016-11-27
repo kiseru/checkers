@@ -1,7 +1,7 @@
 package com.checkers.exceptions;
 
 public class CellDoesNotExistException extends CheckersException {
-    public CellDoesNotExistException() {
+    public CellDoesNotExistException(String cell) {
         msg = "Cell does not exist";
     }
 }

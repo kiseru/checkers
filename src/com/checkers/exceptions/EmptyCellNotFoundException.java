@@ -1,7 +1,9 @@
 package com.checkers.exceptions;
 
+import com.checkers.board.Cell;
+
 public class EmptyCellNotFoundException extends CheckersException {
-    public EmptyCellNotFoundException() {
-        msg = "Empty cell is not found";
+    public EmptyCellNotFoundException(Cell cell) {
+        msg = cell.getMap() + "is not empty";
     }
 }

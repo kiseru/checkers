@@ -1,5 +1,6 @@
 package com.checkers.user;
 
+import com.checkers.board.CheckerBoard;
 import com.checkers.utils.Colour;
 
 import java.io.BufferedReader;
@@ -10,12 +11,15 @@ import java.io.PrintWriter;
 public class Game {
     private BufferedReader reader;
     private PrintWriter writer;
+    private CheckerBoard board;
 
     public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
 
         writer = new PrintWriter(System.out);
+
+        board = new CheckerBoard();
     }
 
     public void start() {
@@ -45,7 +49,7 @@ public class Game {
     public User login() {
         writer.println("Enter login");
 
-        User user = new User("Player", Colour.WHITE);
+        User user = new User("Player", Colour.WHITE, board);
 
         try {
             String login = reader.readLine();

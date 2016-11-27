@@ -1,5 +1,8 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.BlackCellNotFoundException;
+import com.checkers.exceptions.EmptyCellNotFoundException;
+import com.checkers.exceptions.PieceNotFoundException;
 import com.checkers.utils.Colour;
 
 import java.io.PrintWriter;
@@ -9,7 +12,7 @@ public class CheckerBoard {
     private static final int SIZE_OF_BOARD = 8;
     private static Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
 
-    public static void createBoard(PrintWriter _writer) {
+    public void createBoard(PrintWriter _writer) {
         writer = _writer;
         for (int i = 0; i < SIZE_OF_BOARD; i++) {
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
@@ -34,11 +37,11 @@ public class CheckerBoard {
         }
     }
 
-    public static Cell getCell(int x, int y) {
+    public Cell getCell(int x, int y) {
         return board[x][y];
     }
 
-    public static void show() {
+    public void show() {
         writer.print("  ");
         for (char i = 'a'; i <= 'h'; i++) {
             writer.print((char)i + " ");
@@ -54,7 +57,10 @@ public class CheckerBoard {
         }
     }
 
-    public static void move(Cell from, Cell to) throws Exception {
+    public void move(Cell from, Cell to) throws Exception {
+        if (from.getPiece() == null) throw new PieceNotFoundException(from);
+        if (to.getColour() != Colour.BLACK) throw new BlackCellNotFoundException(to);
+        if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
         to.setPiece(from.getPiece());
         from.setPiece(null);
     }
