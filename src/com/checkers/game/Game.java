@@ -13,19 +13,19 @@ public class Game {
     private BufferedReader reader;
     private PrintWriter writer;
     private CheckerBoard board;
+    private User firstPlayer;
+    private User secondPlayer;
 
     public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
 
-        writer = new PrintWriter(System.out);
+        writer = new PrintWriter(System.out, true);
 
         board = new CheckerBoard();
     }
 
     public void start() {
-        User firstPlayer;
-        User secondPlayer;
 
         switch (showMenu()) {
             case 1:
@@ -56,7 +56,6 @@ public class Game {
         writer.println("Menu");
         writer.println("1. Login");
         writer.println("Enter command number: ");
-        writer.flush();
 
         writer.println("Main menu");
         writer.println("1. Multiplayer");
@@ -82,7 +81,6 @@ public class Game {
 
     public User login(Colour colour) {
         writer.println("Enter login");
-        writer.flush();
 
         User user = new User("Player", Colour.WHITE, board);
 
