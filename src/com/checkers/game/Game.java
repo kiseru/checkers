@@ -1,6 +1,7 @@
-package com.checkers.user;
+package com.checkers.game;
 
 import com.checkers.board.CheckerBoard;
+import com.checkers.user.User;
 import com.checkers.utils.Colour;
 
 import java.io.BufferedReader;
@@ -37,7 +38,8 @@ public class Game {
     public int showMenu() {
         writer.println("Menu");
         writer.println("1. Login");
-        writer.print("Enter command number: ");
+        writer.println("Enter command number: ");
+        writer.flush();
 
         try {
             return Integer.parseInt(reader.readLine());
@@ -48,6 +50,7 @@ public class Game {
 
     public User login() {
         writer.println("Enter login");
+        writer.flush();
 
         User user = new User("Player", Colour.WHITE, board);
 
@@ -56,5 +59,10 @@ public class Game {
             user.setName(login);
         } catch (Exception ex) {}
         return user;
+    }
+
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.start();
     }
 }
