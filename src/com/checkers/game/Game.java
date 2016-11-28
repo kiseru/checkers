@@ -13,8 +13,8 @@ public class Game {
     private BufferedReader reader;
     private PrintWriter writer;
     private CheckerBoard board;
-
-    private User firstPlayer, secondPlayer;
+    private User firstPlayer;
+    private User secondPlayer;
 
     public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
