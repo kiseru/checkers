@@ -34,7 +34,6 @@ public class Game {
         writer.println("1. Multiplayer");
         writer.println("2. Exit");
         writer.println("Enter command number");
-        writer.flush();
 
         int command = 2;
 
@@ -58,7 +57,6 @@ public class Game {
         writer.println("1. On one computer");
         writer.println("2. Back");
         writer.println("Enter command number");
-        writer.flush();
 
         int command = 2;
 
