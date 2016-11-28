@@ -13,13 +13,14 @@ public class Game {
     private BufferedReader reader;
     private PrintWriter writer;
     private CheckerBoard board;
-    User firstPlayer, secondPlayer;
+
+    private User firstPlayer, secondPlayer;
 
     public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
 
-        writer = new PrintWriter(System.out);
+        writer = new PrintWriter(System.out, true);
 
         board = new CheckerBoard();
     }
@@ -79,10 +80,9 @@ public class Game {
                 break;
         }
     }
-
+    
     public User login(Colour colour) {
         writer.println("Enter login");
-        writer.flush();
 
         User user = new User("Player", colour, board);
 
