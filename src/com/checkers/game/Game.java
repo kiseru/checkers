@@ -1,6 +1,9 @@
 package com.checkers.game;
 
 import com.checkers.board.CheckerBoard;
+import com.checkers.exceptions.CheckersException;
+import com.checkers.exceptions.CommandNotFoundException;
+import com.checkers.exceptions.NothingToReadException;
 import com.checkers.user.User;
 import com.checkers.utils.Colour;
 
@@ -30,53 +33,59 @@ public class Game {
     }
 
     public void showMenu() {
-        writer.println("Main menu");
-        writer.println("1. Multiplayer");
-        writer.println("2. Exit");
-        writer.println("Enter command number");
-
-        int command = 2;
-
         try {
-            command = Integer.parseInt(reader.readLine());
+            writer.println("Main menu");
+            writer.println("1. Multiplayer");
+            writer.println("2. Exit");
+
+            writer.println("Enter command number");
+            String input = reader.readLine();
+
+            switch (input) {
+                case "":
+                    throw new NothingToReadException();
+                case "1":
+                    showMultiplayer();
+                    break;
+                case "2":
+                    break;
+                default:
+                    throw new CommandNotFoundException();
+            }
+        } catch (CheckersException ex) {
+            writer.println(ex.getMessage());
+            showMenu();
         } catch (IOException ex) {}
 
-        switch (command) {
-            case 1:
-                showMultiplayer();
-                break;
-            case 2:
-                System.exit(0);
-                break;
-            default:
-                break;
-        }
     }
 
     public void showMultiplayer() {
-        writer.println("1. On one computer");
-        writer.println("2. Back");
-        writer.println("Enter command number");
-
-        int command = 2;
-
         try {
-            command = Integer.parseInt(reader.readLine());
-        } catch (IOException ex) {}
+            writer.println("1. On one computer");
+            writer.println("2. Back");
 
-        switch (command) {
-            case 1:
-                writer.println("First player:");
-                firstPlayer = login(Colour.WHITE);
-                writer.println("Second player:");
-                secondPlayer = login(Colour.BLACK);
-                break;
-            case 2:
-                showMenu();
-                break;
-            default:
-                break;
-        }
+            writer.println("Enter command number");
+            String input = reader.readLine();
+
+            switch (input) {
+                case "":
+                    throw new NothingToReadException();
+                case "1":
+                    writer.println("First player:");
+                    firstPlayer = login(Colour.WHITE);
+                    writer.println("Second player:");
+                    secondPlayer = login(Colour.BLACK);
+                    break;
+                case "2":
+                    showMenu();
+                    break;
+                default:
+                    throw new CommandNotFoundException();
+            }
+        } catch (CheckersException ex) {
+            writer.println(ex.getMessage());
+            showMultiplayer();
+        } catch (IOException ex) {}
     }
     
     public User login(Colour colour) {
