@@ -13,6 +13,7 @@ public class Game {
     private BufferedReader reader;
     private PrintWriter writer;
     private CheckerBoard board;
+    User firstPlayer, secondPlayer;
 
     public Game() {
         InputStreamReader streamReader = new InputStreamReader(System.in);
@@ -24,10 +25,23 @@ public class Game {
     }
 
     public void start() {
-        User firstPlayer;
-        User secondPlayer;
+        showMenu();
+    }
 
-        switch (showMenu()) {
+    public void showMenu() {
+        writer.println("Main menu");
+        writer.println("1. Multiplayer");
+        writer.println("2. Exit");
+        writer.println("Enter command number");
+        writer.flush();
+
+        int command = 2;
+
+        try {
+            command = Integer.parseInt(reader.readLine());
+        } catch (IOException ex) {}
+
+        switch (command) {
             case 1:
                 showMultiplayer();
                 break;
@@ -37,8 +51,21 @@ public class Game {
             default:
                 break;
         }
+    }
 
-        switch (showMultiplayer()) {
+    public void showMultiplayer() {
+        writer.println("1. On one computer");
+        writer.println("2. Back");
+        writer.println("Enter command number");
+        writer.flush();
+
+        int command = 2;
+
+        try {
+            command = Integer.parseInt(reader.readLine());
+        } catch (IOException ex) {}
+
+        switch (command) {
             case 1:
                 writer.println("First player:");
                 firstPlayer = login(Colour.WHITE);
@@ -50,33 +77,6 @@ public class Game {
                 break;
             default:
                 break;
-        }
-    }
-
-    public int showMenu() {
-        writer.println("Main menu");
-        writer.println("1. Multiplayer");
-        writer.println("2. Exit");
-        writer.println("Enter command number");
-        writer.flush();
-
-        try {
-            return Integer.parseInt(reader.readLine());
-        } catch (IOException ex) {
-            return showMenu();
-        }
-    }
-
-    public int showMultiplayer() {
-        writer.println("1. On one computer");
-        writer.println("2. Back");
-        writer.println("Enter command number");
-        writer.flush();
-
-        try {
-            return Integer.parseInt(reader.readLine());
-        } catch (IOException ex) {
-            return showMultiplayer();
         }
     }
 
