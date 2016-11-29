@@ -25,11 +25,36 @@ public class Game {
 
         writer = new PrintWriter(System.out, true);
 
-        board = new CheckerBoard();
+        board = new CheckerBoard(writer);
     }
 
     public void start() {
         showMenu();
+        board.show();
+        boolean firstPlayerTurn = true;
+        while (board.isGaming()) {
+            if (firstPlayerTurn) {
+                try {
+                    writer.println("Your turn, " + firstPlayer.getName() + ":");
+                    firstPlayer.makeTurn();
+                    firstPlayerTurn = false;
+                } catch (Exception ex) {
+                    writer.println(ex.getMessage());
+                } finally {
+                    board.show();
+                }
+            } else {
+                try {
+                    writer.println("Your turn, " + secondPlayer.getName() + ":");
+                    secondPlayer.makeTurn();
+                    firstPlayerTurn = true;
+                } catch (Exception ex) {
+                    writer.println(ex.getMessage());
+                } finally {
+                    board.show();
+                }
+            }
+        }
     }
 
     public void showMenu() {
@@ -48,6 +73,7 @@ public class Game {
                     showMultiplayer();
                     break;
                 case "2":
+                    System.exit(0);
                     break;
                 default:
                     throw new CommandNotFoundException();

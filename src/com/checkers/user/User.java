@@ -14,11 +14,13 @@ public class User implements IUser {
     private Colour colour;
     private BufferedReader reader;
     private CheckerBoard board;
+    private boolean canEat;
 
     public User(String _name, Colour _colour, CheckerBoard _board) {
         name = _name;
         colour = _colour;
         board = _board;
+        canEat = false;
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
     }
@@ -43,8 +45,6 @@ public class User implements IUser {
         input = input.toLowerCase();
         Cell to = getCell(input);
         board.move(from, to);
-
-        board.show();
     }
 
     private Cell getCell(String _cell) throws CheckersException {

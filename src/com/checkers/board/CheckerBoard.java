@@ -1,8 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.BlackCellNotFoundException;
-import com.checkers.exceptions.EmptyCellNotFoundException;
-import com.checkers.exceptions.PieceNotFoundException;
+import com.checkers.exceptions.*;
 import com.checkers.utils.Colour;
 
 import java.io.PrintWriter;
@@ -11,8 +9,10 @@ public class CheckerBoard {
     private static PrintWriter writer;
     private static final int SIZE_OF_BOARD = 8;
     private static Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
+    private int whitePieces = 12;
+    private int blackPieces = 12;
 
-    public void createBoard(PrintWriter _writer) {
+    public CheckerBoard(PrintWriter _writer) {
         writer = _writer;
         for (int i = 0; i < SIZE_OF_BOARD; i++) {
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
@@ -53,15 +53,36 @@ public class CheckerBoard {
                 writer.print(board[i][j]);
                 writer.print(" ");
             }
-            writer.print("\n");
+            writer.println();
         }
     }
 
-    public void move(Cell from, Cell to) throws Exception {
+    public void move(Cell from, Cell to) throws CheckersException {
+        if (from.diff(to) == 1) {
+            if (from.getPiece() == null) throw new PieceNotFoundException(from);
+            if (to.getColour() != Colour.BLACK) throw new BlackCellNotFoundException(to);
+            if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+            to.setPiece(from.getPiece());
+            from.setPiece(null);
+        } else if (from.diff(to) == 2) {
+            Cell target = from.between(to);
+            eat(target, from, to);
+        } else throw new CanNotMoveException();
+    }
+
+    public void eat(Cell target, Cell from, Cell to) throws CheckersException {
         if (from.getPiece() == null) throw new PieceNotFoundException(from);
-        if (to.getColour() != Colour.BLACK) throw new BlackCellNotFoundException(to);
+        if (target.getPiece() == null) throw new PieceNotFoundException(target);
         if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        if (target.getPiece().getColour() == Colour.BLACK) blackPieces--;
+        if (target.getPiece().getColour() == Colour.WHITE) whitePieces--;
         to.setPiece(from.getPiece());
+        target.setPiece(null);
         from.setPiece(null);
+    }
+
+    public boolean isGaming() {
+        if (whitePieces == 0 || blackPieces == 0) return false;
+        return true;
     }
 }

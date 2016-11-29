@@ -1,5 +1,6 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.utils.Colour;
 
 public class Cell {
@@ -8,9 +9,9 @@ public class Cell {
     private Colour colour;
     private Piece piece;
 
-    public Cell(int _x, int _y) {
-        col = _x;
-        row = _y;
+    public Cell(int _col, int _row) {
+        col = _col;
+        row = _row;
         piece = null;
         if ((col + row) % 2 == 0) colour = Colour.BLACK;
         else colour = Colour.WHITE;
@@ -54,5 +55,18 @@ public class Cell {
                 return "^";
             }
         }
+    }
+
+    public int diff(Cell second) throws CanNotMoveException {
+        if (getCol() - second.getCol() == getRow() - second.getRow()) {
+            return Math.abs(getCol() - second.getCol());
+        }
+        throw new CanNotMoveException();
+    }
+
+    public Cell between(Cell another) {
+        int col = (getCol() + another.getCol()) / 2;
+        int row = (getRow() + another.getRow()) / 2;
+        return new Cell(col, row);
     }
 }
