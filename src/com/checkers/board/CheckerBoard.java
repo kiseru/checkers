@@ -20,14 +20,8 @@ public class CheckerBoard {
                 board[i][j] = new Cell(i + 1, j + 1);
             }
         }
-        whitePieces = 1;
-        blackPieces = 3;
-        board[0][0].setPiece(new Man(Colour.WHITE));
-        board[1][1].setPiece(new Man(Colour.BLACK));
-        board[3][3].setPiece(new Man(Colour.BLACK));
-        board[5][5].setPiece(new Man(Colour.BLACK));
 
-        /*for (int i = 0; i < SIZE_OF_BOARD / 2 - 1; i++) {
+        for (int i = 0; i < SIZE_OF_BOARD / 2 - 1; i++) {
             for (int j = 0; j < SIZE_OF_BOARD; j++) {
                 if (board[i][j].getColour() == Colour.BLACK) {
                     board[i][j].setPiece(new Man(Colour.WHITE));
@@ -41,7 +35,7 @@ public class CheckerBoard {
                     board[i][j].setPiece(new Man(Colour.BLACK));
                 }
             }
-        }*/
+        }
     }
 
     public Cell getCell(int x, int y) {
