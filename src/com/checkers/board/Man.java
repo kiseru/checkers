@@ -8,6 +8,16 @@ public class Man extends Piece {
     }
 
     @Override
+    public boolean canEat() {
+        return false;
+    }
+
+    @Override
+    public boolean canMove() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         if (getColour() == Colour.BLACK) {
             return "@";

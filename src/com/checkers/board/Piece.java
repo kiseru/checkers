@@ -15,4 +15,7 @@ public abstract class Piece {
     public Colour getColour() {
         return colour;
     }
+
+    public abstract boolean canEat();
+    public abstract boolean canMove();
 }
