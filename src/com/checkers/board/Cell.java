@@ -9,7 +9,7 @@ public class Cell {
     private Colour colour;
     private Piece piece;
 
-    public Cell(int _col, int _row) {
+    public Cell(int _row, int _col) {
         col = _col;
         row = _row;
         piece = null;
@@ -58,15 +58,15 @@ public class Cell {
     }
 
     public int diff(Cell second) throws CanNotMoveException {
-        if (getCol() - second.getCol() == getRow() - second.getRow()) {
+        if (Math.abs(getCol() - second.getCol()) == Math.abs(getRow() - second.getRow())) {
             return Math.abs(getCol() - second.getCol());
         }
         throw new CanNotMoveException();
     }
 
-    public Cell between(Cell another) {
+    public Cell between(Cell another, CheckerBoard board) {
         int col = (getCol() + another.getCol()) / 2;
         int row = (getRow() + another.getRow()) / 2;
-        return new Cell(col, row);
+        return board.getCell(row - 1, col - 1);
     }
 }

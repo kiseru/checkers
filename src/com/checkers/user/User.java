@@ -33,6 +33,18 @@ public class User implements IUser {
         return name;
     }
 
+    public Colour getColour() {
+        return colour;
+    }
+
+    public void setCanEat(boolean canEat) {
+        this.canEat = canEat;
+    }
+
+    public boolean isCanEat() {
+        return canEat;
+    }
+
     @Override
     public void makeTurn() throws Exception {
         System.out.println("Choice piece to make turn");
@@ -44,7 +56,8 @@ public class User implements IUser {
         input = reader.readLine();
         input = input.toLowerCase();
         Cell to = getCell(input);
-        board.move(from, to);
+        board.analyze(this);
+        board.move(from, to, this);
     }
 
     private Cell getCell(String _cell) throws CheckersException {

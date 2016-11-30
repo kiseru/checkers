@@ -1,6 +1,7 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.*;
+import com.checkers.user.User;
 import com.checkers.utils.Colour;
 
 import java.io.PrintWriter;
@@ -57,15 +58,20 @@ public class CheckerBoard {
         }
     }
 
-    public void move(Cell from, Cell to) throws CheckersException {
+    public void move(Cell from, Cell to, User user) throws CheckersException {
         if (from.diff(to) == 1) {
             if (from.getPiece() == null) throw new PieceNotFoundException(from);
+            if (from.getPiece().getColour() != user.getColour()) throw new YourPieceNotFoundException();
             if (to.getColour() != Colour.BLACK) throw new BlackCellNotFoundException(to);
             if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+            if (from.getRow() - to.getRow() >= 0 && user.getColour() == Colour.WHITE) throw new CanNotMoveException();
+            if (from.getRow() - to.getRow() <= 0 && user.getColour() == Colour.BLACK) throw new CanNotMoveException();
+            if (user.isCanEat()) throw new CanEatException();
             to.setPiece(from.getPiece());
             from.setPiece(null);
         } else if (from.diff(to) == 2) {
-            Cell target = from.between(to);
+            if (!user.isCanEat()) throw new CanNotEatException();
+            Cell target = from.between(to, this);
             eat(target, from, to);
         } else throw new CanNotMoveException();
     }
@@ -79,6 +85,22 @@ public class CheckerBoard {
         to.setPiece(from.getPiece());
         target.setPiece(null);
         from.setPiece(null);
+    }
+
+    public void analyze(User user) {
+        Colour colour = user.getColour();
+        boolean canEat = false;
+        for (int row = 0; row < SIZE_OF_BOARD && !canEat; row++) {
+            for (int col = 0; col < SIZE_OF_BOARD && !canEat; col++) {
+                if (board[row][col].getColour() == Colour.WHITE) continue;
+                if (board[row][col].getPiece() == null) continue;
+                if (row - 1 >= 0 && col - 1 >= 0 && board[row - 1][col - 1].getPiece() != null && board[row - 1][col - 1].getPiece().getColour() != board[row][col].getPiece().getColour()) canEat = true;
+                if (row - 1 >= 0 && col + 1 < 8 && board[row - 1][col + 1].getPiece() != null && board[row - 1][col + 1].getPiece().getColour() != board[row][col].getPiece().getColour()) canEat = true;
+                if (row + 1 < 8 && col + 1 < 8 && board[row + 1][col + 1].getPiece() != null && board[row + 1][col + 1].getPiece().getColour() != board[row][col].getPiece().getColour()) canEat = true;
+                if (row + 1 < 8 && col - 1 >= 0 && board[row + 1][col - 1].getPiece() != null && board[row + 1][col - 1].getPiece().getColour() != board[row][col].getPiece().getColour()) canEat = true;
+            }
+        }
+        user.setCanEat(canEat);
     }
 
     public boolean isGaming() {
