@@ -31,27 +31,29 @@ public class Game {
     public void start() {
         showMenu();
         board.show();
+        board.analyze(firstPlayer);
+        board.analyze(secondPlayer);
         boolean firstPlayerTurn = true;
         while (board.isGaming()) {
             if (firstPlayerTurn) {
                 try {
-                    writer.println("Your turn, " + firstPlayer.getName() + ":");
-                    firstPlayer.makeTurn();
+                    do {
+                        writer.println("Your turn, " + firstPlayer.getName() + ":");
+                        firstPlayer.makeTurn();
+                    } while (firstPlayer.isCanEat());
                     firstPlayerTurn = false;
                 } catch (Exception ex) {
                     writer.println(ex.getMessage());
-                } finally {
-                    board.show();
                 }
             } else {
                 try {
-                    writer.println("Your turn, " + secondPlayer.getName() + ":");
-                    secondPlayer.makeTurn();
+                    do {
+                        writer.println("Your turn, " + secondPlayer.getName() + ":");
+                        secondPlayer.makeTurn();
+                    } while (secondPlayer.isCanEat());
                     firstPlayerTurn = true;
                 } catch (Exception ex) {
                     writer.println(ex.getMessage());
-                } finally {
-                    board.show();
                 }
             }
         }

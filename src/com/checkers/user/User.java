@@ -56,8 +56,9 @@ public class User implements IUser {
         input = reader.readLine();
         input = input.toLowerCase();
         Cell to = getCell(input);
-        board.analyze(this);
         board.move(from, to, this);
+        board.show();
+        board.analyze(this);
     }
 
     private Cell getCell(String _cell) throws CheckersException {
