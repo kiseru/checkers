@@ -2,8 +2,7 @@ package com.checkers.user;
 
 import com.checkers.board.Cell;
 import com.checkers.board.CheckerBoard;
-import com.checkers.exceptions.CellDoesNotExistException;
-import com.checkers.exceptions.CheckersException;
+import com.checkers.exceptions.*;
 import com.checkers.utils.Colour;
 
 import java.io.InputStreamReader;
@@ -52,11 +51,18 @@ public class User implements IUser {
         String input = reader.readLine();
         input = input.toLowerCase();
         Cell from = getCell(input);
+        if (from.getPiece() == null) throw new PieceNotFoundException(from);
+        if (from.getPiece().getColour() != colour) throw new YourPieceNotFoundException();
 
         input = reader.readLine();
         input = input.toLowerCase();
         Cell to = getCell(input);
-        board.move(from, to, this);
+        if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        if (canEat) {
+            board.eat(from, to);
+        } else {
+            board.move(from, to);
+        }
         board.show();
         board.analyze(this);
     }

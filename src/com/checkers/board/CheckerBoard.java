@@ -15,31 +15,44 @@ public class CheckerBoard {
 
     public CheckerBoard(PrintWriter _writer) {
         writer = _writer;
-        for (int i = 0; i < SIZE_OF_BOARD; i++) {
-            for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                board[i][j] = new Cell(i + 1, j + 1);
+        for (int row = 0; row < SIZE_OF_BOARD; row++) {
+            for (int col = 0; col < SIZE_OF_BOARD; col++) {
+                board[row][col] = new Cell(row + 1, col + 1, this);
             }
         }
 
-        for (int i = 0; i < SIZE_OF_BOARD / 2 - 1; i++) {
-            for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                if (board[i][j].getColour() == Colour.BLACK) {
-                    board[i][j].setPiece(new Man(Colour.WHITE));
+        for (int row = 0; row < SIZE_OF_BOARD / 2 - 1; row++) {
+            for (int col = 0; col < SIZE_OF_BOARD; col++) {
+                if (board[row][col].getColour() == Colour.BLACK) {
+                    board[row][col].setPiece(new Man(Colour.WHITE));
                 }
             }
         }
 
-        for (int i = SIZE_OF_BOARD - 1; i > SIZE_OF_BOARD / 2; i--) {
-            for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                if (board[i][j].getColour() == Colour.BLACK) {
-                    board[i][j].setPiece(new Man(Colour.BLACK));
+        for (int row = SIZE_OF_BOARD - 1; row > SIZE_OF_BOARD / 2; row--) {
+            for (int col = 0; col < SIZE_OF_BOARD; col++) {
+                if (board[row][col].getColour() == Colour.BLACK) {
+                    board[row][col].setPiece(new Man(Colour.BLACK));
                 }
             }
         }
+
+        for (int row = 0; row < SIZE_OF_BOARD; row++) {
+            for (int col = 0; col < SIZE_OF_BOARD; col++) {
+                Piece piece = board[row][col].getPiece();
+                if (piece != null) {
+                    piece.analyzeAbilityOfMove();
+                    piece.analyzeAbilityOfEat();
+                }
+            }
+        }
+
+        whitePieces = 12;
+        blackPieces = 12;
     }
 
-    public Cell getCell(int x, int y) {
-        return board[x][y];
+    public Cell getCell(int row, int col) {
+        return board[row][col];
     }
 
     public void show() {
@@ -58,22 +71,36 @@ public class CheckerBoard {
         }
     }
 
-    public void move(Cell from, Cell to, User user) throws CheckersException {
-        if (from.diff(to) == 1) {
+    public void move(Cell from, Cell to) throws CheckersException {
+        Piece userPiece = from.getPiece();
+        userPiece.move(to);
+        /*if (from.getPiece().isCanMove() && !user.isCanEat()) {
             if (from.getPiece() == null) throw new PieceNotFoundException(from);
             if (from.getPiece().getColour() != user.getColour()) throw new YourPieceNotFoundException();
-            if (to.getColour() != Colour.BLACK) throw new BlackCellNotFoundException(to);
-            if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
-            if (from.getRow() - to.getRow() >= 0 && user.getColour() == Colour.WHITE) throw new CanNotMoveException();
-            if (from.getRow() - to.getRow() <= 0 && user.getColour() == Colour.BLACK) throw new CanNotMoveException();
-            if (user.isCanEat()) throw new CanEatException();
+            if (!from.getPiece().isCanMoveTo(to)) throw new CanNotMoveException();
             to.setPiece(from.getPiece());
             from.setPiece(null);
-        } else if (from.diff(to) == 2) {
+            int row = from.getRow();
+            int col = from.getCol();
+            if (row + 1 < SIZE_OF_BOARD && col + 1 < SIZE_OF_BOARD && from.getNear(1, 1).getPiece() != null) {
+                from.getNear(1, 1).getPiece().analyzeAbilityOfMove();
+            }
+            if (row + 1 < SIZE_OF_BOARD && col - 1 >= 0 && from.getNear(1, -1).getPiece() != null) {
+                from.getNear(1, -1).getPiece().analyzeAbilityOfMove();
+            }
+            if (row - 1 >= 0 && col - 1 >= 0 && from.getNear(-1, -1).getPiece() != null) {
+                from.getNear(-1, -1).getPiece().analyzeAbilityOfMove();
+            }
+            if (row - 1 >= 0 && col + 1 < SIZE_OF_BOARD && from.getNear(-1, 1).getPiece() != null) {
+                from.getNear(-1, 1).getPiece().analyzeAbilityOfMove();
+            }
+            to.getPiece().analyzeAbilityOfEat();
+            analyze(user);
+        } else if (from.getPiece().isCanEat()) {
             if (!user.isCanEat()) throw new CanNotEatException();
             Cell target = from.between(to, this);
             eat(target, from, to);
-        } else throw new CanNotMoveException();
+        } else throw new CanNotMoveException();*/
     }
 
     public void eat(Cell target, Cell from, Cell to) throws CheckersException {
@@ -95,25 +122,10 @@ public class CheckerBoard {
             for (int col = 0; col < SIZE_OF_BOARD && !isCanEat; col++) {
                 Cell cell = getCell(row, col);
                 if (cell.getColour() == Colour.WHITE) continue;
-                if (cell.getPiece() == null) continue;
-                Piece piece = cell.getPiece();
-                if (piece.getColour() == userColour) {
-                    if (row + 2 < 8 && col - 2 >= 0 &&
-                            board[row + 1][col - 1].getPiece() != null &&
-                            board[row + 1][col - 1].getPiece().getColour() != piece.getColour() &&
-                            board[row + 2][col - 2].getPiece() == null) isCanEat = true;
-                    if (row + 2 < 8 && col + 2 < 8 &&
-                            board[row + 1][col + 1].getPiece() != null &&
-                            board[row + 1][col + 1].getPiece().getColour() != piece.getColour() &&
-                            board[row + 2][col + 2].getPiece() == null) isCanEat = true;
-                    if (row - 2 >= 0 && col - 2 >= 0 &&
-                            board[row - 1][col - 1].getPiece() != null &&
-                            board[row - 1][col - 1].getPiece().getColour() != piece.getColour() &&
-                            board[row - 2][col - 2].getPiece() == null) isCanEat = true;
-                    if (row - 2 >= 0 && col + 2 < 8 &&
-                            board[row - 1][col + 1].getPiece() != null &&
-                            board[row - 1][col + 1].getPiece().getColour() != piece.getColour() &&
-                            board[row - 2][col + 2].getPiece() == null) isCanEat = true;
+                Piece userPiece = cell.getPiece();
+                if (userPiece == null) continue;
+                if (userPiece.getColour() == userColour && userPiece.isCanEat()) {
+                    isCanEat = true;
                 }
             }
         }
