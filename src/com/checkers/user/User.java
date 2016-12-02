@@ -58,13 +58,13 @@ public class User implements IUser {
         input = input.toLowerCase();
         Cell to = getCell(input);
         if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        board.analyze(this);
         if (canEat) {
             board.eat(from, to);
         } else {
             board.move(from, to);
         }
         board.show();
-        board.analyze(this);
     }
 
     private Cell getCell(String _cell) throws CheckersException {

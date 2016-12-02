@@ -19,7 +19,7 @@ public class Game {
     private User firstPlayer;
     private User secondPlayer;
 
-    public Game() {
+    public Game() throws CheckersException {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
 
@@ -30,31 +30,25 @@ public class Game {
 
     public void start() {
         showMenu();
-        board.show();
-        board.analyze(firstPlayer);
-        board.analyze(secondPlayer);
         boolean firstPlayerTurn = true;
+        User turnPlayer;
         while (board.isGaming()) {
             if (firstPlayerTurn) {
-                try {
-                    do {
-                        writer.println("Your turn, " + firstPlayer.getName() + ":");
-                        firstPlayer.makeTurn();
-                    } while (firstPlayer.isCanEat());
-                    firstPlayerTurn = false;
-                } catch (Exception ex) {
-                    writer.println(ex.getMessage());
-                }
+                turnPlayer = firstPlayer;
             } else {
-                try {
-                    do {
-                        writer.println("Your turn, " + secondPlayer.getName() + ":");
-                        secondPlayer.makeTurn();
-                    } while (secondPlayer.isCanEat());
-                    firstPlayerTurn = true;
-                } catch (Exception ex) {
-                    writer.println(ex.getMessage());
-                }
+                turnPlayer = secondPlayer;
+            }
+            try {
+                do {
+                    board.analyze(turnPlayer);
+                    board.show();
+                    writer.println("Your turn, " + turnPlayer.getName() + ":");
+                    turnPlayer.makeTurn();
+                    if (turnPlayer == firstPlayer) firstPlayerTurn = false;
+                    else firstPlayerTurn = true;
+                } while (turnPlayer.isCanEat());
+            } catch (Exception ex) {
+                writer.println(ex.getMessage());
             }
         }
     }
@@ -128,7 +122,7 @@ public class Game {
         return user;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CheckersException {
         Game game = new Game();
         game.start();
     }

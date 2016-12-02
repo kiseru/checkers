@@ -8,6 +8,7 @@ public class Cell {
     private int row;
     private Colour colour;
     private Piece piece;
+
     private CheckerBoard board;
 
     public Cell(int _row, int _col, CheckerBoard _board) {
@@ -17,6 +18,10 @@ public class Cell {
         piece = null;
         if ((col + row) % 2 == 0) colour = Colour.BLACK;
         else colour = Colour.WHITE;
+    }
+
+    public CheckerBoard getBoard() {
+        return board;
     }
 
     public int getCol() {
@@ -33,6 +38,7 @@ public class Cell {
 
     public void setPiece(Piece piece) {
         this.piece = piece;
+        piece.setCell(this);
     }
 
     public Colour getColour() {
@@ -59,11 +65,11 @@ public class Cell {
         }
     }
 
-    public int diff(Cell second) throws CanNotMoveException {
+    public int diff(Cell second) {
         if (Math.abs(getCol() - second.getCol()) == Math.abs(getRow() - second.getRow())) {
             return Math.abs(getCol() - second.getCol());
         }
-        throw new CanNotMoveException();
+        return -1;
     }
 
     public Cell getNear(int diffRow, int diffCol) {

@@ -14,6 +14,10 @@ public abstract class Piece {
         return cell;
     }
 
+    public void setCell(Cell cell) {
+        this.cell = cell;
+    }
+
     public boolean isCanEat() {
         return canEat;
     }
@@ -38,11 +42,13 @@ public abstract class Piece {
         return colour;
     }
 
-    public abstract boolean isCanMoveTo(Cell to) throws CheckersException;
+    public abstract boolean isAbleToMoveTo(Cell to) throws CheckersException;
 
-    public abstract void analyzeAbilityOfMove();
+    public abstract boolean isAbleToEatTo(Cell to) throws CheckersException;
 
-    public abstract void analyzeAbilityOfEat();
+    public abstract void analyzeAbilityOfMove() throws CheckersException;
+
+    public abstract void analyzeAbilityOfEat() throws CheckersException;
 
     public abstract void move(Cell to) throws CheckersException;
 
