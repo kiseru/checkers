@@ -14,7 +14,7 @@ public class Man extends Piece {
         boolean secondCell = false;
         if (getColour() == Colour.WHITE) {
             try {
-                firstCell = isAbleToEatTo(getCell().getNear(1, -1));
+                firstCell = isAbleToMoveTo(getCell().getNear(1, -1));
             } catch (ArrayIndexOutOfBoundsException ex) {}
 
             try {
@@ -28,7 +28,7 @@ public class Man extends Piece {
             }
         } else {
             try {
-                firstCell = isAbleToEatTo(getCell().getNear(-1, -1));
+                firstCell = isAbleToMoveTo(getCell().getNear(-1, -1));
             } catch (ArrayIndexOutOfBoundsException ex) {}
 
             try {

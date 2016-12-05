@@ -40,7 +40,6 @@ public class Game {
             }
             try {
                 do {
-                    board.analyze(turnPlayer);
                     board.show();
                     writer.println("Your turn, " + turnPlayer.getName() + ":");
                     turnPlayer.makeTurn();

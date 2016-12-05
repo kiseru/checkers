@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.*;
+import com.checkers.exceptions.CheckersException;
 import com.checkers.user.User;
 import com.checkers.utils.Colour;
 
@@ -77,6 +77,7 @@ public class CheckerBoard {
 
     public void move(Cell from, Cell to) throws CheckersException {
         Piece userPiece = from.getPiece();
+        from.getPiece().isAbleToMoveTo(to);
         userPiece.move(to);
     }
 
