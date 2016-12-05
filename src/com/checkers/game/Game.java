@@ -32,6 +32,7 @@ public class Game {
         showMenu();
         boolean firstPlayerTurn = true;
         User turnPlayer;
+        board.show();
         while (board.isGaming()) {
             if (firstPlayerTurn) {
                 turnPlayer = firstPlayer;
@@ -40,7 +41,6 @@ public class Game {
             }
             try {
                 do {
-                    board.show();
                     writer.println("Your turn, " + turnPlayer.getName() + ":");
                     turnPlayer.makeTurn();
                     if (turnPlayer == firstPlayer) firstPlayerTurn = false;
