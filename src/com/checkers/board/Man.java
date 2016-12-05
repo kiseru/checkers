@@ -75,7 +75,7 @@ public class Man extends Piece {
         if (pieceCell.diff(to) != 1) return false;
         boolean firstCell = false;
         boolean secondCell = false;
-        if (pieceCell.getColour() == Colour.WHITE) {
+        if (getColour() == Colour.WHITE) {
             try {
                 firstCell = pieceCell.getNear(1, 1) == to;
             } catch (ArrayIndexOutOfBoundsException ex) {}
@@ -91,7 +91,8 @@ public class Man extends Piece {
             } catch (ArrayIndexOutOfBoundsException ex) {}
 
             try {
-                secondCell = pieceCell.getNear(-1, 1) == to;
+                Cell cell = pieceCell.getNear(-1, 1);
+                secondCell = cell == to;
             } catch (ArrayIndexOutOfBoundsException ex) {}
 
             if (firstCell || secondCell) return true;
@@ -105,6 +106,7 @@ public class Man extends Piece {
         else if (to.getPiece() != null) return false;
         Cell target = pieceCell.between(to, pieceCell.getBoard());
         if (target.getPiece() == null) return false;
+        if (target.getPiece().getColour() == getColour()) return false;
         return true;
     }
 

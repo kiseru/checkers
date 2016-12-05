@@ -56,7 +56,7 @@ public class CheckerBoard {
     }
 
     public Cell getCell(int row, int col) throws ArrayIndexOutOfBoundsException {
-        return board[row][col];
+        return board[row - 1][col - 1];
     }
 
     public void show() {
@@ -93,13 +93,16 @@ public class CheckerBoard {
                 if (board[row][col].getPiece() != null) {
                     board[row][col].getPiece().analyzeAbilityOfMove();
                     board[row][col].getPiece().analyzeAbilityOfEat();
+                    if (!board[row][col].getPiece().isCanMove()) {
+                        System.out.println(row + " " + col);
+                    }
                 }
             }
         }
 
         boolean isCanEat = false;
-        for (int row = 0; row < SIZE_OF_BOARD && !isCanEat; row++) {
-            for (int col = 0; col < SIZE_OF_BOARD && !isCanEat; col++) {
+        for (int row = 1; row <= SIZE_OF_BOARD && !isCanEat; row++) {
+            for (int col = 1; col <= SIZE_OF_BOARD && !isCanEat; col++) {
                 Cell cell = getCell(row, col);
                 if (cell.getColour() == Colour.WHITE) continue;
                 Piece userPiece = cell.getPiece();

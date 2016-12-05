@@ -38,7 +38,9 @@ public class Cell {
 
     public void setPiece(Piece piece) {
         this.piece = piece;
-        piece.setCell(this);
+        try {
+            piece.setCell(this);
+        } catch (NullPointerException ex) {}
     }
 
     public Colour getColour() {
@@ -72,13 +74,16 @@ public class Cell {
         return -1;
     }
 
-    public Cell getNear(int diffRow, int diffCol) {
+    public Cell getNear(int diffRow, int diffCol) throws ArrayIndexOutOfBoundsException {
+        int row = getRow() + diffRow;
+        int col = getCol() + diffCol;
+        if (row < 1 || row > 8 || col < 1 || col > 8) throw new ArrayIndexOutOfBoundsException();
         return board.getCell(getRow() + diffRow, getCol() + diffCol);
     }
 
     public Cell between(Cell another, CheckerBoard board) {
         int col = (getCol() + another.getCol()) / 2;
         int row = (getRow() + another.getRow()) / 2;
-        return board.getCell(row - 1, col - 1);
+        return board.getCell(row, col);
     }
 }
