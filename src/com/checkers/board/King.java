@@ -56,7 +56,31 @@ public class King extends Piece {
 
     @Override
     public void analyzeAbilityOfEat() throws CheckersException {
-        //TODO write analyzeAbilityOfEat() method
+        boolean firstDirection = false;
+        boolean secondDirection = false;
+        boolean thirdDirection = false;
+        boolean forthDirection = false;
+        int i = 2;
+        while (getCell().getRow() + i <= 8 && getCell().getCol() + i <= 8 && !firstDirection) {
+            firstDirection = isAbleToEatTo(getCell().getNear(i, i));
+            i++;
+        }
+        i = 2;
+        while (getCell().getRow() + i <= 8 && getCell().getCol() - i >= 1 && !secondDirection) {
+            secondDirection = isAbleToEatTo(getCell().getNear(i, -i));
+            i++;
+        }
+        i = 2;
+        while (getCell().getRow() - i >= 1 && getCell().getCol() + i <= 8 && !thirdDirection) {
+            thirdDirection = isAbleToEatTo(getCell().getNear(-i, i));
+            i++;
+        }
+        i = 2;
+        while (getCell().getRow() - i >= 1 && getCell().getCol() - i >= 1 && !forthDirection) {
+            forthDirection = isAbleToEatTo(getCell().getNear(-i, -i));
+            i++;
+        }
+        setCanEat(firstDirection || secondDirection || thirdDirection || forthDirection);
     }
 
     @Override
@@ -109,7 +133,22 @@ public class King extends Piece {
 
     @Override
     public boolean isAbleToEatTo(Cell to) throws CheckersException {
-        //TODO write isAbleToEatTo() method
+        Cell pieceCell = getCell();
+        if (to.getPiece() != null) return false;
+        byte signRow = (byte)((to.getRow() - pieceCell.getRow()) / Math.abs(to.getRow() - pieceCell.getRow()));
+        byte signCol = (byte)((to.getCol() - pieceCell.getCol()) / Math.abs(to.getCol() - pieceCell.getCol()));
+        int i = 1;
+        int count = 0;
+        while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getCol() + signCol * i <= 8 && pieceCell.getCol() + signCol * i >= 1 ) {
+            if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColour() == pieceCell.getPiece().getColour()) return false;
+            try {
+                if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null)
+                    return false;
+            } catch (ArrayIndexOutOfBoundsException ex) {}
+            if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null) count++;
+        }
+        if (count == 0) return false;
+        return true;
     }
 
     @Override
@@ -124,7 +163,18 @@ public class King extends Piece {
 
     @Override
     public void eat(Cell to) throws CheckersException {
-        //TODO write eat() method
+        if (!isCanEat()) throw new CanNotEatException();
+        if (!isAbleToEatTo(to)) throw new CanNotEatException();
+        Cell from = getCell();
+        to.setPiece(this);
+        from.setPiece(null);
+        byte signRow = (byte)((to.getRow() - from.getRow()) / Math.abs(to.getRow() - from.getRow()));
+        byte signCol = (byte)((to.getCol() - from.getCol()) / Math.abs(to.getCol() - from.getCol()));
+        int i = 1;
+        while (from.getRow() + signRow * i != to.getRow() && from.getCol() + signCol * i != to.getCol()) {
+            from.getNear(signRow * i, signCol * i).setPiece(null);
+            i++;
+        }
     }
 
     @Override
