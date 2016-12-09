@@ -145,12 +145,15 @@ public class King extends Piece {
             try {
                 if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColour() == pieceCell.getPiece().getColour())
                     return false;
-            } catch (NullPointerException ex) {}
+                else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null)
+                    return true;
+            } catch (ArrayIndexOutOfBoundsException ex) {} catch (NullPointerException ex) {}
             try {
                 if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null)
                     return false;
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {return false;}
             if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null) count++;
+
             i++;
         }
         if (count == 0) return false;
