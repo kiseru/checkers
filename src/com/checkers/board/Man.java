@@ -127,13 +127,4 @@ public class Man extends Piece {
         from.setPiece(null);
         from.between(to, from.getBoard()).setPiece(null);
     }
-
-    @Override
-    public String toString() {
-        if (getColour() == Colour.BLACK) {
-            return "@";
-        } else {
-            return "$";
-        }
-    }
 }

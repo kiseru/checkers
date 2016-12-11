@@ -6,7 +6,7 @@
 <body>
     <%@include file="views/partials/header.jsp"%>
 
-    <a class="btn btn-info btn-play" href="/login">
+    <a class="btn btn-success btn-play" href="/login">
         <p>Play</p>
     </a>
 </body>

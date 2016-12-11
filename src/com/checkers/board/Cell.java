@@ -1,6 +1,5 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.utils.Colour;
 
 public class Cell {
@@ -52,19 +51,6 @@ public class Cell {
         result += (char) ('a' + getCol() - 1);
         result += getRow();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return piece.toString();
-        } catch (NullPointerException ex) {
-            if (colour == Colour.BLACK) {
-                return "*";
-            } else {
-                return "^";
-            }
-        }
     }
 
     public int diff(Cell second) {
