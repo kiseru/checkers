@@ -139,13 +139,4 @@ public class Man extends Piece {
             to.setPiece(new King(getColour()));
         }
     }
-
-    @Override
-    public String toString() {
-        if (getColour() == Colour.BLACK) {
-            return "@";
-        } else {
-            return "$";
-        }
-    }
 }

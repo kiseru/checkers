@@ -19,37 +19,13 @@ public class Game {
     private User firstPlayer;
     private User secondPlayer;
 
-    public Game() throws CheckersException {
+    public Game(PrintWriter writer) throws CheckersException {
         InputStreamReader streamReader = new InputStreamReader(System.in);
         reader = new BufferedReader(streamReader);
 
-        writer = new PrintWriter(System.out, true);
+        this.writer = writer;
 
-        board = new CheckerBoard(writer);
-    }
-
-    public void start() {
-        showMenu();
-        boolean firstPlayerTurn = true;
-        User turnPlayer;
-        board.show();
-        while (board.isGaming()) {
-            if (firstPlayerTurn) {
-                turnPlayer = firstPlayer;
-            } else {
-                turnPlayer = secondPlayer;
-            }
-            try {
-                do {
-                    writer.println("Your turn, " + turnPlayer.getName() + ":");
-                    turnPlayer.makeTurn();
-                    if (turnPlayer == firstPlayer) firstPlayerTurn = false;
-                    else firstPlayerTurn = true;
-                } while (turnPlayer.isCanEat());
-            } catch (Exception ex) {
-                writer.println(ex.getMessage());
-            }
-        }
+        board = new CheckerBoard();
     }
 
     public void showMenu() {
@@ -119,10 +95,5 @@ public class Game {
             user.setName(login);
         } catch (Exception ex) {}
         return user;
-    }
-
-    public static void main(String[] args) throws CheckersException {
-        Game game = new Game();
-        game.start();
     }
 }
