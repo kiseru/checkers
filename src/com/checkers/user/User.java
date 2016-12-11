@@ -58,12 +58,16 @@ public class User implements IUser {
         input = input.toLowerCase();
         Cell to = getCell(input);
         if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        boolean wasEating = false;
         board.analyze(this);
         if (canEat) {
             board.eat(from, to);
+            wasEating = true;
         } else {
             board.move(from, to);
         }
+        board.analyze(this);
+        if (!wasEating) this.canEat = false;
         board.show();
     }
 
