@@ -1,0 +1,76 @@
+body {
+    padding: 0px;
+    text-align: center;
+    font-family: cursive !important;
+}
+
+.header {
+    width: 100%;
+    border-radius: 0px !important;
+    background-color: #5cb85c !important;
+    border-color: #5cb85c !important;
+    color: #ffffff !important;
+}
+
+.header h1 {
+    margin: 10px 0px;
+}
+
+.btn-play {
+    width: 200px;
+    border-radius: 10px !important;
+}
+
+.btn-play p {
+    font-size: 32px;
+    margin: 10px auto;
+}
+
+.panel {
+    width: 400px;
+    margin: 0px auto;
+}
+
+.cell {
+    height: 65px;
+    width: 65px;
+    border: 1px solid black;
+    display: inline-block;
+    margin: -3px; /* костыль))) */
+}
+
+.black-cell {
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}
+
+.white-cell {
+    background-color: #e9f5e9;
+    border-color: #e9f5e9;
+}
+
+.piece {
+    width: 50px;
+    height: 50px;
+    margin: 6px;
+}
+
+.black-man {
+    background-image: url("../image/black-man.png");
+}
+
+.white-man {
+    background-image: url("../image/white-man.png");
+}
+
+.black-king {
+    background-image: url("../image/black-king.png");
+}
+
+.white-king {
+    background-image: url("../image/white-king.png");
+}
+
+.panel p {
+    font-size: 18px;
+}

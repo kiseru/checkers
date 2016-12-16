@@ -117,6 +117,12 @@ public class Man extends Piece {
         Cell from = getCell();
         to.setPiece(this);
         from.setPiece(null);
+        if (getColour() == Colour.WHITE && to.getRow() == 8) {
+            to.setPiece(new King(getColour()));
+        }
+        if (getColour() == Colour.BLACK && to.getRow() == 1) {
+            to.setPiece(new King(getColour()));
+        }
     }
 
     public void eat(Cell to) throws CheckersException {
@@ -126,14 +132,11 @@ public class Man extends Piece {
         to.setPiece(this);
         from.setPiece(null);
         from.between(to, from.getBoard()).setPiece(null);
-    }
-
-    @Override
-    public String toString() {
-        if (getColour() == Colour.BLACK) {
-            return "@";
-        } else {
-            return "$";
+        if (getColour() == Colour.WHITE && to.getRow() == 8) {
+            to.setPiece(new King(getColour()));
+        }
+        if (getColour() == Colour.BLACK && to.getRow() == 1) {
+            to.setPiece(new King(getColour()));
         }
     }
 }

@@ -4,17 +4,13 @@ import com.checkers.exceptions.CheckersException;
 import com.checkers.user.User;
 import com.checkers.utils.Colour;
 
-import java.io.PrintWriter;
-
 public class CheckerBoard {
-    private PrintWriter writer;
-    private static final int SIZE_OF_BOARD = 8;
+    public static final int SIZE_OF_BOARD = 8;
     private Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
     private int whitePieces;
     private int blackPieces;
 
-    public CheckerBoard(PrintWriter _writer) throws CheckersException {
-        writer = _writer;
+    public CheckerBoard() {
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 board[row][col] = new Cell(row + 1, col + 1, this);
@@ -45,8 +41,10 @@ public class CheckerBoard {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 Piece piece = board[row][col].getPiece();
                 if (piece != null) {
-                    piece.analyzeAbilityOfMove();
-                    piece.analyzeAbilityOfEat();
+                    try {
+                        piece.analyzeAbilityOfMove();
+                        piece.analyzeAbilityOfEat();
+                    } catch (CheckersException ex) {}
                 }
             }
         }
@@ -55,24 +53,8 @@ public class CheckerBoard {
         blackPieces = 12;
     }
 
-    public Cell getCell(int row, int col) throws ArrayIndexOutOfBoundsException {
+    public Cell getCell(int row, int col) {
         return board[row - 1][col - 1];
-    }
-
-    public void show() {
-        writer.print("  ");
-        for (char i = 'a'; i <= 'h'; i++) {
-            writer.print((char)i + " ");
-        }
-        writer.println();
-        for (int i = SIZE_OF_BOARD - 1; i >= 0; i--) {
-            writer.print((i + 1) + " ");
-            for (int j = 0; j < SIZE_OF_BOARD; j++) {
-                writer.print(board[i][j]);
-                writer.print(" ");
-            }
-            writer.println();
-        }
     }
 
     public void move(Cell from, Cell to) throws CheckersException {

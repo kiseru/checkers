@@ -5,13 +5,9 @@ import com.checkers.board.CheckerBoard;
 import com.checkers.exceptions.*;
 import com.checkers.utils.Colour;
 
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-
 public class User implements IUser {
     private String name;
     private Colour colour;
-    private BufferedReader reader;
     private CheckerBoard board;
     private boolean canEat;
 
@@ -20,8 +16,6 @@ public class User implements IUser {
         colour = _colour;
         board = _board;
         canEat = false;
-        InputStreamReader streamReader = new InputStreamReader(System.in);
-        reader = new BufferedReader(streamReader);
     }
 
     public void setName(String name) {
@@ -45,26 +39,24 @@ public class User implements IUser {
     }
 
     @Override
-    public void makeTurn() throws Exception {
-        System.out.println("Choice piece to make turn");
-
-        String input = reader.readLine();
-        input = input.toLowerCase();
-        Cell from = getCell(input);
+    public void makeTurn(String _from, String _to) throws CheckersException {
+        Cell from = getCell(_from);
         if (from.getPiece() == null) throw new PieceNotFoundException(from);
         if (from.getPiece().getColour() != colour) throw new YourPieceNotFoundException();
 
-        input = reader.readLine();
-        input = input.toLowerCase();
-        Cell to = getCell(input);
+        Cell to = getCell(_to);
         if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        boolean wasEating = false;
         board.analyze(this);
         if (canEat) {
             board.eat(from, to);
+            wasEating = true;
         } else {
             board.move(from, to);
         }
-        board.show();
+        board.analyze(this);
+        if (!wasEating) this.canEat = false;
+
     }
 
     private Cell getCell(String _cell) throws CheckersException {
@@ -84,5 +76,10 @@ public class User implements IUser {
         }
 
         return board.getCell(row, col);
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }
