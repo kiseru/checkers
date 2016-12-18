@@ -4,7 +4,7 @@
 <html>
 <head>
     <%@include file="partials/head.jsp"%>
-    <script src="js/autoreload.js"></script>
+    <!--<script src="js/autoreload.js"></script>-->
 </head>
 <body>
     <%@include file="partials/header.jsp"%>
@@ -33,6 +33,7 @@
                     <div class="panel-body">
                         <p>Login: <span id="login">${param.login}</span></p>
                         <p>Turn: <%= turn %></p>
+                        <p>Room ID: <span id="id">${param.id}</span></p>
                     </div>
                 </div>
 
