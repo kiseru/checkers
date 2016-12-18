@@ -57,7 +57,7 @@ public class GameServlet extends HttpServlet {
             req.getRequestDispatcher("/finish").forward(req, resp);
         }
 
-        if (from != null && to != null) {
+        if (from != null && to != null && room.getSecondPlayer() != null) {
             if (login.equals(room.getFirstPlayer().getName()) && room.getTurn().equals(room.getFirstPlayer())) {
                 try {
                     room.getFirstPlayer().makeTurn(from, to);
