@@ -1,11 +1,9 @@
-*.class
 *.iml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Directories
-out/*
 
 # Package Files #
 *.jar
