@@ -40,17 +40,17 @@ public class GameServlet extends HttpServlet {
         else if (secondPlayer == null && !login.equals(firstPlayer.getName())) secondPlayer = new User(login, Colour.BLACK, board);
 
         if (from != null && to != null) {
-            if (login.equals(firstPlayer.getName())) {
+            if (login.equals(firstPlayer.getName()) && turn.equals(firstPlayer)) {
                 try {
                     firstPlayer.makeTurn(from, to);
-                    turn = secondPlayer;
+                    if (!firstPlayer.isCanEat()) turn = secondPlayer;
                 } catch (CheckersException ex) {
                     message = ex.getMessage();
                 }
-            } else if (login.equals(secondPlayer.getName())) {
+            } else if (login.equals(secondPlayer.getName()) && turn.equals(secondPlayer)) {
                 try {
                     secondPlayer.makeTurn(from, to);
-                    turn = firstPlayer;
+                    if (!secondPlayer.isCanEat()) turn = firstPlayer;
                 } catch (CheckersException ex) {
                     message = ex.getMessage();
                 }
