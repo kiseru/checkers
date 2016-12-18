@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet("/find_room")
+public class FindRoom extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("views/find_room.jsp").forward(req, resp);
     }
 }

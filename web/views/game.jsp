@@ -1,4 +1,5 @@
 <%@ page import="com.checkers.user.User" %>
+<%@ page import="com.checkers.game.Room" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -15,19 +16,15 @@
             </div>
 
             <%
-                String turn = "";
-                if (request.getAttribute("turn") != null) {
-                    turn = ((User) request.getAttribute("turn")).getName();
-                }
+                Room room = (Room) request.getAttribute("room");
 
-                String firstPlayer = "";
-                if (request.getAttribute("firstPlayer") != null) {
-                    firstPlayer = ((User)request.getAttribute("firstPlayer")).getName();
-                }
+                String turn = room.getTurn().toString();
 
-                String secondPlayer = "";
-                if (request.getAttribute("secondPlayer") != null) {
-                    secondPlayer = ((User)request.getAttribute("secondPlayer")).getName();
+                String firstPlayer = room.getFirstPlayer().toString();
+
+                String secondPlayer = null;
+                if (room.getSecondPlayer() != null) {
+                    secondPlayer = room.getSecondPlayer().toString();
                 }
             %>
 
@@ -44,30 +41,6 @@
                         <p>White: <%= firstPlayer %></p>
                         <p>Black: <%= secondPlayer %></p>
                         <p>Message: <%= request.getAttribute("Message") %></p>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <form id="myform" method="post" action="game">
-                            <input type="hidden" name="login" value="${param.login}">
-
-                            <div class="form-group">
-                                <label for="from">From</label>
-                                <input type="text" class="form-control" name="from" id="from" hidden>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="to">To</label>
-                                <input type="text" class="form-control" name="to" id="to">
-                            </div>
-
-                            <% if (request.getParameter("login").equals(turn)) { %>
-                                <input type="submit" class="btn btn-success btn-lg" value="Make turn">
-                            <% } else { %>
-                                <input type="submit" class="btn btn-success btn-lg" value="Make turn" disabled>
-                            <% } %>
-                        </form>
                     </div>
                 </div>
             </div>

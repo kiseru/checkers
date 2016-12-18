@@ -3,7 +3,8 @@
 <%@ page import="com.checkers.board.CheckerBoard" %>
 <%@ page import="com.checkers.utils.Colour" %>
 <%@ page import="com.checkers.board.Cell" %>
-<% CheckerBoard board = (CheckerBoard)request.getAttribute("board"); %>
+<% Room boardRoom = (Room)request.getAttribute("room"); %>
+<% CheckerBoard board = boardRoom.getBoard(); %>
 <% for (int row = CheckerBoard.SIZE_OF_BOARD; row > 0; row--) { %>
 <div class="row">
     <% for (int col = 1; col <= CheckerBoard.SIZE_OF_BOARD; col++) { %>
