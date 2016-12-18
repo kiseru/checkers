@@ -33,7 +33,7 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <p>Login: ${param.login}</p>
+                        <p>Login: <span id="login">${param.login}</span></p>
                         <p>Turn: <%= turn %></p>
                     </div>
                 </div>
@@ -48,17 +48,17 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form method="post" action="game">
+                        <form id="myform" method="post" action="game">
                             <input type="hidden" name="login" value="${param.login}">
 
                             <div class="form-group">
-                                <label for="from1">From</label>
-                                <input type="text" class="form-control" name="from" id="from1" hidden>
+                                <label for="from">From</label>
+                                <input type="text" class="form-control" name="from" id="from" hidden>
                             </div>
 
                             <div class="form-group">
-                                <label for="to1">To</label>
-                                <input type="text" class="form-control" name="to" id="to1">
+                                <label for="to">To</label>
+                                <input type="text" class="form-control" name="to" id="to">
                             </div>
 
                             <% if (request.getParameter("login").equals(turn)) { %>

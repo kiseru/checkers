@@ -72,4 +72,11 @@ public class Cell {
         int row = (getRow() + another.getRow()) / 2;
         return board.getCell(row, col);
     }
+
+    @Override
+    public String toString() {
+        char letter = (char)('a' + getCol() - 1);
+        int number = getRow();
+        return "" + letter + number;
+    }
 }
