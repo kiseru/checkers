@@ -12,7 +12,7 @@ build-and-run:
   script:
     - docker-compose -p checkers stop
     - docker-compose -p checkers rm -f 
-    - docker-compose -p checkers up -d
+    - docker-compose -p checkers up -d --build
   only:
     - stable
   tags:
