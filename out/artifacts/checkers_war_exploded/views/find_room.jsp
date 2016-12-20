@@ -6,7 +6,7 @@
 <body>
     <%@ include file="partials/header.jsp" %>
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" style="margin-top: 175px;">
         <div class="panel-body">
             <form method="post" action="game">
                 <div class="form-group">
