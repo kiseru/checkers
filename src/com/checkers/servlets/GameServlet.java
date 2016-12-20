@@ -25,9 +25,6 @@ public class GameServlet extends HttpServlet {
         String from = req.getParameter("from");
         String to = req.getParameter("to");
         Integer id = Integer.parseInt(req.getParameter("id"));
-        String isCreate = req.getParameter("isCreate");
-        String message = "";
-        boolean isSending = false;
 
 
         Room room = null;
@@ -39,6 +36,7 @@ public class GameServlet extends HttpServlet {
                 break;
             }
         }
+
         if (!existed) {
             room = new Room(id, new CheckerBoard());
             rooms.add(room);
@@ -62,18 +60,16 @@ public class GameServlet extends HttpServlet {
                 try {
                     room.getFirstPlayer().makeTurn(from, to);
                     if (!room.getFirstPlayer().isCanEat()) room.setTurn(room.getSecondPlayer());
-                } catch (CheckersException ex) {
-                    message = ex.getMessage();
-                }
+                } catch (CheckersException ex) {}
             } else if (login.equals(room.getSecondPlayer().getName()) && room.getTurn().equals(room.getSecondPlayer())) {
                 try {
                     room.getSecondPlayer().makeTurn(from, to);
                     if (!room.getSecondPlayer().isCanEat()) room.setTurn(room.getFirstPlayer());
-                } catch (CheckersException ex) {
-                    message = ex.getMessage();
-                }
+                } catch (CheckersException ex) {}
             }
         }
+
+
 
         req.setAttribute("room", room);
 

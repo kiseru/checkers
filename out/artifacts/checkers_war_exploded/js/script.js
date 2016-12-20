@@ -12,7 +12,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -28,7 +29,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -44,7 +46,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -60,7 +63,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -76,7 +80,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -92,7 +97,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -108,7 +114,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -124,7 +131,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -140,7 +148,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -156,7 +165,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -172,7 +182,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -188,7 +199,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -204,7 +216,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -220,7 +233,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -236,7 +250,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -252,7 +267,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -268,7 +284,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -284,7 +301,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -300,7 +318,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -316,7 +335,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -332,7 +352,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -348,7 +369,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -364,7 +386,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -380,7 +403,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -396,7 +420,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -412,7 +437,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -428,7 +454,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -443,7 +470,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -459,7 +487,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -475,7 +504,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -491,7 +521,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
@@ -507,7 +538,8 @@ $(document).ready(function () {
             $.post('/game', {
                 'from': from,
                 'to': to,
-                'login': $('#login').text()
+                'login': $('#login').text(),
+                'id': $('#id').text()
             });
             location.reload();
         }
