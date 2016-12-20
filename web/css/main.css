@@ -19,6 +19,7 @@ body {
 .btn-play {
     width: 200px;
     border-radius: 10px !important;
+    margin-top: 225px;
 }
 
 .btn-play p {
