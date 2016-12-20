@@ -6,7 +6,7 @@
 <body>
     <%@include file="partials/header.jsp"%>
 
-    <div class="panel panel-default" style="margin-top:50px">
+    <div class="panel panel-default" style="margin-top:175px">
         <div class="panel-body">
             <form method="post" action="find_room">
                 <div class="form-group">
