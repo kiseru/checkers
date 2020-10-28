@@ -1,7 +1,10 @@
 package com.kiseru.checkers;
 
+import com.kiseru.checkers.models.Board;
+
 public class CheckersApplication {
     public static void main(String[] args) {
-        System.out.println("Application started");
+        var board = new Board();
+        System.out.println(board);
     }
 }
