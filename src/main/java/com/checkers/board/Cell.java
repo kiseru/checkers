@@ -63,7 +63,9 @@ public class Cell {
     public Cell getNear(int diffRow, int diffCol) throws ArrayIndexOutOfBoundsException {
         int row = getRow() + diffRow;
         int col = getCol() + diffCol;
-        if (row < 1 || row > 8 || col < 1 || col > 8) throw new ArrayIndexOutOfBoundsException();
+        if (row < 1 || row > 8 || col < 1 || col > 8) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
         return board.getCell(getRow() + diffRow, getCol() + diffCol);
     }
 
