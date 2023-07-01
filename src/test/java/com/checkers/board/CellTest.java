@@ -24,7 +24,7 @@ class CellTest {
         assertThat(cell.getCol()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
-        assertThat(cell.getColour()).isEqualTo(Colour.BLACK);
+        assertThat(cell.getColor()).isEqualTo(Colour.BLACK);
         assertThat(cell.getPiece()).isNull();
     }
 
@@ -38,7 +38,7 @@ class CellTest {
         assertThat(cell.getCol()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
-        assertThat(cell.getColour()).isEqualTo(Colour.WHITE);
+        assertThat(cell.getColor()).isEqualTo(Colour.WHITE);
         assertThat(cell.getPiece()).isNull();
     }
 

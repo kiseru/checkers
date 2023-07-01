@@ -19,7 +19,7 @@ public class CheckerBoard {
 
         for (int row = 0; row < SIZE_OF_BOARD / 2 - 1; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
-                if (board[row][col].getColour() == Colour.BLACK) {
+                if (board[row][col].getColor() == Colour.BLACK) {
                     Piece newPiece = new Man(Colour.WHITE);
                     board[row][col].setPiece(newPiece);
                     newPiece.setCell(board[row][col]);
@@ -29,7 +29,7 @@ public class CheckerBoard {
 
         for (int row = SIZE_OF_BOARD - 1; row > SIZE_OF_BOARD / 2; row--) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
-                if (board[row][col].getColour() == Colour.BLACK) {
+                if (board[row][col].getColor() == Colour.BLACK) {
                     Piece newPiece = new Man(Colour.BLACK);
                     board[row][col].setPiece(newPiece);
                     newPiece.setCell(board[row][col]);
@@ -86,7 +86,7 @@ public class CheckerBoard {
         for (int row = 1; row <= SIZE_OF_BOARD && !isCanEat; row++) {
             for (int col = 1; col <= SIZE_OF_BOARD && !isCanEat; col++) {
                 Cell cell = getCell(row, col);
-                if (cell.getColour() == Colour.WHITE) continue;
+                if (cell.getColor() == Colour.WHITE) continue;
                 Piece userPiece = cell.getPiece();
                 if (userPiece == null) continue;
                 if (userPiece.getColour() == userColour && userPiece.isCanEat()) {

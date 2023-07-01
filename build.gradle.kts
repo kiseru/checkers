@@ -10,6 +10,8 @@ repositories {
 
 dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api")
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core")

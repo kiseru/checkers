@@ -1,56 +1,38 @@
 package com.checkers.board;
 
 import com.checkers.utils.Colour;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class Cell {
-    private int col;
-    private int row;
-    private Colour colour;
+
+    private final int row;
+
+    private final int col;
+
+    private final CheckerBoard board;
+
     private Piece piece;
-
-    private CheckerBoard board;
-
-    public Cell(int _row, int _col, CheckerBoard _board) {
-        col = _col;
-        row = _row;
-        board = _board;
-        piece = null;
-        if ((col + row) % 2 == 0) colour = Colour.BLACK;
-        else colour = Colour.WHITE;
-    }
-
-    public CheckerBoard getBoard() {
-        return board;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public Piece getPiece() throws NullPointerException {
-        return piece;
-    }
 
     public void setPiece(Piece piece) {
         this.piece = piece;
-        try {
+        if (piece != null) {
             piece.setCell(this);
-        } catch (NullPointerException ex) {}
+        }
     }
 
-    public Colour getColour() {
-        return colour;
+    public Colour getColor() {
+        if (((col + row) & 1) == 0) {
+            return Colour.BLACK;
+        } else {
+            return Colour.WHITE;
+        }
     }
 
     public String getMap() {
-        String result = "";
-        result += (char) ('a' + getCol() - 1);
-        result += getRow();
-        return result;
+        return toString();
     }
 
     public int diff(Cell second) {
@@ -60,13 +42,14 @@ public class Cell {
         return -1;
     }
 
-    public Cell getNear(int diffRow, int diffCol) throws ArrayIndexOutOfBoundsException {
+    public Cell getNear(int diffRow, int diffCol) {
         int row = getRow() + diffRow;
         int col = getCol() + diffCol;
         if (row < 1 || row > 8 || col < 1 || col > 8) {
             throw new ArrayIndexOutOfBoundsException();
         }
-        return board.getCell(getRow() + diffRow, getCol() + diffCol);
+
+        return board.getCell(row, col);
     }
 
     public Cell between(Cell another, CheckerBoard board) {
@@ -77,8 +60,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        char letter = (char)('a' + getCol() - 1);
-        int number = getRow();
-        return "" + letter + number;
+        char letter = (char) ('a' + col - 1);
+        return String.valueOf(letter) + row;
     }
 }
