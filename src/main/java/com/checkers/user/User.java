@@ -4,75 +4,71 @@ import com.checkers.board.Cell;
 import com.checkers.board.CheckerBoard;
 import com.checkers.exceptions.*;
 import com.checkers.utils.Color;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
 public class User implements IUser {
-    private String name;
-    private Color color;
-    private CheckerBoard board;
-    private boolean canEat;
 
-    public User(String _name, Color _color, CheckerBoard _board) {
-        name = _name;
-        color = _color;
-        board = _board;
-        canEat = false;
-    }
+    @Getter
+    private final String name;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Getter
+    private final Color color;
 
-    public String getName() {
-        return name;
-    }
+    private final CheckerBoard board;
 
-    public Color getColour() {
-        return color;
-    }
-
-    public void setCanEat(boolean canEat) {
-        this.canEat = canEat;
-    }
-
-    public boolean isCanEat() {
-        return canEat;
-    }
+    @Setter
+    @Getter
+    private boolean canEat = false;
 
     @Override
-    public void makeTurn(String _from, String _to) throws CheckersException {
-        Cell from = getCell(_from);
-        if (from.getPiece() == null) throw new PieceNotFoundException(from);
-        if (from.getPiece().getColor() != color) throw new YourPieceNotFoundException();
+    public void makeTurn(String from, String to) throws CheckersException {
+        Cell cellFrom = getCell(from);
+        if (cellFrom.getPiece() == null) {
+            throw new PieceNotFoundException(cellFrom);
+        }
 
-        Cell to = getCell(_to);
-        if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
+        if (cellFrom.getPiece().getColor() != color) {
+            throw new YourPieceNotFoundException();
+        }
+
+        Cell cellTo = getCell(to);
+        if (cellTo.getPiece() != null) {
+            throw new EmptyCellNotFoundException(cellTo);
+        }
+
         boolean wasEating = false;
         board.analyze(this);
         if (canEat) {
-            board.eat(from, to);
+            board.eat(cellFrom, cellTo);
             wasEating = true;
         } else {
-            board.move(from, to);
+            board.move(cellFrom, cellTo);
         }
         board.analyze(this);
-        if (!wasEating) this.canEat = false;
-
+        if (!wasEating) {
+            this.canEat = false;
+        }
     }
 
-    private Cell getCell(String _cell) throws CheckersException {
-        if (_cell.length() != 2) throw new CellDoesNotExistException(_cell);
-        int col, row;
-
-        if (_cell.charAt(0) >= 'a' && _cell.charAt(0) <= 'h') {
-            col = _cell.charAt(0) - 'a' + 1;
-        } else {
-            throw new CellDoesNotExistException(_cell);
+    private Cell getCell(String cell) throws CheckersException {
+        if (cell.length() != 2) {
+            throw new CellDoesNotExistException(cell);
         }
 
-        if (_cell.charAt(1) >= '1' && _cell.charAt(1) <= '8') {
-            row = _cell.charAt(1) - '1' + 1;
+        int col, row;
+        if (cell.charAt(0) >= 'a' && cell.charAt(0) <= 'h') {
+            col = cell.charAt(0) - 'a' + 1;
         } else {
-            throw new CellDoesNotExistException(_cell);
+            throw new CellDoesNotExistException(cell);
+        }
+
+        if (cell.charAt(1) >= '1' && cell.charAt(1) <= '8') {
+            row = cell.charAt(1) - '1' + 1;
+        } else {
+            throw new CellDoesNotExistException(cell);
         }
 
         return board.getCell(row, col);

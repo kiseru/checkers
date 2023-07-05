@@ -68,7 +68,7 @@ public class CheckerBoard {
     }
 
     public void analyze(User user) throws CheckersException {
-        Color userColor = user.getColour();
+        Color userColor = user.getColor();
 
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
