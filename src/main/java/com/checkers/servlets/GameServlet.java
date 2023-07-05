@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 @WebServlet("/game")
 public class GameServlet extends HttpServlet {
+
     private LinkedList<Room> rooms = new LinkedList<>();
 
     @Override
@@ -59,17 +60,19 @@ public class GameServlet extends HttpServlet {
             if (login.equals(room.getFirstPlayer().getName()) && room.getTurn().equals(room.getFirstPlayer())) {
                 try {
                     room.getFirstPlayer().makeTurn(from, to);
-                    if (!room.getFirstPlayer().isCanEat()) room.setTurn(room.getSecondPlayer());
+                    if (!room.getFirstPlayer().isCanEat()) {
+                        room.setTurn(room.getSecondPlayer());
+                    }
                 } catch (CheckersException ex) {}
             } else if (login.equals(room.getSecondPlayer().getName()) && room.getTurn().equals(room.getSecondPlayer())) {
                 try {
                     room.getSecondPlayer().makeTurn(from, to);
-                    if (!room.getSecondPlayer().isCanEat()) room.setTurn(room.getFirstPlayer());
+                    if (!room.getSecondPlayer().isCanEat()) {
+                        room.setTurn(room.getFirstPlayer());
+                    }
                 } catch (CheckersException ex) {}
             }
         }
-
-
 
         req.setAttribute("room", room);
 
