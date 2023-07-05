@@ -36,26 +36,26 @@ public class Cell {
     }
 
     public int diff(Cell second) {
-        if (Math.abs(getCol() - second.getCol()) == Math.abs(getRow() - second.getRow())) {
-            return Math.abs(getCol() - second.getCol());
+        if (Math.abs(col - second.col) == Math.abs(row - second.row)) {
+            return Math.abs(col - second.col);
         }
         return -1;
     }
 
     public Cell getNear(int diffRow, int diffCol) {
-        int row = getRow() + diffRow;
-        int col = getCol() + diffCol;
-        if (row < 1 || row > 8 || col < 1 || col > 8) {
+        int rowToFind = row + diffRow;
+        int colToFind = col + diffCol;
+        if (rowToFind < 1 || rowToFind > 8 || colToFind < 1 || colToFind > 8) {
             throw new ArrayIndexOutOfBoundsException();
         }
 
-        return board.getCell(row, col);
+        return board.getCell(rowToFind, colToFind);
     }
 
     public Cell between(Cell another, CheckerBoard board) {
-        int col = (getCol() + another.getCol()) / 2;
-        int row = (getRow() + another.getRow()) / 2;
-        return board.getCell(row, col);
+        int colToFind = (col + another.col) / 2;
+        int rowToFind = (row + another.row) / 2;
+        return board.getCell(rowToFind, colToFind);
     }
 
     @Override
