@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @RequiredArgsConstructor
-public class User implements IUser {
+public class User {
 
     @Getter
     private final String name;
@@ -23,7 +23,6 @@ public class User implements IUser {
     @Getter
     private boolean canEat = false;
 
-    @Override
     public void makeTurn(String from, String to) throws CheckersException {
         Cell cellFrom = getCell(from);
         if (cellFrom.getPiece() == null) {
