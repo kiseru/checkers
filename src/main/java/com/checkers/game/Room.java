@@ -2,48 +2,24 @@ package com.checkers.game;
 
 import com.checkers.board.CheckerBoard;
 import com.checkers.user.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@RequiredArgsConstructor
+@Setter
 public class Room {
-    private CheckerBoard board;
+
+    @Getter
+    private final int id;
+
+    @Getter
+    private final CheckerBoard board;
+
     private User firstPlayer;
+
     private User secondPlayer;
+
     private User turn;
-    private int id;
-
-    public Room(int _id, CheckerBoard _board) {
-        id = _id;
-        board = _board;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public CheckerBoard getBoard() {
-        return board;
-    }
-
-    public User getFirstPlayer() {
-        return firstPlayer;
-    }
-
-    public void setFirstPlayer(User firstPlayer) {
-        this.firstPlayer = firstPlayer;
-    }
-
-    public User getSecondPlayer() {
-        return secondPlayer;
-    }
-
-    public void setSecondPlayer(User secondPlayer) {
-        this.secondPlayer = secondPlayer;
-    }
-
-    public User getTurn() {
-        return turn;
-    }
-
-    public void setTurn(User turn) {
-        this.turn = turn;
-    }
 }
