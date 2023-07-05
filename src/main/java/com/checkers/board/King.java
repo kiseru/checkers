@@ -86,8 +86,14 @@ public class King extends Piece {
     @Override
     public boolean isAbleToMoveTo(Cell to) throws CheckersException {
         Cell pieceCell = getCell();
-        if (pieceCell.diff(to) == -1) return false;
-        if (to.getPiece() != null) return false;
+        if (pieceCell.diff(to) == -1) {
+            return false;
+        }
+
+        if (to.getPiece() != null) {
+            return false;
+        }
+
         boolean firstDirection = false;
         boolean secondDirection = false;
         boolean thirdDirection = false;
@@ -135,36 +141,57 @@ public class King extends Piece {
     @Override
     public boolean isAbleToEatTo(Cell to) throws CheckersException {
         Cell pieceCell = getCell();
-        if (to.getPiece() != null) return false;
-        if (getCell().diff(to) < 2) return false;
+        if (to.getPiece() != null) {
+            return false;
+        }
+
+        if (getCell().diff(to) < 2) {
+            return false;
+        }
+
         byte signRow = (byte)((to.getRow() - pieceCell.getRow()) / Math.abs(to.getRow() - pieceCell.getRow()));
         byte signCol = (byte)((to.getCol() - pieceCell.getCol()) / Math.abs(to.getCol() - pieceCell.getCol()));
         int i = 1;
         int count = 0;
         while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getCol() + signCol * i <= 8 && pieceCell.getCol() + signCol * i >= 1 ) {
             try {
-                if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColor() == pieceCell.getPiece().getColor())
+                if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColor() == pieceCell.getPiece().getColor()) {
                     return false;
-                else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null)
+                } else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null) {
                     return true;
+                }
             } catch (ArrayIndexOutOfBoundsException ex) {} catch (NullPointerException ex) {}
             try {
-                if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null)
+                if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null) {
                     return false;
-            } catch (ArrayIndexOutOfBoundsException ex) {return false;}
+                }
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                return false;
+            }
             if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null) count++;
 
             i++;
         }
-        if (count == 0) return false;
+        if (count == 0) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public void move(Cell to) throws CheckersException {
-        if (isCanEat()) throw new CanEatException();
-        if (!isCanMove()) throw new CanNotMoveException();
-        if (!isAbleToMoveTo(to)) throw new CanNotMoveException();
+        if (isCanEat()) {
+            throw new CanEatException();
+        }
+
+        if (!isCanMove()) {
+            throw new CanNotMoveException();
+        }
+
+        if (!isAbleToMoveTo(to)) {
+            throw new CanNotMoveException();
+        }
+
         Cell from = getCell();
         to.setPiece(this);
         from.setPiece(null);
@@ -172,8 +199,14 @@ public class King extends Piece {
 
     @Override
     public void eat(Cell to) throws CheckersException {
-        if (!isCanEat()) throw new CanNotEatException();
-        if (!isAbleToEatTo(to)) throw new CanNotEatException();
+        if (!isCanEat()) {
+            throw new CanNotEatException();
+        }
+
+        if (!isAbleToEatTo(to)) {
+            throw new CanNotEatException();
+        }
+
         Cell from = getCell();
         to.setPiece(this);
         from.setPiece(null);
