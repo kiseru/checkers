@@ -2,6 +2,8 @@ package com.checkers.board;
 
 import com.checkers.exceptions.*;
 import com.checkers.utils.Color;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Man extends Piece {
 
@@ -15,11 +17,13 @@ public class Man extends Piece {
         if (getColor() == Color.WHITE) {
             try {
                 firstCell = isAbleToMoveTo(getCell().getNear(1, -1));
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             try {
                 secondCell = isAbleToMoveTo(getCell().getNear(1, 1));
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             if (firstCell || secondCell) {
                 setCanMove(true);
@@ -29,11 +33,13 @@ public class Man extends Piece {
         } else {
             try {
                 firstCell = isAbleToMoveTo(getCell().getNear(-1, -1));
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             try {
                 secondCell = isAbleToMoveTo(getCell().getNear(-1, 1));
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             if (firstCell || secondCell) {
                 setCanMove(true);
@@ -52,19 +58,23 @@ public class Man extends Piece {
 
         try {
             first = isAbleToEatTo(pieceCell.getNear(2, 2));
-        } catch (ArrayIndexOutOfBoundsException ex) {}
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
 
         try {
             second = isAbleToEatTo(pieceCell.getNear(-2, 2));
-        } catch (ArrayIndexOutOfBoundsException ex) {}
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
 
         try {
             third = isAbleToEatTo(pieceCell.getNear(-2, -2));
-        } catch (ArrayIndexOutOfBoundsException ex) {}
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
 
         try {
             fourth = isAbleToEatTo(pieceCell.getNear(2, -2));
-        } catch (ArrayIndexOutOfBoundsException ex) {}
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
 
         if (first || second || third || fourth) {
             setCanEat(true);
@@ -73,8 +83,17 @@ public class Man extends Piece {
         }
     }
 
-    public boolean isAbleToMoveTo(Cell to) throws CheckersException {
+    public boolean isAbleToMoveTo(Cell to) {
+        if (to.getPiece() != null) {
+            return false;
+        }
+
+        if (isEnemyNear()) {
+            return false;
+        }
+
         Cell pieceCell = getCell();
+
         if (pieceCell.diff(to) != 1) {
             return false;
         }
@@ -84,11 +103,13 @@ public class Man extends Piece {
         if (getColor() == Color.WHITE) {
             try {
                 firstCell = pieceCell.getNear(1, 1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             try {
                 secondCell = pieceCell.getNear(1, -1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             if (firstCell || secondCell) {
                 return true;
@@ -96,12 +117,14 @@ public class Man extends Piece {
         } else {
             try {
                 firstCell = pieceCell.getNear(-1, -1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             try {
                 Cell cell = pieceCell.getNear(-1, 1);
                 secondCell = cell == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            }
 
             if (firstCell || secondCell) {
                 return true;
@@ -109,6 +132,31 @@ public class Man extends Piece {
         }
 
         return false;
+    }
+
+    private boolean isEnemyNear() {
+        var col = cell.getCol();
+        var row = cell.getRow();
+
+        var board = cell.getBoard();
+        return Stream.of(
+                        board.getCell(row - 1, col - 1),
+                        board.getCell(row - 1, col + 1),
+                        board.getCell(row + 1, col + 1),
+                        board.getCell(row + 1, col - 1)
+                )
+                .filter(Objects::nonNull)
+                .anyMatch(this::hasEnemyIn);
+    }
+
+    private boolean hasEnemyIn(Cell cell) {
+        var piece = cell.getPiece();
+        if (piece == null) {
+            return false;
+        }
+
+        var pieceColor = piece.getColor();
+        return pieceColor != color;
     }
 
     public boolean isAbleToEatTo(Cell to) throws CheckersException {

@@ -54,6 +54,10 @@ public class CheckerBoard {
     }
 
     public Cell getCell(int row, int col) {
+        if (row < 1 || row > 8 || col < 1 || col > 8) {
+            return null;
+        }
+
         return board[row - 1][col - 1];
     }
 
