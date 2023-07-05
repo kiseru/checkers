@@ -1,6 +1,6 @@
 package com.checkers.utils;
 
-public enum Colour {
+public enum Color {
     WHITE,
     BLACK
 }

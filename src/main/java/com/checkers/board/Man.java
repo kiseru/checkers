@@ -1,18 +1,18 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.*;
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 
 public class Man extends Piece {
 
-    public Man(Colour colour) {
-        setColour(colour);
+    public Man(Color color) {
+        super(color);
     }
 
     public void analyzeAbilityOfMove() throws CheckersException {
         boolean firstCell = false;
         boolean secondCell = false;
-        if (getColour() == Colour.WHITE) {
+        if (getColor() == Color.WHITE) {
             try {
                 firstCell = isAbleToMoveTo(getCell().getNear(1, -1));
             } catch (ArrayIndexOutOfBoundsException ex) {}
@@ -75,7 +75,7 @@ public class Man extends Piece {
         if (pieceCell.diff(to) != 1) return false;
         boolean firstCell = false;
         boolean secondCell = false;
-        if (getColour() == Colour.WHITE) {
+        if (getColor() == Color.WHITE) {
             try {
                 firstCell = pieceCell.getNear(1, 1) == to;
             } catch (ArrayIndexOutOfBoundsException ex) {}
@@ -106,7 +106,7 @@ public class Man extends Piece {
         else if (to.getPiece() != null) return false;
         Cell target = pieceCell.between(to, pieceCell.getBoard());
         if (target.getPiece() == null) return false;
-        if (target.getPiece().getColour() == getColour()) return false;
+        if (target.getPiece().getColor() == getColor()) return false;
         return true;
     }
 
@@ -117,11 +117,11 @@ public class Man extends Piece {
         Cell from = getCell();
         to.setPiece(this);
         from.setPiece(null);
-        if (getColour() == Colour.WHITE && to.getRow() == 8) {
-            to.setPiece(new King(getColour()));
+        if (getColor() == Color.WHITE && to.getRow() == 8) {
+            to.setPiece(new King(getColor()));
         }
-        if (getColour() == Colour.BLACK && to.getRow() == 1) {
-            to.setPiece(new King(getColour()));
+        if (getColor() == Color.BLACK && to.getRow() == 1) {
+            to.setPiece(new King(getColor()));
         }
     }
 
@@ -132,11 +132,11 @@ public class Man extends Piece {
         to.setPiece(this);
         from.setPiece(null);
         from.between(to, from.getBoard()).setPiece(null);
-        if (getColour() == Colour.WHITE && to.getRow() == 8) {
-            to.setPiece(new King(getColour()));
+        if (getColor() == Color.WHITE && to.getRow() == 8) {
+            to.setPiece(new King(getColor()));
         }
-        if (getColour() == Colour.BLACK && to.getRow() == 1) {
-            to.setPiece(new King(getColour()));
+        if (getColor() == Color.BLACK && to.getRow() == 1) {
+            to.setPiece(new King(getColor()));
         }
     }
 }

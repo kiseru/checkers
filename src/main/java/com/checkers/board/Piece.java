@@ -1,46 +1,23 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CheckersException;
-import com.checkers.utils.Colour;
-import com.checkers.user.IUser;
+import com.checkers.utils.Color;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
+@Getter
+@Setter
 public abstract class Piece {
-    private Colour colour;
-    private boolean canEat;
-    private boolean canMove;
-    private Cell cell;
 
-    public Cell getCell() {
-        return cell;
-    }
+    protected final Color color;
 
-    public void setCell(Cell cell) {
-        this.cell = cell;
-    }
+    protected boolean canEat;
 
-    public boolean isCanEat() {
-        return canEat;
-    }
+    protected boolean canMove;
 
-    public void setCanEat(boolean canEat) {
-        this.canEat = canEat;
-    }
-
-    public boolean isCanMove() {
-        return canMove;
-    }
-
-    public void setCanMove(boolean canMove) {
-        this.canMove = canMove;
-    }
-
-    public void setColour(Colour colour) {
-        this.colour = colour;
-    }
-
-    public Colour getColour() {
-        return colour;
-    }
+    protected Cell cell;
 
     public abstract boolean isAbleToMoveTo(Cell to) throws CheckersException;
 

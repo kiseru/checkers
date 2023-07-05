@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,11 +23,11 @@ public class Cell {
         }
     }
 
-    public Colour getColor() {
+    public Color getColor() {
         if (((col + row) & 1) == 0) {
-            return Colour.BLACK;
+            return Color.BLACK;
         } else {
-            return Colour.WHITE;
+            return Color.WHITE;
         }
     }
 

@@ -1,12 +1,12 @@
 package com.checkers.board;
 
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 import com.checkers.exceptions.*;
 
 public class King extends Piece {
 
-    public King(Colour colour) {
-        setColour(colour);
+    public King(Color color) {
+        super(color);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class King extends Piece {
         int count = 0;
         while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getCol() + signCol * i <= 8 && pieceCell.getCol() + signCol * i >= 1 ) {
             try {
-                if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColour() == pieceCell.getPiece().getColour())
+                if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColor() == pieceCell.getPiece().getColor())
                     return false;
                 else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null)
                     return true;
@@ -188,7 +188,7 @@ public class King extends Piece {
 
     @Override
     public String toString() {
-        if (getColour() == Colour.BLACK) {
+        if (getColor() == Color.BLACK) {
             return "&";
         } else {
             return "#";

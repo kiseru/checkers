@@ -2,7 +2,7 @@ package com.checkers.board;
 
 import com.checkers.exceptions.CheckersException;
 import com.checkers.user.User;
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 
 public class CheckerBoard {
     public static final int SIZE_OF_BOARD = 8;
@@ -19,8 +19,8 @@ public class CheckerBoard {
 
         for (int row = 0; row < SIZE_OF_BOARD / 2 - 1; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
-                if (board[row][col].getColor() == Colour.BLACK) {
-                    Piece newPiece = new Man(Colour.WHITE);
+                if (board[row][col].getColor() == Color.BLACK) {
+                    Piece newPiece = new Man(Color.WHITE);
                     board[row][col].setPiece(newPiece);
                     newPiece.setCell(board[row][col]);
                 }
@@ -29,8 +29,8 @@ public class CheckerBoard {
 
         for (int row = SIZE_OF_BOARD - 1; row > SIZE_OF_BOARD / 2; row--) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
-                if (board[row][col].getColor() == Colour.BLACK) {
-                    Piece newPiece = new Man(Colour.BLACK);
+                if (board[row][col].getColor() == Color.BLACK) {
+                    Piece newPiece = new Man(Color.BLACK);
                     board[row][col].setPiece(newPiece);
                     newPiece.setCell(board[row][col]);
                 }
@@ -68,7 +68,7 @@ public class CheckerBoard {
     }
 
     public void analyze(User user) throws CheckersException {
-        Colour userColour = user.getColour();
+        Color userColor = user.getColour();
 
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
@@ -86,10 +86,10 @@ public class CheckerBoard {
         for (int row = 1; row <= SIZE_OF_BOARD && !isCanEat; row++) {
             for (int col = 1; col <= SIZE_OF_BOARD && !isCanEat; col++) {
                 Cell cell = getCell(row, col);
-                if (cell.getColor() == Colour.WHITE) continue;
+                if (cell.getColor() == Color.WHITE) continue;
                 Piece userPiece = cell.getPiece();
                 if (userPiece == null) continue;
-                if (userPiece.getColour() == userColour && userPiece.isCanEat()) {
+                if (userPiece.getColor() == userColor && userPiece.isCanEat()) {
                     isCanEat = true;
                 }
             }

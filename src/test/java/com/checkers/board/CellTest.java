@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +24,7 @@ class CellTest {
         assertThat(cell.getCol()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
-        assertThat(cell.getColor()).isEqualTo(Colour.BLACK);
+        assertThat(cell.getColor()).isEqualTo(Color.BLACK);
         assertThat(cell.getPiece()).isNull();
     }
 
@@ -38,7 +38,7 @@ class CellTest {
         assertThat(cell.getCol()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
-        assertThat(cell.getColor()).isEqualTo(Colour.WHITE);
+        assertThat(cell.getColor()).isEqualTo(Color.WHITE);
         assertThat(cell.getPiece()).isNull();
     }
 

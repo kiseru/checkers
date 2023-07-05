@@ -4,7 +4,7 @@ import com.checkers.board.CheckerBoard;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.game.Room;
 import com.checkers.user.User;
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -43,10 +43,10 @@ public class GameServlet extends HttpServlet {
         }
 
         if (room.getFirstPlayer() == null) {
-            room.setFirstPlayer(new User(login, Colour.WHITE, room.getBoard()));
+            room.setFirstPlayer(new User(login, Color.WHITE, room.getBoard()));
             room.setTurn(room.getFirstPlayer());
         } else if (room.getSecondPlayer() == null && !login.equals(room.getFirstPlayer().getName())) {
-            room.setSecondPlayer(new User(login, Colour.BLACK, room.getBoard()));
+            room.setSecondPlayer(new User(login, Color.BLACK, room.getBoard()));
         }
 
         if (!room.getBoard().isGaming()) {

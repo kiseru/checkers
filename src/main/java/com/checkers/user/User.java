@@ -3,17 +3,17 @@ package com.checkers.user;
 import com.checkers.board.Cell;
 import com.checkers.board.CheckerBoard;
 import com.checkers.exceptions.*;
-import com.checkers.utils.Colour;
+import com.checkers.utils.Color;
 
 public class User implements IUser {
     private String name;
-    private Colour colour;
+    private Color color;
     private CheckerBoard board;
     private boolean canEat;
 
-    public User(String _name, Colour _colour, CheckerBoard _board) {
+    public User(String _name, Color _color, CheckerBoard _board) {
         name = _name;
-        colour = _colour;
+        color = _color;
         board = _board;
         canEat = false;
     }
@@ -26,8 +26,8 @@ public class User implements IUser {
         return name;
     }
 
-    public Colour getColour() {
-        return colour;
+    public Color getColour() {
+        return color;
     }
 
     public void setCanEat(boolean canEat) {
@@ -42,7 +42,7 @@ public class User implements IUser {
     public void makeTurn(String _from, String _to) throws CheckersException {
         Cell from = getCell(_from);
         if (from.getPiece() == null) throw new PieceNotFoundException(from);
-        if (from.getPiece().getColour() != colour) throw new YourPieceNotFoundException();
+        if (from.getPiece().getColor() != color) throw new YourPieceNotFoundException();
 
         Cell to = getCell(_to);
         if (to.getPiece() != null) throw new EmptyCellNotFoundException(to);
