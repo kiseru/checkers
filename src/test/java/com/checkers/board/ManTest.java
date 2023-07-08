@@ -276,15 +276,6 @@ class ManTest {
         assertThat(actual).isTrue();
     }
 
-    private static Stream<Arguments> nextCellForActionEat() {
-        return Stream.of(
-                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN + 2),
-                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN + 2),
-                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN - 2),
-                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN - 2)
-        );
-    }
-
     @ParameterizedTest
     @MethodSource("nextCellForActionMoveOfWhiteMan")
     void testAnalyzeAbilityOfMoveWhileWhiteManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
@@ -379,6 +370,93 @@ class ManTest {
         var canMove = (Boolean) canMoveField.get(underTest);
 
         assertThat(canMove).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testAnalyzeAbilityOfEatWhileWhiteManHasOpportunityToEat(int destinationRow, int destinationColumn)
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var cellWithSacrifice = board.getCell(
+                (PIECE_CELL_ROW + destinationRow) / 2,
+                (PIECE_CELL_COLUMN + destinationColumn) / 2
+        );
+        cellWithSacrifice.setPiece(new Man(Color.BLACK));
+
+        underTest.analyzeAbilityOfEat();
+
+        var pieceClass = Piece.class;
+        var canEatField = pieceClass.getDeclaredField("canEat");
+        canEatField.setAccessible(true);
+        var canEat = (Boolean) canEatField.get(underTest);
+
+        assertThat(canEat).isTrue();
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToEat()
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        underTest.analyzeAbilityOfEat();
+
+        var pieceClass = Piece.class;
+        var canEatField = pieceClass.getDeclaredField("canEat");
+        canEatField.setAccessible(true);
+        var canEat = (Boolean) canEatField.get(underTest);
+
+        assertThat(canEat).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToEat(int destinationRow, int destinationColumn)
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.BLACK);
+        pieceCell.setPiece(underTest);
+
+        var cellWithSacrifice = board.getCell(
+                (PIECE_CELL_ROW + destinationRow) / 2,
+                (PIECE_CELL_COLUMN + destinationColumn) / 2
+        );
+        cellWithSacrifice.setPiece(new Man(Color.WHITE));
+
+        underTest.analyzeAbilityOfEat();
+
+        var pieceClass = Piece.class;
+        var canEatField = pieceClass.getDeclaredField("canEat");
+        canEatField.setAccessible(true);
+        var canEat = (Boolean) canEatField.get(underTest);
+
+        assertThat(canEat).isTrue();
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToEat()
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.BLACK);
+        pieceCell.setPiece(underTest);
+
+        underTest.analyzeAbilityOfEat();
+
+        var pieceClass = Piece.class;
+        var canEatField = pieceClass.getDeclaredField("canEat");
+        canEatField.setAccessible(true);
+        var canEat = (Boolean) canEatField.get(underTest);
+
+        assertThat(canEat).isFalse();
+    }
+
+    private static Stream<Arguments> nextCellForActionEat() {
+        return Stream.of(
+                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN + 2),
+                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN + 2),
+                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN - 2),
+                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN - 2)
+        );
     }
 
     private void clearBoard(CheckerBoard board) {
