@@ -6,6 +6,7 @@ import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Man extends Piece {
@@ -14,42 +15,19 @@ public class Man extends Piece {
         super(color);
     }
 
-    public void analyzeAbilityOfMove() throws CheckersException {
-        boolean firstCell = false;
-        boolean secondCell = false;
-        if (getColor() == Color.WHITE) {
-            try {
-                firstCell = isAbleToMoveTo(getCell().getNear(1, -1));
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            try {
-                secondCell = isAbleToMoveTo(getCell().getNear(1, 1));
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            if (firstCell || secondCell) {
-                setCanMove(true);
-            } else {
-                setCanMove(false);
-            }
-        } else {
-            try {
-                firstCell = isAbleToMoveTo(getCell().getNear(-1, -1));
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            try {
-                secondCell = isAbleToMoveTo(getCell().getNear(-1, 1));
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            if (firstCell || secondCell) {
-                setCanMove(true);
-            } else {
-                setCanMove(false);
-            }
+    public void analyzeAbilityOfMove() {
+        var row = cell.getRow();
+        var nextRow = color == Color.WHITE ? row + 1 : row - 1;
+        if (nextRow < 1 || nextRow > 8) {
+            return;
         }
+
+        var board = cell.getBoard();
+        var column = cell.getCol();
+        canMove = IntStream.of(column - 1, column + 1)
+                .filter(destinationColumn -> destinationColumn >= 1 && destinationColumn <= 8)
+                .mapToObj(destinationColumn -> board.getCell(nextRow, destinationColumn))
+                .anyMatch(this::isAbleToMoveTo);
     }
 
     public void analyzeAbilityOfEat() throws CheckersException {
@@ -86,8 +64,8 @@ public class Man extends Piece {
         }
     }
 
-    public boolean isAbleToMoveTo(Cell to) {
-        if (!to.isEmpty() || isEnemyNear() || cell.diff(to) != 1) {
+    public boolean isAbleToMoveTo(Cell destinationCell) {
+        if (!destinationCell.isEmpty() || isEnemyNear() || cell.diff(destinationCell) != 1) {
             return false;
         }
 
@@ -96,7 +74,7 @@ public class Man extends Piece {
         var col = cell.getCol();
         var nextRow = color == Color.WHITE ? row + 1 : row - 1;
         return Stream.of(board.getCell(nextRow, col + 1), board.getCell(nextRow, col - 1))
-                .anyMatch(nearCell -> nearCell == to);
+                .anyMatch(nearCell -> nearCell == destinationCell);
     }
 
     private boolean isEnemyNear() {
