@@ -84,54 +84,16 @@ public class Man extends Piece {
     }
 
     public boolean isAbleToMoveTo(Cell to) {
-        if (to.getPiece() != null) {
+        if (!to.isEmpty() || isEnemyNear() || cell.diff(to) != 1) {
             return false;
         }
 
-        if (isEnemyNear()) {
-            return false;
-        }
-
-        Cell pieceCell = getCell();
-
-        if (pieceCell.diff(to) != 1) {
-            return false;
-        }
-
-        boolean firstCell = false;
-        boolean secondCell = false;
-        if (getColor() == Color.WHITE) {
-            try {
-                firstCell = pieceCell.getNear(1, 1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            try {
-                secondCell = pieceCell.getNear(1, -1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            if (firstCell || secondCell) {
-                return true;
-            }
-        } else {
-            try {
-                firstCell = pieceCell.getNear(-1, -1) == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            try {
-                Cell cell = pieceCell.getNear(-1, 1);
-                secondCell = cell == to;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            }
-
-            if (firstCell || secondCell) {
-                return true;
-            }
-        }
-
-        return false;
+        var board = cell.getBoard();
+        var row = cell.getRow();
+        var col = cell.getCol();
+        var nextRow = color == Color.WHITE ? row + 1 : row - 1;
+        return Stream.of(board.getCell(nextRow, col + 1), board.getCell(nextRow, col - 1))
+                .anyMatch(nearCell -> nearCell == to);
     }
 
     private boolean isEnemyNear() {

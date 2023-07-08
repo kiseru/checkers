@@ -58,6 +58,10 @@ public class Cell {
         return board.getCell(rowToFind, colToFind);
     }
 
+    public boolean isEmpty() {
+        return piece == null;
+    }
+
     @Override
     public String toString() {
         char letter = (char) ('a' + col - 1);

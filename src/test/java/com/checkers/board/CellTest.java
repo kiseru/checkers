@@ -237,4 +237,21 @@ class CellTest {
                 Arguments.of(3, 3, 5, 3, "c4")
         );
     }
+
+    @Test
+    void testIsEmptyWhileThereIsNoPiece() {
+        var underTest = new Cell(3, 3, mock(CheckerBoard.class));
+
+        var actual = underTest.isEmpty();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void testIeEmptyWhileThereIsPiece() {
+        var underTest = new Cell(3, 3, mock(CheckerBoard.class));
+        underTest.setPiece(mock(Piece.class));
+
+        var actual = underTest.isEmpty();
+        assertThat(actual).isFalse();
+    }
 }
