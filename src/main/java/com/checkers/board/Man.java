@@ -1,6 +1,9 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.*;
+import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.CanNotEatException;
+import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -121,24 +124,14 @@ public class Man extends Piece {
         return pieceColor != color;
     }
 
-    public boolean isAbleToEatTo(Cell to) throws CheckersException {
-        Cell pieceCell = getCell();
-        if (pieceCell.diff(to) != 2) {
-            return false;
-        } else if (to.getPiece() != null) {
+    public boolean isAbleToEatTo(Cell destinationCell) {
+        if (cell.diff(destinationCell) != 2 || !destinationCell.isEmpty()) {
             return false;
         }
 
-        Cell target = pieceCell.between(to, pieceCell.getBoard());
-        if (target.getPiece() == null) {
-            return false;
-        }
-
-        if (target.getPiece().getColor() == getColor()) {
-            return false;
-        }
-
-        return true;
+        Cell cellWithSacrifice = cell.between(destinationCell, cell.getBoard());
+        var sacrificePiece = cellWithSacrifice.getPiece();
+        return sacrificePiece != null && sacrificePiece.color != color;
     }
 
     public void move(Cell to) throws CheckersException {
