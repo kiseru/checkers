@@ -25,43 +25,26 @@ public class Man extends Piece {
         var board = cell.getBoard();
         var column = cell.getCol();
         canMove = IntStream.of(column - 1, column + 1)
-                .filter(destinationColumn -> destinationColumn >= 1 && destinationColumn <= 8)
+                .filter(this::hasCoordinate)
                 .mapToObj(destinationColumn -> board.getCell(nextRow, destinationColumn))
                 .anyMatch(this::isAbleToMoveTo);
     }
 
-    public void analyzeAbilityOfEat() throws CheckersException {
-        Cell pieceCell = getCell();
-        boolean first = false;
-        boolean second = false;
-        boolean third = false;
-        boolean fourth = false;
+    public void analyzeAbilityOfEat() {
+        var column = cell.getCol();
+        var row = cell.getRow();
+        var board = cell.getBoard();
+        canEat = IntStream.of(row - 2, row + 2)
+                .filter(this::hasCoordinate)
+                .boxed()
+                .flatMap(nextRow -> IntStream.of(column - 2, column + 2)
+                        .filter(this::hasCoordinate)
+                        .mapToObj(nextColumn -> board.getCell(nextRow, nextColumn)))
+                .anyMatch(this::isAbleToEatTo);
+    }
 
-        try {
-            first = isAbleToEatTo(pieceCell.getNear(2, 2));
-        } catch (ArrayIndexOutOfBoundsException ex) {
-        }
-
-        try {
-            second = isAbleToEatTo(pieceCell.getNear(-2, 2));
-        } catch (ArrayIndexOutOfBoundsException ex) {
-        }
-
-        try {
-            third = isAbleToEatTo(pieceCell.getNear(-2, -2));
-        } catch (ArrayIndexOutOfBoundsException ex) {
-        }
-
-        try {
-            fourth = isAbleToEatTo(pieceCell.getNear(2, -2));
-        } catch (ArrayIndexOutOfBoundsException ex) {
-        }
-
-        if (first || second || third || fourth) {
-            setCanEat(true);
-        } else {
-            setCanEat(false);
-        }
+    private boolean hasCoordinate(int coordinate) {
+        return coordinate >= 1 && coordinate <= 8;
     }
 
     public boolean isAbleToMoveTo(Cell destinationCell) {
