@@ -2,10 +2,12 @@ package com.checkers.board;
 
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -207,7 +209,10 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(int destinationRow, int destinationColumn) throws CheckersException {
+    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(
+            int destinationRow,
+            int destinationColumn
+    ) throws CheckersException {
         underTest = new Man(Color.WHITE);
         pieceCell.setPiece(underTest);
 
@@ -232,7 +237,10 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
+    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(
+            int destinationRow,
+            int destinationColumn
+    ) throws CheckersException {
         underTest = new Man(Color.WHITE);
         pieceCell.setPiece(underTest);
 
@@ -250,7 +258,10 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
+    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(
+            int destinationRow,
+            int destinationColumn
+    ) throws CheckersException {
         underTest = new Man(Color.WHITE);
         pieceCell.setPiece(underTest);
 
@@ -273,6 +284,102 @@ class ManTest {
                 Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN - 2),
                 Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN - 2)
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionMoveOfWhiteMan")
+    void testAnalyzeAbilityOfMoveWhileWhiteManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
+        notEmptyCell.setPiece(new Man(Color.WHITE));
+
+        underTest.analyzeAbilityOfMove();
+
+        var pieceClass = Piece.class;
+        var canMoveField = pieceClass.getDeclaredField("canMove");
+        canMoveField.setAccessible(true);
+        var canMove = (Boolean) canMoveField.get(underTest);
+
+        assertThat(canMove).isTrue();
+    }
+
+    private static Stream<Arguments> nextCellForActionMoveOfWhiteMan() {
+        return Stream.of(
+                Arguments.of(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN - 1),
+                Arguments.of(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN + 1)
+        );
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToMove()
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        board.getCell(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN - 1)
+                .setPiece(new Man(Color.WHITE));
+        board.getCell(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN + 1)
+                .setPiece(new Man(Color.WHITE));
+
+        underTest.analyzeAbilityOfMove();
+
+        var pieceClass = Piece.class;
+        var canMoveField = pieceClass.getDeclaredField("canMove");
+        canMoveField.setAccessible(true);
+        var canMove = (Boolean) canMoveField.get(underTest);
+
+        assertThat(canMove).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionMoveOfBlackMan")
+    void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.BLACK);
+        pieceCell.setPiece(underTest);
+
+        var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
+        notEmptyCell.setPiece(new Man(Color.BLACK));
+
+        underTest.analyzeAbilityOfMove();
+
+        var pieceClass = Piece.class;
+        var canMoveField = pieceClass.getDeclaredField("canMove");
+        canMoveField.setAccessible(true);
+        var canMove = (Boolean) canMoveField.get(underTest);
+
+        assertThat(canMove).isTrue();
+    }
+
+    private static Stream<Arguments> nextCellForActionMoveOfBlackMan() {
+        return Stream.of(
+                Arguments.of(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN - 1),
+                Arguments.of(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN + 1)
+        );
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToMove()
+            throws CheckersException, NoSuchFieldException, IllegalAccessException {
+        underTest = new Man(Color.BLACK);
+        pieceCell.setPiece(underTest);
+
+        board.getCell(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN - 1)
+                .setPiece(new Man(Color.BLACK));
+        board.getCell(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN + 1)
+                .setPiece(new Man(Color.BLACK));
+
+        underTest.analyzeAbilityOfMove();
+
+        var pieceClass = Piece.class;
+        var canMoveField = pieceClass.getDeclaredField("canMove");
+        canMoveField.setAccessible(true);
+        var canMove = (Boolean) canMoveField.get(underTest);
+
+        assertThat(canMove).isFalse();
     }
 
     private void clearBoard(CheckerBoard board) {
