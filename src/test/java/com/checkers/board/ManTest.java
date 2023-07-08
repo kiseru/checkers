@@ -5,6 +5,7 @@ import com.checkers.utils.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,17 +14,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ManTest {
 
+    private static final int PIECE_CELL_COLUMN = 4;
+
+    private static final int PIECE_CELL_ROW = 4;
+
     private Piece underTest;
+
+    private CheckerBoard board;
+
+    private Cell pieceCell;
+
+    @BeforeEach
+    void setUp() {
+        board = new CheckerBoard();
+        clearBoard(board);
+
+        pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
+    }
 
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsWhiteSource")
     void testIsAbleToMoveToWhileManIsWhite(int row, int column, boolean expected) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
         underTest = new Man(Color.WHITE);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
         var currentCell = board.getCell(row, column);
         var actual = underTest.isAbleToMoveTo(currentCell);
@@ -45,12 +58,8 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsBlackSource")
     void testIsAbleToMoveToWhileManIsBlack(int row, int column, boolean expected) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
         underTest = new Man(Color.BLACK);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
         var currentCell = board.getCell(row, column);
         var actual = underTest.isAbleToMoveTo(currentCell);
@@ -72,16 +81,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsWhiteAndCellIsBusySource")
     void testIsAbleToMoveToWhileManIsWhiteAndCellIsBusy(int row, int column) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
         underTest = new Man(Color.WHITE);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
-        var cellTo = board.getCell(row, column);
-        cellTo.setPiece(new Man(Color.WHITE));
-        var actual = underTest.isAbleToMoveTo(cellTo);
+        var destinationCell = board.getCell(row, column);
+        destinationCell.setPiece(new Man(Color.WHITE));
+        var actual = underTest.isAbleToMoveTo(destinationCell);
 
         assertThat(actual).isFalse();
     }
@@ -96,16 +101,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsBlackAndCellIsBusySource")
     void testIsAbleToMoveToWhileManIsBlackAndCellIsBusy(int row, int column) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
         underTest = new Man(Color.BLACK);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
-        var cellTo = board.getCell(row, column);
-        cellTo.setPiece(new Man(Color.BLACK));
-        var actual = underTest.isAbleToMoveTo(cellTo);
+        var destinationCell = board.getCell(row, column);
+        destinationCell.setPiece(new Man(Color.BLACK));
+        var actual = underTest.isAbleToMoveTo(destinationCell);
 
         assertThat(actual).isFalse();
     }
@@ -119,19 +120,20 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemySource")
-    void testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemy(int row, int column, int enemyRow, int enemyCol) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
+    void testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemy(
+            int row,
+            int column,
+            int enemyRow,
+            int enemyColumn
+    ) throws CheckersException {
         underTest = new Man(Color.BLACK);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
-        var cellWithEnemy = board.getCell(enemyRow, enemyCol);
+        var cellWithEnemy = board.getCell(enemyRow, enemyColumn);
         cellWithEnemy.setPiece(new Man(Color.WHITE));
 
-        var cellTo = board.getCell(row, column);
-        var actual = underTest.isAbleToMoveTo(cellTo);
+        var destinationCell = board.getCell(row, column);
+        var actual = underTest.isAbleToMoveTo(destinationCell);
 
         assertThat(actual).isFalse();
     }
@@ -149,19 +151,20 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("testIsAbleToMoveToWhileManIsBlackAndMustEatEnemySource")
-    void testIsAbleToMoveToWhileManIsBlackAndMustEatEnemy(int row, int column, int enemyRow, int enemyCol) throws CheckersException {
-        CheckerBoard board = new CheckerBoard();
-        clearBoard(board);
-
+    void testIsAbleToMoveToWhileManIsBlackAndMustEatEnemy(
+            int row,
+            int column,
+            int enemyRow,
+            int enemyColumn
+    ) throws CheckersException {
         underTest = new Man(Color.WHITE);
-        var cell = board.getCell(4, 4);
-        cell.setPiece(underTest);
+        pieceCell.setPiece(underTest);
 
-        var cellWithEnemy = board.getCell(enemyRow, enemyCol);
+        var cellWithEnemy = board.getCell(enemyRow, enemyColumn);
         cellWithEnemy.setPiece(new Man(Color.BLACK));
 
-        var cellTo = board.getCell(row, column);
-        var actual = underTest.isAbleToMoveTo(cellTo);
+        var destinationCell = board.getCell(row, column);
+        var actual = underTest.isAbleToMoveTo(destinationCell);
 
         assertThat(actual).isFalse();
     }
@@ -174,6 +177,101 @@ class ManTest {
                 Arguments.of(3, 5, 5, 3),
                 Arguments.of(3, 5, 5, 5),
                 Arguments.of(3, 5, 3, 3)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("testIsAbleToEatToWhileDiffIsNotEqualsTwoSource")
+    void testIsAbleToEatToWhileDiffIsNotEqualsTwo(int destinationRow, int destinationColumn) throws CheckersException {
+        var destinationCell = board.getCell(destinationRow, destinationColumn);
+
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        assertThat(actual).isFalse();
+    }
+
+    private static Stream<Arguments> testIsAbleToEatToWhileDiffIsNotEqualsTwoSource() {
+        return Stream.of(
+                Arguments.of(3, 3),
+                Arguments.of(3, 5),
+                Arguments.of(5, 5),
+                Arguments.of(5, 3),
+                Arguments.of(1, 3),
+                Arguments.of(7, 1),
+                Arguments.of(7, 7),
+                Arguments.of(1, 7)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(int destinationRow, int destinationColumn) throws CheckersException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        destinationCell.setPiece(new Man(Color.WHITE));
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        assertThat(actual).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testIsAbleToEatWhileThereIsNoSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        assertThat(actual).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var cellWithSacrifice = board.getCell(
+                (PIECE_CELL_ROW + destinationRow) / 2,
+                (PIECE_CELL_COLUMN + destinationColumn) / 2
+        );
+        cellWithSacrifice.setPiece(new Man(Color.WHITE));
+
+        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        assertThat(actual).isFalse();
+    }
+
+    @ParameterizedTest
+    @MethodSource("nextCellForActionEat")
+    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
+        underTest = new Man(Color.WHITE);
+        pieceCell.setPiece(underTest);
+
+        var cellWithSacrifice = board.getCell(
+                (PIECE_CELL_ROW + destinationRow) / 2,
+                (PIECE_CELL_COLUMN + destinationColumn) / 2
+        );
+        cellWithSacrifice.setPiece(new Man(Color.BLACK));
+
+        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        assertThat(actual).isTrue();
+    }
+
+    private static Stream<Arguments> nextCellForActionEat() {
+        return Stream.of(
+                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN + 2),
+                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN + 2),
+                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN - 2),
+                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN - 2)
         );
     }
 
