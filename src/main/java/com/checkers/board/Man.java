@@ -95,7 +95,7 @@ public class Man extends Piece {
         return sacrificePiece != null && sacrificePiece.color != color;
     }
 
-    public void move(Cell to) throws CheckersException {
+    public void move(Cell destinationCell) throws CheckersException {
         if (isCanEat()) {
             throw new CanEatException();
         }
@@ -104,18 +104,21 @@ public class Man extends Piece {
             throw new CanNotMoveException();
         }
 
-        if (!isAbleToMoveTo(to)) {
+        if (!isAbleToMoveTo(destinationCell)) {
             throw new CanNotMoveException();
         }
 
-        Cell from = getCell();
-        to.setPiece(this);
-        from.setPiece(null);
-        if (getColor() == Color.WHITE && to.getRow() == 8) {
-            to.setPiece(new King(getColor()));
-        }
-        if (getColor() == Color.BLACK && to.getRow() == 1) {
-            to.setPiece(new King(getColor()));
+        cell.setPiece(null);
+        updatePiece(destinationCell);
+    }
+
+    private void updatePiece(Cell destinationCell) {
+        int destinationRow = destinationCell.getRow();
+        if (color == Color.WHITE && destinationRow == 8
+                || color == Color.BLACK && destinationRow == 1) {
+            destinationCell.setPiece(new King(color));
+        } else {
+            destinationCell.setPiece(this);
         }
     }
 

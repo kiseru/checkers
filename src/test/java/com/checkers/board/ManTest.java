@@ -1,17 +1,31 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.argThat;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isNull;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.willCallRealMethod;
+import static org.mockito.Mockito.mock;
 
 class ManTest {
 
@@ -466,5 +480,129 @@ class ManTest {
                 cell.setPiece(null);
             }
         }
+    }
+
+    @Test
+    void testMoveWhileCanEat() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.TRUE);
+        willCallRealMethod()
+                .given(man)
+                .move(any());
+
+        // then
+        assertThatExceptionOfType(CanEatException.class)
+                .isThrownBy(() -> man.move(null));
+    }
+
+    @Test
+    void testMoveWhileCannotMove() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        given(man.isCanMove()).willReturn(Boolean.FALSE);
+        willCallRealMethod()
+                .given(man)
+                .move(any());
+
+        // then
+        assertThatExceptionOfType(CanNotMoveException.class)
+                .isThrownBy(() -> man.move(null));
+    }
+
+    @Test
+    void testMoveWhileCannotMoveTo() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        given(man.isCanMove()).willReturn(Boolean.TRUE);
+        given(man.isAbleToMoveTo(any())).willReturn(Boolean.FALSE);
+        willCallRealMethod()
+                .given(man)
+                .move(any());
+
+        // then
+        assertThatExceptionOfType(CanNotMoveException.class)
+                .isThrownBy(() -> man.move(null));
+    }
+
+    @Test
+    void testMove() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        given(man.isCanMove()).willReturn(Boolean.TRUE);
+        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+
+        var sourceCell = mock(Cell.class);
+        willCallRealMethod().given(man).setCell(eq(sourceCell));
+        man.setCell(sourceCell);
+
+        var destinationCell = mock(Cell.class);
+        willCallRealMethod().given(man).move(destinationCell);
+
+        // when
+        man.move(destinationCell);
+
+        // then
+        then(destinationCell).should(times(1)).setPiece(eq(man));
+        then(sourceCell).should(times(1)).setPiece(isNull());
+    }
+
+    @Test
+    void testMoveWhileWhitePieceBecomeKing() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        given(man.isCanMove()).willReturn(Boolean.TRUE);
+        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+
+        ReflectionTestUtils.setField(man, "color", Color.WHITE);
+
+        var sourceCell = mock(Cell.class);
+        willCallRealMethod().given(man).setCell(eq(sourceCell));
+        man.setCell(sourceCell);
+
+        var destinationCell = mock(Cell.class);
+        given(destinationCell.getRow()).willReturn(8);
+        willCallRealMethod().given(man).move(destinationCell);
+
+        // when
+        man.move(destinationCell);
+
+        // then
+        then(sourceCell).should(times(1)).setPiece(isNull());
+        then(destinationCell)
+                .should(times(1))
+                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.WHITE));
+    }
+
+    @Test
+    void testMoveWhileBlackPieceBecomeKing() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        given(man.isCanMove()).willReturn(Boolean.TRUE);
+        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+
+        ReflectionTestUtils.setField(man, "color", Color.BLACK);
+
+        var sourceCell = mock(Cell.class);
+        willCallRealMethod().given(man).setCell(eq(sourceCell));
+        man.setCell(sourceCell);
+
+        var destinationCell = mock(Cell.class);
+        given(destinationCell.getRow()).willReturn(1);
+        willCallRealMethod().given(man).move(destinationCell);
+
+        // when
+        man.move(destinationCell);
+
+        // then
+        then(sourceCell).should(times(1)).setPiece(isNull());
+        then(destinationCell)
+                .should(times(1))
+                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.BLACK));
     }
 }
