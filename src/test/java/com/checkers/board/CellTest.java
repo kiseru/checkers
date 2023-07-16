@@ -1,18 +1,35 @@
 package com.checkers.board;
 
 import com.checkers.utils.Color;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.willCallRealMethod;
 
+@ExtendWith(MockitoExtension.class)
 class CellTest {
+
+    @Mock
+    private Cell underTest;
+
+    @Mock
+    private CheckerBoard board;
 
     @Test
     void testCreatingBlackCell() {
@@ -44,55 +61,63 @@ class CellTest {
 
     @Test
     void testSettingPieceWhileItIsNull() {
-        var row = 0;
-        var col = 0;
-        var board = mock(CheckerBoard.class);
-        var cell = new Cell(row, col, board);
+        // given
+        willCallRealMethod().given(underTest).setPiece(null);
 
+        // when
         assertThatNoException()
-                .isThrownBy(() -> cell.setPiece(null));
-        assertThat(cell.getPiece()).isNull();
+                .isThrownBy(() -> underTest.setPiece(null));
+
+        // then
+        var piece = ReflectionTestUtils.getField(underTest, "piece");
+        assertThat(piece).isNull();
     }
 
     @Test
     void testSettingPieceWhileItIsNotNull() {
-        var row = 0;
-        var col = 0;
-        var board = mock(CheckerBoard.class);
-        var cell = new Cell(row, col, board);
+        // given
         var piece = mock(Piece.class);
 
-        cell.setPiece(piece);
+        willCallRealMethod().given(underTest).setPiece(eq(piece));
 
-        assertThat(cell.getPiece()).isEqualTo(piece);
+        // when
+        underTest.setPiece(piece);
+
+        // then
+        var pieceInCell = ReflectionTestUtils.getField(underTest, "piece");
+        assertThat(pieceInCell).isEqualTo(piece);
     }
 
     @ParameterizedTest
     @MethodSource("gettingMapSource")
     void testGettingMap(int col, int row, String result) {
-        var board = mock(CheckerBoard.class);
+        // given
         var cell = new Cell(row, col, board);
 
+        // when
         var map = cell.getMap();
 
+        // then
         assertThat(map).isEqualTo(result);
     }
 
     @ParameterizedTest
     @MethodSource("gettingMapSource")
     void testToString(int col, int row, String result) {
-        var board = mock(CheckerBoard.class);
+        // given
         var cell = new Cell(row, col, board);
 
+        // when
         var map = cell.toString();
 
+        // then
         assertThat(map).isEqualTo(result);
     }
 
     @ParameterizedTest
     @MethodSource("testDiffSource")
     void testDiff(int firstCol, int firstRow, int secondCol, int secondRow, int diff) {
-        var board = mock(CheckerBoard.class);
+        // given
         var firstCell = new Cell(firstCol, firstRow, board);
         var secondCell = new Cell(secondCol, secondRow, board);
 
@@ -103,23 +128,31 @@ class CellTest {
         assertThat(diff2).isEqualTo(diff);
     }
 
+    @MockitoSettings(strictness = Strictness.LENIENT)
     @ParameterizedTest
     @MethodSource("testGetNearSource")
     void testGetNear(int diffRow, int diffCol, String foundCell) {
-        var board = new CheckerBoard();
+        // given
+        var nearRow = diffRow + 5;
+        var nearCol = diffCol + 5;
+        given(board.getCell(eq(nearRow), eq(nearCol))).willReturn(new Cell(nearRow, nearCol, board));
+
         var cell = new Cell(5, 5, board);
 
+        // when
         var nearCell = cell.getNear(diffRow, diffCol);
 
+        // then
         assertThat(nearCell.toString()).isEqualTo(foundCell);
     }
 
     @ParameterizedTest
     @MethodSource("testGetNearNonExistingCellSource")
     void testGetNearNonExistingCell(int diffRow, int diffCol) {
-        var board = new CheckerBoard();
+        // given
         var cell = new Cell(5, 5, board);
 
+        // when & then
         assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
                 .isThrownBy(() -> cell.getNear(diffRow, diffCol));
     }
@@ -127,14 +160,20 @@ class CellTest {
     @ParameterizedTest
     @MethodSource("testBetweenSource")
     void testBetween(int firstCol, int firstRow, int secondCol, int secondRow, String foundCell) {
-        var board = new CheckerBoard();
-        var firstCell = new Cell(firstCol, firstRow, board);
-        var secondCell = new Cell(secondCol, secondRow, board);
+        // given
+        var firstCell = new Cell(firstRow, firstCol, board);
+        var secondCell = new Cell(secondRow, secondCol, board);
 
+        var rowToFind = (firstRow + secondRow) / 2;
+        var columnToFind = (firstCol + secondCol) / 2;
+        given(board.getCell(eq(rowToFind), eq(columnToFind))).willReturn(new Cell(rowToFind, columnToFind, board));
+
+        // when
         var between1 = firstCell.between(secondCell, board);
-        assertThat(between1.toString()).isEqualTo(foundCell);
-
         var between2 = secondCell.between(firstCell, board);
+
+        // then
+        assertThat(between1.toString()).isEqualTo(foundCell);
         assertThat(between2.toString()).isEqualTo(foundCell);
     }
 
@@ -234,24 +273,32 @@ class CellTest {
                 Arguments.of(4, 4, 5, 5, "d4"),
                 Arguments.of(1, 1, 8, 8, "d4"),
                 Arguments.of(5, 5, 7, 7, "f6"),
-                Arguments.of(3, 3, 5, 3, "c4")
+                Arguments.of(3, 3, 5, 3, "d3")
         );
     }
 
     @Test
     void testIsEmptyWhileThereIsNoPiece() {
-        var underTest = new Cell(3, 3, mock(CheckerBoard.class));
+        // given
+        var underTest = new Cell(3, 3, board);
 
+        // when
         var actual = underTest.isEmpty();
+
+        // then
         assertThat(actual).isTrue();
     }
 
     @Test
     void testIeEmptyWhileThereIsPiece() {
-        var underTest = new Cell(3, 3, mock(CheckerBoard.class));
+        // given
+        var underTest = new Cell(3, 3, board);
         underTest.setPiece(mock(Piece.class));
 
+        // when
         var actual = underTest.isEmpty();
+
+        // then
         assertThat(actual).isFalse();
     }
 }
