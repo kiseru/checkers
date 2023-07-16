@@ -20,7 +20,6 @@ import static org.mockito.BDDMockito.argThat;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.isNull;
-import static org.mockito.BDDMockito.refEq;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.willCallRealMethod;
@@ -299,248 +298,241 @@ class ManTest {
     @Test
     void testMoveWhileCanEat() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.TRUE);
-        willCallRealMethod()
-                .given(man)
-                .move(any());
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
         assertThatExceptionOfType(CanEatException.class)
-                .isThrownBy(() -> man.move(null));
+                .isThrownBy(() -> underTest.move(destinationCell));
     }
 
     @Test
     void testMoveWhileCannotMove() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        given(man.isCanMove()).willReturn(Boolean.FALSE);
-        willCallRealMethod()
-                .given(man)
-                .move(any());
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
         assertThatExceptionOfType(CanNotMoveException.class)
-                .isThrownBy(() -> man.move(null));
+                .isThrownBy(() -> underTest.move(destinationCell));
     }
 
     @Test
     void testMoveWhileCannotMoveTo() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        given(man.isCanMove()).willReturn(Boolean.TRUE);
-        given(man.isAbleToMoveTo(any())).willReturn(Boolean.FALSE);
-        willCallRealMethod()
-                .given(man)
-                .move(any());
+        var underTest = mock(Man.class);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
         assertThatExceptionOfType(CanNotMoveException.class)
-                .isThrownBy(() -> man.move(null));
+                .isThrownBy(() -> underTest.move(destinationCell));
     }
 
     @Test
     void testMove() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        given(man.isCanMove()).willReturn(Boolean.TRUE);
-        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
 
-        var sourceCell = mock(Cell.class);
-        willCallRealMethod().given(man).setCell(eq(sourceCell));
-        man.setCell(sourceCell);
-
-        var destinationCell = mock(Cell.class);
-        willCallRealMethod().given(man).move(destinationCell);
+        willCallRealMethod().given(underTest).move(destinationCell);
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(sourceCell).setPiece(any());
 
         // when
-        man.move(destinationCell);
+        underTest.move(destinationCell);
 
         // then
-        then(destinationCell).should(times(1)).setPiece(eq(man));
-        then(sourceCell).should(times(1)).setPiece(isNull());
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isEqualTo(underTest);
+
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
     }
 
     @Test
     void testMoveWhileWhitePieceBecomeKing() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        given(man.isCanMove()).willReturn(Boolean.TRUE);
-        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
 
-        ReflectionTestUtils.setField(man, "color", Color.WHITE);
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
 
-        var sourceCell = mock(Cell.class);
-        willCallRealMethod().given(man).setCell(eq(sourceCell));
-        man.setCell(sourceCell);
-
-        var destinationCell = mock(Cell.class);
         given(destinationCell.getRow()).willReturn(8);
-        willCallRealMethod().given(man).move(destinationCell);
+
+        willCallRealMethod().given(underTest).move(destinationCell);
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(sourceCell).setPiece(any());
 
         // when
-        man.move(destinationCell);
+        underTest.move(destinationCell);
 
         // then
-        then(sourceCell).should(times(1)).setPiece(isNull());
-        then(destinationCell)
-                .should(times(1))
-                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.WHITE));
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isNotNull();
+        assertThat(pieceInDestinationCell).isInstanceOf(King.class);
+        assertThat(((King) pieceInDestinationCell).getColor()).isEqualTo(Color.WHITE);
+
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
     }
 
     @Test
     void testMoveWhileBlackPieceBecomeKing() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        given(man.isCanMove()).willReturn(Boolean.TRUE);
-        given(man.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
 
-        ReflectionTestUtils.setField(man, "color", Color.BLACK);
+        ReflectionTestUtils.setField(underTest, "color", Color.BLACK);
 
-        var sourceCell = mock(Cell.class);
-        willCallRealMethod().given(man).setCell(eq(sourceCell));
-        man.setCell(sourceCell);
-
-        var destinationCell = mock(Cell.class);
         given(destinationCell.getRow()).willReturn(1);
-        willCallRealMethod().given(man).move(destinationCell);
+
+        willCallRealMethod().given(underTest).move(destinationCell);
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(sourceCell).setPiece(any());
 
         // when
-        man.move(destinationCell);
+        underTest.move(destinationCell);
 
         // then
-        then(sourceCell).should(times(1)).setPiece(isNull());
-        then(destinationCell)
-                .should(times(1))
-                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.BLACK));
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isNotNull();
+        assertThat(pieceInDestinationCell).isInstanceOf(King.class);
+        assertThat(((King) pieceInDestinationCell).getColor()).isEqualTo(Color.BLACK);
+
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
     }
 
     @Test
     void testEatWhileCannotEat() throws CheckersException {
         // given
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.FALSE);
-        willCallRealMethod().given(man).eat(any());
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // then
         assertThatExceptionOfType(CanNotEatException.class)
-                .isThrownBy(() -> man.eat(null));
+                .isThrownBy(() -> underTest.eat(destinationCell));
     }
 
     @Test
     void testEatWhileCannotEatAtSomeDestination() throws CheckersException {
         // given
-        var destinationCell = mock(Cell.class);
-
-        var man = mock(Man.class);
-        given(man.isCanEat()).willReturn(Boolean.TRUE);
-        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
-        willCallRealMethod().given(man).eat(eq(destinationCell));
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // then
         assertThatExceptionOfType(CanNotEatException.class)
-                .isThrownBy(() -> man.eat(destinationCell));
+                .isThrownBy(() -> underTest.eat(destinationCell));
     }
 
     @Test
     void testEat() throws CheckersException {
         // given
-        var destinationCell = mock(Cell.class);
-
         var targetCell = mock(Cell.class);
 
-        var sourceCell = mock(Cell.class);
         given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
 
-        var man = mock(Man.class);
-        ReflectionTestUtils.setField(man, "cell", sourceCell);
-        given(man.isCanEat()).willReturn(Boolean.TRUE);
-        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(man).eat(eq(destinationCell));
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+        willCallRealMethod().given(sourceCell).setPiece(any());
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(targetCell).setPiece(any());
 
         // when
-        man.eat(destinationCell);
+        underTest.eat(destinationCell);
 
         // then
-        then(sourceCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(targetCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(destinationCell)
-                .should(times(1))
-                .setPiece(refEq(man));
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
+
+        var pieceInTargetCell = ReflectionTestUtils.getField(targetCell, "piece");
+        assertThat(pieceInTargetCell).isNull();
+
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isEqualTo(underTest);
     }
 
     @Test
     void testEatWhileWhiteManShouldBecomeKing() throws CheckersException {
         // given
-        var destinationCell = mock(Cell.class);
         given(destinationCell.getRow()).willReturn(8);
 
         var targetCell = mock(Cell.class);
 
-        var sourceCell = mock(Cell.class);
         given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
 
-        var man = mock(Man.class);
-        ReflectionTestUtils.setField(man, "cell", sourceCell);
-        ReflectionTestUtils.setField(man, "color", Color.WHITE);
-        given(man.isCanEat()).willReturn(Boolean.TRUE);
-        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(man).eat(eq(destinationCell));
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+        willCallRealMethod().given(sourceCell).setPiece(any());
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(targetCell).setPiece(any());
 
         // when
-        man.eat(destinationCell);
+        underTest.eat(destinationCell);
 
         // then
-        then(sourceCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(targetCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(destinationCell)
-                .should(times(1))
-                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.WHITE));
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
+
+        var pieceInTargetCell = ReflectionTestUtils.getField(targetCell, "piece");
+        assertThat(pieceInTargetCell).isNull();
+
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isNotNull();
+        assertThat(pieceInDestinationCell).isInstanceOf(King.class);
+        assertThat(((King) pieceInDestinationCell).getColor()).isEqualTo(Color.WHITE);
     }
 
     @Test
     void testEatWhileBlackManShouldBecomeKing() throws CheckersException {
         // given
-        var destinationCell = mock(Cell.class);
         given(destinationCell.getRow()).willReturn(1);
 
         var targetCell = mock(Cell.class);
 
-        var sourceCell = mock(Cell.class);
         given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
 
-        var man = mock(Man.class);
-        ReflectionTestUtils.setField(man, "cell", sourceCell);
-        ReflectionTestUtils.setField(man, "color", Color.BLACK);
-        given(man.isCanEat()).willReturn(Boolean.TRUE);
-        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(man).eat(eq(destinationCell));
+        ReflectionTestUtils.setField(underTest, "color", Color.BLACK);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+        willCallRealMethod().given(sourceCell).setPiece(any());
+        willCallRealMethod().given(destinationCell).setPiece(any());
+        willCallRealMethod().given(targetCell).setPiece(any());
 
         // when
-        man.eat(destinationCell);
+        underTest.eat(destinationCell);
 
         // then
-        then(sourceCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(targetCell)
-                .should(times(1))
-                .setPiece(isNull());
-        then(destinationCell)
-                .should(times(1))
-                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.BLACK));
+        var pieceInSourceCell = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(pieceInSourceCell).isNull();
+
+        var pieceInTargetCell = ReflectionTestUtils.getField(targetCell, "piece");
+        assertThat(pieceInTargetCell).isNull();
+
+        var pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(pieceInDestinationCell).isNotNull();
+        assertThat(pieceInDestinationCell).isInstanceOf(King.class);
+        assertThat(((King) pieceInDestinationCell).getColor()).isEqualTo(Color.BLACK);
+    }
+
+    @Test
+    void testCreating() {
+        // when
+        var man = new Man(Color.BLACK);
+
+        // then
+        assertThat(man.getColor()).isEqualTo(Color.BLACK);
     }
 }
