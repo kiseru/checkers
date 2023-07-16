@@ -149,111 +149,118 @@ class ManTest {
         assertThat(actual).isTrue();
     }
 
-    @ParameterizedTest
-    @MethodSource("testIsAbleToEatToWhileDiffIsNotEqualsTwoSource")
-    void testIsAbleToEatToWhileDiffIsNotEqualsTwo(int destinationRow, int destinationColumn) {
-        var board = new CheckerBoard();
-        clearBoard(board);
+    @Test
+    void testIsAbleToEatToWhileCellDiffIsLessThanTwo() {
+        // given
+        given(sourceCell.diff(eq(destinationCell))).willReturn(1);
 
-        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
-        var underTest = new Man(Color.WHITE);
-
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
+        // when
         var actual = underTest.isAbleToEatTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    private static Stream<Arguments> testIsAbleToEatToWhileDiffIsNotEqualsTwoSource() {
-        return Stream.of(
-                Arguments.of(3, 3),
-                Arguments.of(3, 5),
-                Arguments.of(5, 5),
-                Arguments.of(5, 3),
-                Arguments.of(1, 3),
-                Arguments.of(7, 1),
-                Arguments.of(7, 7),
-                Arguments.of(1, 7)
-        );
-    }
+    @Test
+    void testIsAbleToEatToWhileCellDiffIsMoreThanTwo() {
+        // given
+        given(sourceCell.diff(eq(destinationCell))).willReturn(3);
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(int destinationRow, int destinationColumn) {
-        var underTest = new Man(Color.WHITE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        var destinationCell = board.getCell(destinationRow, destinationColumn);
-        destinationCell.setPiece(new Man(Color.WHITE));
+        // when
         var actual = underTest.isAbleToEatTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsNoSacrifice(int destinationRow, int destinationColumn) {
-        var underTest = new Man(Color.WHITE);
+    @Test
+    void testIsAbleToEatToWhileDestinationCellIsNotBusy() {
+        // given
+        given(sourceCell.diff(eq(destinationCell))).willReturn(2);
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
+        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
 
-        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToEatTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(int destinationRow, int destinationColumn) {
-        var underTest = new Man(Color.WHITE);
+    @Test
+    void testIsAbleToEatToWhileThereIsNoSacrificePiece() {
+        // given
+        var cellWithSacrifice = mock(Cell.class);
+        given(cellWithSacrifice.getPiece()).willReturn(null);
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
+        given(sourceCell.diff(eq(destinationCell))).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice);
 
-        var cellWithSacrifice = board.getCell(
-                (PIECE_CELL_ROW + destinationRow) / 2,
-                (PIECE_CELL_COLUMN + destinationColumn) / 2
-        );
-        cellWithSacrifice.setPiece(new Man(Color.WHITE));
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
-        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToEatTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(int destinationRow, int destinationColumn) {
-        var underTest = new Man(Color.WHITE);
+    @Test
+    void testIsAbleToEatToWhileSacrificePieceHasTheSameColor() {
+        // given
+        var sacrificePiece = mock(Man.class);
+        ReflectionTestUtils.setField(sacrificePiece, "color", Color.WHITE);
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
+        var cellWithSacrifice = mock(Cell.class);
+        given(cellWithSacrifice.getPiece()).willReturn(sacrificePiece);
 
-        var cellWithSacrifice = board.getCell(
-                (PIECE_CELL_ROW + destinationRow) / 2,
-                (PIECE_CELL_COLUMN + destinationColumn) / 2
-        );
-        cellWithSacrifice.setPiece(new Man(Color.BLACK));
+        given(sourceCell.diff(eq(destinationCell))).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice);
 
-        var destinationCell = board.getCell(destinationRow, destinationColumn);
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToEatTo(destinationCell);
 
+        // then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    void testIsAbleToEatToWhileSacrificePieceHasEnemyColor() {
+        // given
+        var sacrificePiece = mock(Man.class);
+        ReflectionTestUtils.setField(sacrificePiece, "color", Color.BLACK);
+
+        var cellWithSacrifice = mock(Cell.class);
+        given(cellWithSacrifice.getPiece()).willReturn(sacrificePiece);
+
+        given(sourceCell.diff(eq(destinationCell))).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice);
+
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
+        var actual = underTest.isAbleToEatTo(destinationCell);
+
+        // then
         assertThat(actual).isTrue();
     }
 
