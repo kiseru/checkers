@@ -112,34 +112,31 @@ public class Man extends Piece {
         updatePiece(destinationCell);
     }
 
+    public void eat(Cell destinationCell) throws CheckersException {
+        if (!isCanEat()) {
+            throw new CanNotEatException();
+        }
+
+        if (!isAbleToEatTo(destinationCell)) {
+            throw new CanNotEatException();
+        }
+
+        cell.setPiece(null);
+        cell.between(destinationCell, cell.getBoard()).setPiece(null);
+        updatePiece(destinationCell);
+    }
+
     private void updatePiece(Cell destinationCell) {
         int destinationRow = destinationCell.getRow();
         if (color == Color.WHITE && destinationRow == 8
                 || color == Color.BLACK && destinationRow == 1) {
-            destinationCell.setPiece(new King(color));
+            destinationCell.setPiece(createKing());
         } else {
             destinationCell.setPiece(this);
         }
     }
 
-    public void eat(Cell to) throws CheckersException {
-        if (!isCanEat()) {
-            throw new CanNotEatException();
-        }
-
-        if (!isAbleToEatTo(to)) {
-            throw new CanNotEatException();
-        }
-
-        Cell from = getCell();
-        to.setPiece(this);
-        from.setPiece(null);
-        from.between(to, from.getBoard()).setPiece(null);
-        if (getColor() == Color.WHITE && to.getRow() == 8) {
-            to.setPiece(new King(getColor()));
-        }
-        if (getColor() == Color.BLACK && to.getRow() == 1) {
-            to.setPiece(new King(getColor()));
-        }
+    private Piece createKing() {
+        return new King(color);
     }
 }

@@ -1,6 +1,7 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.CanNotEatException;
 import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.argThat;
 import static org.mockito.BDDMockito.eq;
@@ -601,6 +603,130 @@ class ManTest {
 
         // then
         then(sourceCell).should(times(1)).setPiece(isNull());
+        then(destinationCell)
+                .should(times(1))
+                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.BLACK));
+    }
+
+    @Test
+    void testEatWhileCannotEat() throws CheckersException {
+        // given
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(man).eat(any());
+
+        // then
+        assertThatExceptionOfType(CanNotEatException.class)
+                .isThrownBy(() -> man.eat(null));
+    }
+
+    @Test
+    void testEatWhileCannotEatAtSomeDestination() throws CheckersException {
+        // given
+        var destinationCell = mock(Cell.class);
+
+        var man = mock(Man.class);
+        given(man.isCanEat()).willReturn(Boolean.TRUE);
+        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(man).eat(eq(destinationCell));
+
+        // then
+        assertThatExceptionOfType(CanNotEatException.class)
+                .isThrownBy(() -> man.eat(destinationCell));
+    }
+
+    @Test
+    void testEat() throws CheckersException {
+        // given
+        var destinationCell = mock(Cell.class);
+
+        var targetCell = mock(Cell.class);
+
+        var sourceCell = mock(Cell.class);
+        given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
+
+        var man = mock(Man.class);
+        ReflectionTestUtils.setField(man, "cell", sourceCell);
+        given(man.isCanEat()).willReturn(Boolean.TRUE);
+        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(man).eat(eq(destinationCell));
+
+        // when
+        man.eat(destinationCell);
+
+        // then
+        then(sourceCell)
+                .should(times(1))
+                .setPiece(isNull());
+        then(targetCell)
+                .should(times(1))
+                .setPiece(isNull());
+        then(destinationCell)
+                .should(times(1))
+                .setPiece(refEq(man));
+    }
+
+    @Test
+    void testEatWhileWhiteManShouldBecomeKing() throws CheckersException {
+        // given
+        var destinationCell = mock(Cell.class);
+        given(destinationCell.getRow()).willReturn(8);
+
+        var targetCell = mock(Cell.class);
+
+        var sourceCell = mock(Cell.class);
+        given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
+
+        var man = mock(Man.class);
+        ReflectionTestUtils.setField(man, "cell", sourceCell);
+        ReflectionTestUtils.setField(man, "color", Color.WHITE);
+        given(man.isCanEat()).willReturn(Boolean.TRUE);
+        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(man).eat(eq(destinationCell));
+
+        // when
+        man.eat(destinationCell);
+
+        // then
+        then(sourceCell)
+                .should(times(1))
+                .setPiece(isNull());
+        then(targetCell)
+                .should(times(1))
+                .setPiece(isNull());
+        then(destinationCell)
+                .should(times(1))
+                .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.WHITE));
+    }
+
+    @Test
+    void testEatWhileBlackManShouldBecomeKing() throws CheckersException {
+        // given
+        var destinationCell = mock(Cell.class);
+        given(destinationCell.getRow()).willReturn(1);
+
+        var targetCell = mock(Cell.class);
+
+        var sourceCell = mock(Cell.class);
+        given(sourceCell.between(eq(destinationCell), any())).willReturn(targetCell);
+
+        var man = mock(Man.class);
+        ReflectionTestUtils.setField(man, "cell", sourceCell);
+        ReflectionTestUtils.setField(man, "color", Color.BLACK);
+        given(man.isCanEat()).willReturn(Boolean.TRUE);
+        given(man.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(man).eat(eq(destinationCell));
+
+        // when
+        man.eat(destinationCell);
+
+        // then
+        then(sourceCell)
+                .should(times(1))
+                .setPiece(isNull());
+        then(targetCell)
+                .should(times(1))
+                .setPiece(isNull());
         then(destinationCell)
                 .should(times(1))
                 .setPiece(argThat(piece -> piece instanceof King && piece.getColor() == Color.BLACK));
