@@ -7,203 +7,161 @@ import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyInt;
 import static org.mockito.BDDMockito.argThat;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.isNull;
+import static org.mockito.BDDMockito.refEq;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 class ManTest {
 
     private static final int PIECE_CELL_COLUMN = 4;
 
     private static final int PIECE_CELL_ROW = 4;
 
-    private Piece underTest;
+    @Mock
+    private Man underTest;
 
+    @Mock
     private CheckerBoard board;
 
-    private Cell pieceCell;
+    @Mock
+    private Cell sourceCell;
+
+    @Mock
+    private Cell destinationCell;
 
     @BeforeEach
     void setUp() {
-        board = new CheckerBoard();
-        clearBoard(board);
-
-        pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        ReflectionTestUtils.setField(sourceCell, "piece", underTest);
     }
 
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsWhiteSource")
-    void testIsAbleToMoveToWhileManIsWhite(int row, int column, boolean expected) throws CheckersException {
-        underTest = new Man(Color.WHITE);
-        pieceCell.setPiece(underTest);
+    @Test
+    void testIsAbleToMoveToWhileDestinationCellIsNotEmpty() {
+        // given
+        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
 
-        var currentCell = board.getCell(row, column);
-        var actual = underTest.isAbleToMoveTo(currentCell);
-        assertThat(actual).isEqualTo(expected);
-    }
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsWhiteSource() {
-        List<Arguments> arguments = new ArrayList<>();
-        for (int row = 1; row <= 8; row++) {
-            for (int column = 1; column <= 8; column++) {
-                var expected = 4 - row == -1 && Math.abs(4 - column) == 1 && (((row + column) & 1) == 0);
-                arguments.add(Arguments.of(row, column, expected));
-            }
-        }
-
-        return arguments.stream();
-    }
-
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsBlackSource")
-    void testIsAbleToMoveToWhileManIsBlack(int row, int column, boolean expected) throws CheckersException {
-        underTest = new Man(Color.BLACK);
-        pieceCell.setPiece(underTest);
-
-        var currentCell = board.getCell(row, column);
-        var actual = underTest.isAbleToMoveTo(currentCell);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsBlackSource() {
-        List<Arguments> arguments = new ArrayList<>();
-        for (int row = 1; row <= 8; row++) {
-            for (int column = 1; column <= 8; column++) {
-                var expected = 4 - row == 1 && Math.abs(4 - column) == 1 && (((row + column) & 1) == 0);
-                arguments.add(Arguments.of(row, column, expected));
-            }
-        }
-
-        return arguments.stream();
-    }
-
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsWhiteAndCellIsBusySource")
-    void testIsAbleToMoveToWhileManIsWhiteAndCellIsBusy(int row, int column) throws CheckersException {
-        underTest = new Man(Color.WHITE);
-        pieceCell.setPiece(underTest);
-
-        var destinationCell = board.getCell(row, column);
-        destinationCell.setPiece(new Man(Color.WHITE));
+        // when
         var actual = underTest.isAbleToMoveTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsWhiteAndCellIsBusySource() {
-        return Stream.of(
-                Arguments.of(5, 3),
-                Arguments.of(5, 5)
-        );
-    }
+    @Test
+    void testIsAbleToMoveToWhileEnemyIsNearby() {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
 
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsBlackAndCellIsBusySource")
-    void testIsAbleToMoveToWhileManIsBlackAndCellIsBusy(int row, int column) throws CheckersException {
-        underTest = new Man(Color.BLACK);
-        pieceCell.setPiece(underTest);
+        var enemy = mock(Man.class);
+        given(enemy.getColor()).willReturn(Color.BLACK);
 
-        var destinationCell = board.getCell(row, column);
-        destinationCell.setPiece(new Man(Color.BLACK));
+        var cellWithEnemy = mock(Cell.class);
+        given(cellWithEnemy.getPiece()).willReturn(enemy);
+
+        given(board.getCell(anyInt(), anyInt())).willReturn(cellWithEnemy);
+
+        given(sourceCell.getBoard()).willReturn(board);
+
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToMoveTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsBlackAndCellIsBusySource() {
-        return Stream.of(
-                Arguments.of(3, 3),
-                Arguments.of(3, 5)
-        );
-    }
+    @Test
+    void testIsAbleToMoveToWhileDestinationDiffIsMoreThanOne() {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
 
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemySource")
-    void testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemy(
-            int row,
-            int column,
-            int enemyRow,
-            int enemyColumn
-    ) throws CheckersException {
-        underTest = new Man(Color.BLACK);
-        pieceCell.setPiece(underTest);
+        var emptyCell = mock(Cell.class);
+        given(emptyCell.getPiece()).willReturn(null);
 
-        var cellWithEnemy = board.getCell(enemyRow, enemyColumn);
-        cellWithEnemy.setPiece(new Man(Color.WHITE));
+        given(board.getCell(anyInt(), anyInt())).willReturn(emptyCell);
 
-        var destinationCell = board.getCell(row, column);
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.diff(eq(destinationCell))).willReturn(2);
+
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToMoveTo(destinationCell);
 
+        // then
         assertThat(actual).isFalse();
     }
 
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsWhiteAndMustEatEnemySource() {
-        return Stream.of(
-                Arguments.of(5, 3, 5, 5),
-                Arguments.of(5, 3, 3, 5),
-                Arguments.of(5, 3, 3, 3),
-                Arguments.of(5, 5, 5, 3),
-                Arguments.of(5, 5, 3, 5),
-                Arguments.of(5, 5, 3, 3)
-        );
-    }
+    @Test
+    void testIsAbleToMoveToWhileCanMoveToDestination() {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
 
-    @ParameterizedTest
-    @MethodSource("testIsAbleToMoveToWhileManIsBlackAndMustEatEnemySource")
-    void testIsAbleToMoveToWhileManIsBlackAndMustEatEnemy(
-            int row,
-            int column,
-            int enemyRow,
-            int enemyColumn
-    ) throws CheckersException {
-        underTest = new Man(Color.WHITE);
-        pieceCell.setPiece(underTest);
+        var emptyCell = mock(Cell.class);
+        given(emptyCell.getPiece()).willReturn(null);
 
-        var cellWithEnemy = board.getCell(enemyRow, enemyColumn);
-        cellWithEnemy.setPiece(new Man(Color.BLACK));
+        given(board.getCell(eq(PIECE_CELL_ROW + 1), eq(PIECE_CELL_COLUMN - 1))).willReturn(destinationCell);
+        given(board.getCell(eq(PIECE_CELL_ROW + 1), eq(PIECE_CELL_COLUMN + 1))).willReturn(destinationCell);
+        given(board.getCell(eq(PIECE_CELL_ROW - 1), eq(PIECE_CELL_COLUMN - 1))).willReturn(emptyCell);
+        given(board.getCell(eq(PIECE_CELL_ROW - 1), eq(PIECE_CELL_COLUMN + 1))).willReturn(emptyCell);
 
-        var destinationCell = board.getCell(row, column);
+        given(sourceCell.getCol()).willReturn(PIECE_CELL_COLUMN);
+        given(sourceCell.getRow()).willReturn(PIECE_CELL_ROW);
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.diff(eq(destinationCell))).willReturn(1);
+
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
+
+        // when
         var actual = underTest.isAbleToMoveTo(destinationCell);
 
-        assertThat(actual).isFalse();
-    }
-
-    private static Stream<Arguments> testIsAbleToMoveToWhileManIsBlackAndMustEatEnemySource() {
-        return Stream.of(
-                Arguments.of(3, 3, 5, 5),
-                Arguments.of(3, 3, 3, 5),
-                Arguments.of(3, 3, 5, 3),
-                Arguments.of(3, 5, 5, 3),
-                Arguments.of(3, 5, 5, 5),
-                Arguments.of(3, 5, 3, 3)
-        );
+        // then
+        assertThat(actual).isTrue();
     }
 
     @ParameterizedTest
     @MethodSource("testIsAbleToEatToWhileDiffIsNotEqualsTwoSource")
-    void testIsAbleToEatToWhileDiffIsNotEqualsTwo(int destinationRow, int destinationColumn) throws CheckersException {
+    void testIsAbleToEatToWhileDiffIsNotEqualsTwo(int destinationRow, int destinationColumn) {
+        var board = new CheckerBoard();
+        clearBoard(board);
+
         var destinationCell = board.getCell(destinationRow, destinationColumn);
 
-        underTest = new Man(Color.WHITE);
+        var underTest = new Man(Color.WHITE);
+
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
+
         var actual = underTest.isAbleToEatTo(destinationCell);
 
         assertThat(actual).isFalse();
@@ -224,11 +182,12 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(
-            int destinationRow,
-            int destinationColumn
-    ) throws CheckersException {
-        underTest = new Man(Color.WHITE);
+    void testIsAbleToEatToWhileDestinationCellIsNotEmpty(int destinationRow, int destinationColumn) {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var destinationCell = board.getCell(destinationRow, destinationColumn);
@@ -240,8 +199,12 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsNoSacrifice(int destinationRow, int destinationColumn) throws CheckersException {
-        underTest = new Man(Color.WHITE);
+    void testIsAbleToEatWhileThereIsNoSacrifice(int destinationRow, int destinationColumn) {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var destinationCell = board.getCell(destinationRow, destinationColumn);
@@ -252,11 +215,12 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(
-            int destinationRow,
-            int destinationColumn
-    ) throws CheckersException {
-        underTest = new Man(Color.WHITE);
+    void testIsAbleToEatWhileThereIsOwnCheckerAsSacrifice(int destinationRow, int destinationColumn) {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var cellWithSacrifice = board.getCell(
@@ -273,11 +237,12 @@ class ManTest {
 
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
-    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(
-            int destinationRow,
-            int destinationColumn
-    ) throws CheckersException {
-        underTest = new Man(Color.WHITE);
+    void testIsAbleToEatWhileThereIsEnemyCheckerAsSacrifice(int destinationRow, int destinationColumn) {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var cellWithSacrifice = board.getCell(
@@ -295,8 +260,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("nextCellForActionMoveOfWhiteMan")
     void testAnalyzeAbilityOfMoveWhileWhiteManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.WHITE);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
@@ -321,8 +290,12 @@ class ManTest {
 
     @Test
     void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToMove()
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.WHITE);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         board.getCell(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN - 1)
@@ -343,8 +316,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("nextCellForActionMoveOfBlackMan")
     void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.BLACK);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.BLACK);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
@@ -369,8 +346,12 @@ class ManTest {
 
     @Test
     void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToMove()
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.BLACK);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.BLACK);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         board.getCell(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN - 1)
@@ -391,8 +372,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
     void testAnalyzeAbilityOfEatWhileWhiteManHasOpportunityToEat(int destinationRow, int destinationColumn)
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.WHITE);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var cellWithSacrifice = board.getCell(
@@ -413,8 +398,12 @@ class ManTest {
 
     @Test
     void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToEat()
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.WHITE);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.WHITE);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         underTest.analyzeAbilityOfEat();
@@ -430,8 +419,12 @@ class ManTest {
     @ParameterizedTest
     @MethodSource("nextCellForActionEat")
     void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToEat(int destinationRow, int destinationColumn)
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.BLACK);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.BLACK);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         var cellWithSacrifice = board.getCell(
@@ -452,8 +445,12 @@ class ManTest {
 
     @Test
     void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToEat()
-            throws CheckersException, NoSuchFieldException, IllegalAccessException {
-        underTest = new Man(Color.BLACK);
+            throws NoSuchFieldException, IllegalAccessException {
+        var underTest = new Man(Color.BLACK);
+
+        var board = new CheckerBoard();
+        clearBoard(board);
+        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
         pieceCell.setPiece(underTest);
 
         underTest.analyzeAbilityOfEat();
