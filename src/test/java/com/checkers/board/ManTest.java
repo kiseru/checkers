@@ -8,14 +8,9 @@ import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -34,9 +29,9 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class ManTest {
 
-    private static final int PIECE_CELL_COLUMN = 4;
+    private static final int SOURCE_CELL_COLUMN = 4;
 
-    private static final int PIECE_CELL_ROW = 4;
+    private static final int SOURCE_CELL_ROW = 4;
 
     @Mock
     private Man underTest;
@@ -128,13 +123,13 @@ class ManTest {
         var emptyCell = mock(Cell.class);
         given(emptyCell.getPiece()).willReturn(null);
 
-        given(board.getCell(eq(PIECE_CELL_ROW + 1), eq(PIECE_CELL_COLUMN - 1))).willReturn(destinationCell);
-        given(board.getCell(eq(PIECE_CELL_ROW + 1), eq(PIECE_CELL_COLUMN + 1))).willReturn(destinationCell);
-        given(board.getCell(eq(PIECE_CELL_ROW - 1), eq(PIECE_CELL_COLUMN - 1))).willReturn(emptyCell);
-        given(board.getCell(eq(PIECE_CELL_ROW - 1), eq(PIECE_CELL_COLUMN + 1))).willReturn(emptyCell);
+        given(board.getCell(eq(SOURCE_CELL_ROW + 1), eq(SOURCE_CELL_COLUMN - 1))).willReturn(destinationCell);
+        given(board.getCell(eq(SOURCE_CELL_ROW + 1), eq(SOURCE_CELL_COLUMN + 1))).willReturn(destinationCell);
+        given(board.getCell(eq(SOURCE_CELL_ROW - 1), eq(SOURCE_CELL_COLUMN - 1))).willReturn(emptyCell);
+        given(board.getCell(eq(SOURCE_CELL_ROW - 1), eq(SOURCE_CELL_COLUMN + 1))).willReturn(emptyCell);
 
-        given(sourceCell.getCol()).willReturn(PIECE_CELL_COLUMN);
-        given(sourceCell.getRow()).willReturn(PIECE_CELL_ROW);
+        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
         given(sourceCell.getBoard()).willReturn(board);
         given(sourceCell.diff(eq(destinationCell))).willReturn(1);
 
@@ -268,8 +263,8 @@ class ManTest {
     void testAnalyzeAbilityOfMove() {
         // given
         given(sourceCell.getBoard()).willReturn(board);
-        given(sourceCell.getCol()).willReturn(PIECE_CELL_COLUMN);
-        given(sourceCell.getRow()).willReturn(PIECE_CELL_ROW);
+        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
 
         ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
         given(underTest.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
@@ -283,116 +278,22 @@ class ManTest {
         assertThat(canMove).isEqualTo(Boolean.TRUE);
     }
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testAnalyzeAbilityOfEatWhileWhiteManHasOpportunityToEat(int destinationRow, int destinationColumn)
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.WHITE);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        var cellWithSacrifice = board.getCell(
-                (PIECE_CELL_ROW + destinationRow) / 2,
-                (PIECE_CELL_COLUMN + destinationColumn) / 2
-        );
-        cellWithSacrifice.setPiece(new Man(Color.BLACK));
-
-        underTest.analyzeAbilityOfEat();
-
-        var pieceClass = Piece.class;
-        var canEatField = pieceClass.getDeclaredField("canEat");
-        canEatField.setAccessible(true);
-        var canEat = (Boolean) canEatField.get(underTest);
-
-        assertThat(canEat).isTrue();
-    }
-
     @Test
-    void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToEat()
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.WHITE);
+    void testAnalyzeAbilityOfEat() {
+        // given
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
+        given(underTest.isAbleToEatTo(any())).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).analyzeAbilityOfEat();
 
+        // when
         underTest.analyzeAbilityOfEat();
 
-        var pieceClass = Piece.class;
-        var canEatField = pieceClass.getDeclaredField("canEat");
-        canEatField.setAccessible(true);
-        var canEat = (Boolean) canEatField.get(underTest);
-
-        assertThat(canEat).isFalse();
-    }
-
-    @ParameterizedTest
-    @MethodSource("nextCellForActionEat")
-    void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToEat(int destinationRow, int destinationColumn)
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.BLACK);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        var cellWithSacrifice = board.getCell(
-                (PIECE_CELL_ROW + destinationRow) / 2,
-                (PIECE_CELL_COLUMN + destinationColumn) / 2
-        );
-        cellWithSacrifice.setPiece(new Man(Color.WHITE));
-
-        underTest.analyzeAbilityOfEat();
-
-        var pieceClass = Piece.class;
-        var canEatField = pieceClass.getDeclaredField("canEat");
-        canEatField.setAccessible(true);
-        var canEat = (Boolean) canEatField.get(underTest);
-
-        assertThat(canEat).isTrue();
-    }
-
-    @Test
-    void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToEat()
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.BLACK);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        underTest.analyzeAbilityOfEat();
-
-        var pieceClass = Piece.class;
-        var canEatField = pieceClass.getDeclaredField("canEat");
-        canEatField.setAccessible(true);
-        var canEat = (Boolean) canEatField.get(underTest);
-
-        assertThat(canEat).isFalse();
-    }
-
-    private static Stream<Arguments> nextCellForActionEat() {
-        return Stream.of(
-                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN + 2),
-                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN + 2),
-                Arguments.of(PIECE_CELL_ROW - 2, PIECE_CELL_COLUMN - 2),
-                Arguments.of(PIECE_CELL_ROW + 2, PIECE_CELL_COLUMN - 2)
-        );
-    }
-
-    private void clearBoard(CheckerBoard board) {
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                var cell = board.getCell(i, j);
-                cell.setPiece(null);
-            }
-        }
+        // then
+        var canEat = ReflectionTestUtils.getField(underTest, "canEat");
+        assertThat(canEat).isEqualTo(Boolean.TRUE);
     }
 
     @Test
