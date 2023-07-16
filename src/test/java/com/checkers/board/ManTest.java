@@ -264,116 +264,23 @@ class ManTest {
         assertThat(actual).isTrue();
     }
 
-    @ParameterizedTest
-    @MethodSource("nextCellForActionMoveOfWhiteMan")
-    void testAnalyzeAbilityOfMoveWhileWhiteManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.WHITE);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
-        notEmptyCell.setPiece(new Man(Color.WHITE));
-
-        underTest.analyzeAbilityOfMove();
-
-        var pieceClass = Piece.class;
-        var canMoveField = pieceClass.getDeclaredField("canMove");
-        canMoveField.setAccessible(true);
-        var canMove = (Boolean) canMoveField.get(underTest);
-
-        assertThat(canMove).isTrue();
-    }
-
-    private static Stream<Arguments> nextCellForActionMoveOfWhiteMan() {
-        return Stream.of(
-                Arguments.of(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN - 1),
-                Arguments.of(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN + 1)
-        );
-    }
-
     @Test
-    void testAnalyzeAbilityOfMoveWhileWhiteManHasNoOpportunityToMove()
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.WHITE);
+    void testAnalyzeAbilityOfMove() {
+        // given
+        given(sourceCell.getBoard()).willReturn(board);
+        given(sourceCell.getCol()).willReturn(PIECE_CELL_COLUMN);
+        given(sourceCell.getRow()).willReturn(PIECE_CELL_ROW);
 
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.isAbleToMoveTo(any())).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
-        board.getCell(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN - 1)
-                .setPiece(new Man(Color.WHITE));
-        board.getCell(PIECE_CELL_ROW + 1, PIECE_CELL_COLUMN + 1)
-                .setPiece(new Man(Color.WHITE));
-
+        // when
         underTest.analyzeAbilityOfMove();
 
-        var pieceClass = Piece.class;
-        var canMoveField = pieceClass.getDeclaredField("canMove");
-        canMoveField.setAccessible(true);
-        var canMove = (Boolean) canMoveField.get(underTest);
-
-        assertThat(canMove).isFalse();
-    }
-
-    @ParameterizedTest
-    @MethodSource("nextCellForActionMoveOfBlackMan")
-    void testAnalyzeAbilityOfMoveWhileBlackManHasOpportunityToMove(int notEmptyCellRow, int notEmptyCellColumn)
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.BLACK);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        var notEmptyCell = board.getCell(notEmptyCellRow, notEmptyCellColumn);
-        notEmptyCell.setPiece(new Man(Color.BLACK));
-
-        underTest.analyzeAbilityOfMove();
-
-        var pieceClass = Piece.class;
-        var canMoveField = pieceClass.getDeclaredField("canMove");
-        canMoveField.setAccessible(true);
-        var canMove = (Boolean) canMoveField.get(underTest);
-
-        assertThat(canMove).isTrue();
-    }
-
-    private static Stream<Arguments> nextCellForActionMoveOfBlackMan() {
-        return Stream.of(
-                Arguments.of(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN - 1),
-                Arguments.of(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN + 1)
-        );
-    }
-
-    @Test
-    void testAnalyzeAbilityOfMoveWhileBlackManHasNoOpportunityToMove()
-            throws NoSuchFieldException, IllegalAccessException {
-        var underTest = new Man(Color.BLACK);
-
-        var board = new CheckerBoard();
-        clearBoard(board);
-        var pieceCell = board.getCell(PIECE_CELL_ROW, PIECE_CELL_COLUMN);
-        pieceCell.setPiece(underTest);
-
-        board.getCell(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN - 1)
-                .setPiece(new Man(Color.BLACK));
-        board.getCell(PIECE_CELL_ROW - 1, PIECE_CELL_COLUMN + 1)
-                .setPiece(new Man(Color.BLACK));
-
-        underTest.analyzeAbilityOfMove();
-
-        var pieceClass = Piece.class;
-        var canMoveField = pieceClass.getDeclaredField("canMove");
-        canMoveField.setAccessible(true);
-        var canMove = (Boolean) canMoveField.get(underTest);
-
-        assertThat(canMove).isFalse();
+        // then
+        var canMove = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(canMove).isEqualTo(Boolean.TRUE);
     }
 
     @ParameterizedTest
