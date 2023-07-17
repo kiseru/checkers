@@ -32,7 +32,7 @@ class ManTest {
     private Man underTest;
 
     @Mock
-    private CheckerBoard board;
+    private Board board;
 
     @Mock
     private Cell sourceCell;

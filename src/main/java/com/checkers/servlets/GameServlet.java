@@ -1,6 +1,6 @@
 package com.checkers.servlets;
 
-import com.checkers.board.CheckerBoard;
+import com.checkers.board.Board;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.game.Room;
 import com.checkers.user.User;
@@ -39,7 +39,11 @@ public class GameServlet extends HttpServlet {
         }
 
         if (!existed) {
-            room = new Room(id, new CheckerBoard());
+            try {
+                room = new Room(id, new Board());
+            } catch (CheckersException e) {
+                throw new RuntimeException(e);
+            }
             rooms.add(room);
         }
 
@@ -77,5 +81,6 @@ public class GameServlet extends HttpServlet {
         req.setAttribute("room", room);
 
         req.getRequestDispatcher("views/game.jsp").forward(req, resp);
+
     }
 }

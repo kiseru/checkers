@@ -1,22 +1,39 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CannotEatException;
+import com.checkers.exceptions.CannotMoveException;
+import com.checkers.exceptions.CellIsBusyException;
+import com.checkers.exceptions.CellIsEmptyException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
 
-public class CheckerBoard {
-    public static final int SIZE_OF_BOARD = 8;
-    private Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
-    private int whitePieces;
-    private int blackPieces;
+public class Board {
 
-    public CheckerBoard() {
+    private static final int SIZE_OF_BOARD = 8;
+
+    private final Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
+
+    private int whitePieces = 12;
+
+    private int blackPieces = 12;
+
+    public Board() throws CheckersException {
+        createCellsInBoard();
+        initWhitePieces();
+        initBlackPieces();
+        analyzeAbilities();
+    }
+
+    private void createCellsInBoard() {
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 board[row][col] = new Cell(row + 1, col + 1, this);
             }
         }
+    }
 
+    private void initWhitePieces() {
         for (int row = 0; row < SIZE_OF_BOARD / 2 - 1; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 if (board[row][col].getColor() == Color.BLACK) {
@@ -26,7 +43,9 @@ public class CheckerBoard {
                 }
             }
         }
+    }
 
+    private void initBlackPieces() {
         for (int row = SIZE_OF_BOARD - 1; row > SIZE_OF_BOARD / 2; row--) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 if (board[row][col].getColor() == Color.BLACK) {
@@ -36,21 +55,18 @@ public class CheckerBoard {
                 }
             }
         }
+    }
 
+    private void analyzeAbilities() throws CheckersException {
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 Piece piece = board[row][col].getPiece();
                 if (piece != null) {
-                    try {
-                        piece.analyzeAbilityOfMove();
-                        piece.analyzeAbilityOfEat();
-                    } catch (CheckersException ex) {}
+                    piece.analyzeAbilityOfMove();
+                    piece.analyzeAbilityOfEat();
                 }
             }
         }
-
-        whitePieces = 12;
-        blackPieces = 12;
     }
 
     public Cell getCell(int row, int col) {
@@ -61,14 +77,38 @@ public class CheckerBoard {
         return board[row - 1][col - 1];
     }
 
-    public void move(Cell from, Cell to) throws CheckersException {
-        Piece userPiece = from.getPiece();
-        from.getPiece().isAbleToMoveTo(to);
-        userPiece.move(to);
+    public void move(Cell sourceCell, Cell destinationCell) throws CheckersException {
+        if (sourceCell.isEmpty()) {
+            throw new CellIsEmptyException(sourceCell);
+        }
+
+        if (!destinationCell.isEmpty()) {
+            throw new CellIsBusyException(destinationCell);
+        }
+
+        Piece piece = sourceCell.getPiece();
+        if (piece.isAbleToMoveTo(destinationCell)) {
+            piece.move(destinationCell);
+        } else {
+            throw new CannotMoveException(sourceCell, destinationCell);
+        }
     }
 
-    public void eat(Cell from, Cell to) throws CheckersException {
-        from.getPiece().eat(to);
+    public void eat(Cell sourceCell, Cell destinationCell) throws CheckersException {
+        if (sourceCell.isEmpty()) {
+            throw new CellIsEmptyException(sourceCell);
+        }
+
+        if (!destinationCell.isEmpty()) {
+            throw new CellIsBusyException(destinationCell);
+        }
+
+        var piece = sourceCell.getPiece();
+        if (piece.isAbleToEatTo(destinationCell)) {
+            piece.eat(destinationCell);
+        } else {
+            throw new CannotEatException(sourceCell, destinationCell);
+        }
     }
 
     public void analyze(User user) throws CheckersException {
@@ -102,7 +142,6 @@ public class CheckerBoard {
     }
 
     public boolean isGaming() {
-        if (whitePieces == 0 || blackPieces == 0) return false;
-        return true;
+        return whitePieces != 0 && blackPieces != 0;
     }
 }

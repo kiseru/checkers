@@ -29,13 +29,13 @@ class CellTest {
     private Cell underTest;
 
     @Mock
-    private CheckerBoard board;
+    private Board board;
 
     @Test
     void testCreatingBlackCell() {
         var row = 0;
         var col = 0;
-        var board = mock(CheckerBoard.class);
+        var board = mock(Board.class);
         var cell = new Cell(row, col, board);
 
         assertThat(cell.getCol()).isEqualTo(col);
@@ -49,7 +49,7 @@ class CellTest {
     void testCreatingWhiteCell() {
         var row = 0;
         var col = 1;
-        var board = mock(CheckerBoard.class);
+        var board = mock(Board.class);
         var cell = new Cell(row, col, board);
 
         assertThat(cell.getCol()).isEqualTo(col);

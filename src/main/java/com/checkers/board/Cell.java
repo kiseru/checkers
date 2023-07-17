@@ -12,7 +12,7 @@ public class Cell {
 
     private final int col;
 
-    private final CheckerBoard board;
+    private final Board board;
 
     private Piece piece;
 
@@ -52,7 +52,7 @@ public class Cell {
         return board.getCell(rowToFind, colToFind);
     }
 
-    public Cell between(Cell another, CheckerBoard board) {
+    public Cell between(Cell another, Board board) {
         int colToFind = (col + another.col) / 2;
         int rowToFind = (row + another.row) / 2;
         return board.getCell(rowToFind, colToFind);

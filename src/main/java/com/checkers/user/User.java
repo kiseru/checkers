@@ -1,7 +1,7 @@
 package com.checkers.user;
 
 import com.checkers.board.Cell;
-import com.checkers.board.CheckerBoard;
+import com.checkers.board.Board;
 import com.checkers.exceptions.*;
 import com.checkers.utils.Color;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class User {
     @Getter
     private final Color color;
 
-    private final CheckerBoard board;
+    private final Board board;
 
     @Setter
     @Getter

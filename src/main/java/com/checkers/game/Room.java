@@ -1,6 +1,6 @@
 package com.checkers.game;
 
-import com.checkers.board.CheckerBoard;
+import com.checkers.board.Board;
 import com.checkers.user.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class Room {
     private final int id;
 
     @Getter
-    private final CheckerBoard board;
+    private final Board board;
 
     private User firstPlayer;
 
