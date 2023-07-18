@@ -8,7 +8,7 @@
 
     <div class="panel panel-default" style="margin-top:175px">
         <div class="panel-body">
-            <form method="post" action="find_room">
+            <form method="post" action="find-room">
                 <div class="form-group">
                     <label for="log-in">Login</label>
                     <input type="text" name="login" class="form-control" id="log-in" placeholder="Your login">

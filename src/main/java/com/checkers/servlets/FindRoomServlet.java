@@ -7,10 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/find_room")
-public class FindRoom extends HttpServlet {
+@WebServlet("/find-room")
+public class FindRoomServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("views/find_room.jsp").forward(req, resp);
+        req.getRequestDispatcher("views/find-room.jsp").forward(req, resp);
     }
 }
