@@ -174,7 +174,7 @@ public class BoardTest {
     }
 
     @Test
-    void testEatWhileCannotEat() throws CheckersException {
+    void testEatWhileCannotEat() {
         // given
         var destinationCell = mock(Cell.class);
         given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
@@ -239,7 +239,7 @@ public class BoardTest {
     }
 
     @Test
-    void testMoveWhileCannotMove() throws CheckersException {
+    void testMoveWhileCannotMove() {
         // given
         var destinationCell = mock(Cell.class);
         given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);

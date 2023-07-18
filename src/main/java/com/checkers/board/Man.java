@@ -113,7 +113,7 @@ public class Man extends Piece {
         updatePiece(destinationCell);
     }
 
-    public void eat(Cell destinationCell) throws CheckersException {
+    public void eat(Cell destinationCell) {
         if (!isCanEat()) {
             throw new CannotEatException(cell, destinationCell);
         }

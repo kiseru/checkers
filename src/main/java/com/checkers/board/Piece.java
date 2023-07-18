@@ -19,15 +19,15 @@ public abstract class Piece {
 
     protected Cell cell;
 
-    public abstract boolean isAbleToMoveTo(Cell to) throws CheckersException;
+    public abstract boolean isAbleToMoveTo(Cell to);
 
-    public abstract boolean isAbleToEatTo(Cell to) throws CheckersException;
+    public abstract boolean isAbleToEatTo(Cell to);
 
-    public abstract void analyzeAbilityOfMove() throws CheckersException;
+    public abstract void analyzeAbilityOfMove();
 
-    public abstract void analyzeAbilityOfEat() throws CheckersException;
+    public abstract void analyzeAbilityOfEat();
 
     public abstract void move(Cell to) throws CheckersException;
 
-    public abstract void eat(Cell to) throws CheckersException;
+    public abstract void eat(Cell to);
 }

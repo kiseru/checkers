@@ -407,7 +407,7 @@ class ManTest {
     }
 
     @Test
-    void testEatWhileCannotEat() throws CheckersException {
+    void testEatWhileCannotEat() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
@@ -418,7 +418,7 @@ class ManTest {
     }
 
     @Test
-    void testEatWhileCannotEatAtSomeDestination() throws CheckersException {
+    void testEatWhileCannotEatAtSomeDestination() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
@@ -430,7 +430,7 @@ class ManTest {
     }
 
     @Test
-    void testEat() throws CheckersException {
+    void testEat() {
         // given
         var targetCell = mock(Cell.class);
 
@@ -458,7 +458,7 @@ class ManTest {
     }
 
     @Test
-    void testEatWhileWhiteManShouldBecomeKing() throws CheckersException {
+    void testEatWhileWhiteManShouldBecomeKing() {
         // given
         given(destinationCell.getRow()).willReturn(8);
 
@@ -491,7 +491,7 @@ class ManTest {
     }
 
     @Test
-    void testEatWhileBlackManShouldBecomeKing() throws CheckersException {
+    void testEatWhileBlackManShouldBecomeKing() {
         // given
         given(destinationCell.getRow()).willReturn(1);
 

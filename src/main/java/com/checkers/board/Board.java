@@ -57,7 +57,7 @@ public class Board {
         }
     }
 
-    private void analyzeAbilities() throws CheckersException {
+    private void analyzeAbilities() {
         for (int row = 0; row < SIZE_OF_BOARD; row++) {
             for (int col = 0; col < SIZE_OF_BOARD; col++) {
                 Piece piece = board[row][col].getPiece();
@@ -94,7 +94,7 @@ public class Board {
         }
     }
 
-    public void eat(Cell sourceCell, Cell destinationCell) throws CheckersException {
+    public void eat(Cell sourceCell, Cell destinationCell) {
         if (sourceCell.isEmpty()) {
             throw new CellIsEmptyException(sourceCell);
         }
@@ -111,7 +111,7 @@ public class Board {
         }
     }
 
-    public void analyze(User user) throws CheckersException {
+    public void analyze(User user) {
         Color userColor = user.getColor();
 
         for (int row = 0; row < SIZE_OF_BOARD; row++) {

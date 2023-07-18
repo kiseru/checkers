@@ -13,7 +13,7 @@ public class King extends Piece {
     }
 
     @Override
-    public void analyzeAbilityOfMove() throws CheckersException {
+    public void analyzeAbilityOfMove() {
         boolean firstDirection = false;
         boolean secondDirection = false;
         boolean thirdDirection = false;
@@ -58,7 +58,7 @@ public class King extends Piece {
     }
 
     @Override
-    public void analyzeAbilityOfEat() throws CheckersException {
+    public void analyzeAbilityOfEat() {
         boolean firstDirection = false;
         boolean secondDirection = false;
         boolean thirdDirection = false;
@@ -87,7 +87,7 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isAbleToMoveTo(Cell to) throws CheckersException {
+    public boolean isAbleToMoveTo(Cell to) {
         Cell pieceCell = getCell();
         if (pieceCell.diff(to) == -1) {
             return false;
@@ -142,7 +142,7 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isAbleToEatTo(Cell to) throws CheckersException {
+    public boolean isAbleToEatTo(Cell to) {
         Cell pieceCell = getCell();
         if (to.getPiece() != null) {
             return false;
@@ -201,7 +201,7 @@ public class King extends Piece {
     }
 
     @Override
-    public void eat(Cell to) throws CheckersException {
+    public void eat(Cell to) {
         if (!isCanEat()) {
             throw new CannotEatException(cell, to);
         }
