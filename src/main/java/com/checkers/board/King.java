@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
@@ -182,9 +182,9 @@ public class King extends Piece {
     }
 
     @Override
-    public void move(Cell to) throws CheckersException {
+    public void move(Cell to) {
         if (isCanEat()) {
-            throw new CanEatException();
+            throw new MustEatException();
         }
 
         if (!isCanMove()) {

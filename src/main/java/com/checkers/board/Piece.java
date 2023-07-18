@@ -27,7 +27,7 @@ public abstract class Piece {
 
     public abstract void analyzeAbilityOfEat();
 
-    public abstract void move(Cell to) throws CheckersException;
+    public abstract void move(Cell to);
 
     public abstract void eat(Cell to);
 }

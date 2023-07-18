@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CheckersException;
@@ -96,9 +96,9 @@ public class Man extends Piece {
         return sacrificePiece != null && sacrificePiece.color != color;
     }
 
-    public void move(Cell destinationCell) throws CheckersException {
+    public void move(Cell destinationCell) {
         if (isCanEat()) {
-            throw new CanEatException();
+            throw new MustEatException();
         }
 
         if (!isCanMove()) {

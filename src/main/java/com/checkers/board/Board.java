@@ -18,7 +18,7 @@ public class Board {
 
     private int blackPieces = 12;
 
-    public Board() throws CheckersException {
+    public Board() {
         createCellsInBoard();
         initWhitePieces();
         initBlackPieces();
@@ -77,7 +77,7 @@ public class Board {
         return board[row - 1][col - 1];
     }
 
-    public void move(Cell sourceCell, Cell destinationCell) throws CheckersException {
+    public void move(Cell sourceCell, Cell destinationCell) {
         if (sourceCell.isEmpty()) {
             throw new CellIsEmptyException(sourceCell);
         }

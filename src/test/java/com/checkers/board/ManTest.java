@@ -1,6 +1,6 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
@@ -292,18 +292,18 @@ class ManTest {
     }
 
     @Test
-    void testMoveWhileCanEat() throws CheckersException {
+    void testMoveWhileCanEat() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
-        assertThatExceptionOfType(CanEatException.class)
+        assertThatExceptionOfType(MustEatException.class)
                 .isThrownBy(() -> underTest.move(destinationCell));
     }
 
     @Test
-    void testMoveWhileCannotMove() throws CheckersException {
+    void testMoveWhileCannotMove() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         given(underTest.isCanMove()).willReturn(Boolean.FALSE);
@@ -315,7 +315,7 @@ class ManTest {
     }
 
     @Test
-    void testMoveWhileCannotMoveTo() throws CheckersException {
+    void testMoveWhileCannotMoveTo() {
         // given
         var underTest = mock(Man.class);
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
@@ -329,7 +329,7 @@ class ManTest {
     }
 
     @Test
-    void testMove() throws CheckersException {
+    void testMove() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         given(underTest.isCanMove()).willReturn(Boolean.TRUE);
@@ -351,7 +351,7 @@ class ManTest {
     }
 
     @Test
-    void testMoveWhileWhitePieceBecomeKing() throws CheckersException {
+    void testMoveWhileWhitePieceBecomeKing() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         given(underTest.isCanMove()).willReturn(Boolean.TRUE);
@@ -379,7 +379,7 @@ class ManTest {
     }
 
     @Test
-    void testMoveWhileBlackPieceBecomeKing() throws CheckersException {
+    void testMoveWhileBlackPieceBecomeKing() {
         // given
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         given(underTest.isCanMove()).willReturn(Boolean.TRUE);

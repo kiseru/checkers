@@ -33,7 +33,7 @@ public class BoardTest {
     private Board underTest;
 
     @BeforeEach
-    void setUp() throws CheckersException {
+    void setUp() {
         underTest = new Board();
     }
 
@@ -192,7 +192,7 @@ public class BoardTest {
     }
 
     @Test
-    void testEatWhileCanEat() throws CheckersException {
+    void testEatWhileCanEat() {
         // given
         var destinationCell = mock(Cell.class);
         given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
@@ -257,7 +257,7 @@ public class BoardTest {
     }
 
     @Test
-    void testMoveWhileCanMove() throws CheckersException {
+    void testMoveWhileCanMove() {
         // given
         var destinationCell = mock(Cell.class);
         given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
