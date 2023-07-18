@@ -33,7 +33,7 @@
                     <div class="panel-body">
                         <p>Login: <span id="login">${param.login}</span></p>
                         <p>Turn: <%= turn %></p>
-                        <p>Room ID: <span id="id">${param.id}</span></p>
+                        <p>Room ID: <span id="id">${room.getId()}</span></p>
                     </div>
                 </div>
 
