@@ -3,24 +3,21 @@
 <%@ page import="com.checkers.board.Board" %>
 <%@ page import="com.checkers.utils.Color" %>
 <%@ page import="com.checkers.board.Cell" %>
-<% Room boardRoom = (Room)request.getAttribute("room"); %>
+<% Room boardRoom = (Room) request.getAttribute("room"); %>
 <% Board board = boardRoom.getBoard(); %>
 <% for (int row = 8; row > 0; row--) { %>
 <div class="row">
     <% for (int col = 1; col <= 8; col++) { %>
-        <% Color color = null; %>
-        <% try {
-            color = board.getCell(row, col).getColor();
-        } catch (Exception e) {}%>
+        <% Cell cell = board.getCell(row, col); %>
+        <% Color color = cell.getColor(); %>
         <% if (color == Color.BLACK) { %>
             <div id="<%= board.getCell(row, col) %>" class="cell black-cell">
                 <%
                     String rang = null;
-                    Cell cell = board.getCell(row, col);
-                    Piece piece = cell.getPiece();
-                    if (piece != null) {
+                    if (!cell.isEmpty()) {
+                        Piece piece = cell.getPiece();
                         if (piece.getColor() == Color.BLACK) {
-                            if (piece instanceof Man) {
+                            if (piece instanceof Man) { 
                                 rang = "black-man";
                             } else {
                                 rang = "black-king";
@@ -38,8 +35,6 @@
             </div>
         <% } else if (color == Color.WHITE) { %>
             <div class="cell white-cell"></div>
-        <% } else { %>
-            <div class="cell">null</div>
         <% } %>
     <% } %>
 </div>
