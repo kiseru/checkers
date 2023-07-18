@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -39,11 +40,7 @@ public class GameServlet extends HttpServlet {
         }
 
         if (!existed) {
-            try {
-                room = new Room(id, new Board());
-            } catch (CheckersException e) {
-                throw new RuntimeException(e);
-            }
+            room = new Room(id, new Board());
             rooms.add(room);
         }
 
@@ -67,14 +64,16 @@ public class GameServlet extends HttpServlet {
                     if (!room.getFirstPlayer().isCanEat()) {
                         room.setTurn(room.getSecondPlayer());
                     }
-                } catch (CheckersException ex) {}
+                } catch (CheckersException ex) {
+                }
             } else if (login.equals(room.getSecondPlayer().getName()) && room.getTurn().equals(room.getSecondPlayer())) {
                 try {
                     room.getSecondPlayer().makeTurn(from, to);
                     if (!room.getSecondPlayer().isCanEat()) {
                         room.setTurn(room.getFirstPlayer());
                     }
-                } catch (CheckersException ex) {}
+                } catch (CheckersException ex) {
+                }
             }
         }
 

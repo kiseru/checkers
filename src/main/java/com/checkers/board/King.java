@@ -3,7 +3,6 @@ package com.checkers.board;
 import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
-import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 
 public class King extends Piece {
@@ -87,13 +86,12 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isAbleToMoveTo(Cell to) {
-        Cell pieceCell = getCell();
-        if (pieceCell.diff(to) == -1) {
+    public boolean isAbleToMoveTo(Cell destinationCell) {
+        if (cell.diff(destinationCell) == -1) {
             return false;
         }
 
-        if (to.getPiece() != null) {
+        if (!destinationCell.isEmpty()) {
             return false;
         }
 
@@ -103,39 +101,39 @@ public class King extends Piece {
         boolean forthDirection = false;
 
         int i = 1;
-        while (pieceCell.getRow() + i <= 8 && pieceCell.getCol() + i <= 8 && !firstDirection) {
-            if (pieceCell.getNear(i, i).getPiece() != null && pieceCell.getNear(i, i) != to) {
+        while (cell.getRow() + i <= 8 && cell.getCol() + i <= 8 && !firstDirection) {
+            if (cell.getNear(i, i).getPiece() != null && cell.getNear(i, i) != destinationCell) {
                 firstDirection = false;
                 break;
             }
-            firstDirection = pieceCell.getNear(i, i) == to;
+            firstDirection = cell.getNear(i, i) == destinationCell;
             i++;
         }
         i = 1;
-        while (pieceCell.getRow() + i <= 8 && pieceCell.getCol() - i >= 1 && !secondDirection) {
-            if (pieceCell.getNear(i, -i).getPiece() != null && pieceCell.getNear(i, -i) != to) {
+        while (cell.getRow() + i <= 8 && cell.getCol() - i >= 1 && !secondDirection) {
+            if (cell.getNear(i, -i).getPiece() != null && cell.getNear(i, -i) != destinationCell) {
                 secondDirection = false;
                 break;
             }
-            secondDirection = pieceCell.getNear(i, -i) == to;
+            secondDirection = cell.getNear(i, -i) == destinationCell;
             i++;
         }
         i = 1;
-        while (pieceCell.getRow() - i >= 1 && pieceCell.getCol() + i <= 8 && !thirdDirection) {
-            if (pieceCell.getNear(-i, i).getPiece() != null && pieceCell.getNear(-i, i) != to) {
+        while (cell.getRow() - i >= 1 && cell.getCol() + i <= 8 && !thirdDirection) {
+            if (cell.getNear(-i, i).getPiece() != null && cell.getNear(-i, i) != destinationCell) {
                 thirdDirection = false;
                 break;
             }
-            thirdDirection = pieceCell.getNear(-i, i) == to;
+            thirdDirection = cell.getNear(-i, i) == destinationCell;
             i++;
         }
         i = 1;
-        while (pieceCell.getRow() - i >= 1 && pieceCell.getCol() - i >= 1 && !forthDirection) {
-            if (pieceCell.getNear(-i, -i).getPiece() != null && pieceCell.getNear(-i, -i) != to) {
+        while (cell.getRow() - i >= 1 && cell.getCol() - i >= 1 && !forthDirection) {
+            if (cell.getNear(-i, -i).getPiece() != null && cell.getNear(-i, -i) != destinationCell) {
                 forthDirection = false;
                 break;
             }
-            forthDirection = pieceCell.getNear(-i, -i) == to;
+            forthDirection = cell.getNear(-i, -i) == destinationCell;
             i++;
         }
         return firstDirection || secondDirection || thirdDirection || forthDirection;
