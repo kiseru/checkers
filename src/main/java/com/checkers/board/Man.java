@@ -1,10 +1,11 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
-import com.checkers.exceptions.CanNotMoveException;
 import com.checkers.exceptions.CannotEatException;
+import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
+
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -101,11 +102,11 @@ public class Man extends Piece {
         }
 
         if (!isCanMove()) {
-            throw new CanNotMoveException();
+            throw new CannotMoveException(cell, destinationCell);
         }
 
         if (!isAbleToMoveTo(destinationCell)) {
-            throw new CanNotMoveException();
+            throw new CannotMoveException(cell, destinationCell);
         }
 
         cell.setPiece(null);

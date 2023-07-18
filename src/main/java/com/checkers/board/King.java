@@ -1,7 +1,7 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
-import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
@@ -188,11 +188,11 @@ public class King extends Piece {
         }
 
         if (!isCanMove()) {
-            throw new CanNotMoveException();
+            throw new CannotMoveException(cell, to);
         }
 
         if (!isAbleToMoveTo(to)) {
-            throw new CanNotMoveException();
+            throw new CannotMoveException(cell, to);
         }
 
         Cell from = getCell();

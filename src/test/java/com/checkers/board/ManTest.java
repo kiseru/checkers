@@ -1,7 +1,7 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
-import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
@@ -310,7 +310,7 @@ class ManTest {
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
-        assertThatExceptionOfType(CanNotMoveException.class)
+        assertThatExceptionOfType(CannotMoveException.class)
                 .isThrownBy(() -> underTest.move(destinationCell));
     }
 
@@ -324,7 +324,7 @@ class ManTest {
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // then
-        assertThatExceptionOfType(CanNotMoveException.class)
+        assertThatExceptionOfType(CannotMoveException.class)
                 .isThrownBy(() -> underTest.move(destinationCell));
     }
 
