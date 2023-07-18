@@ -1,8 +1,8 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
-import com.checkers.exceptions.CanNotEatException;
 import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
@@ -413,7 +413,7 @@ class ManTest {
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // then
-        assertThatExceptionOfType(CanNotEatException.class)
+        assertThatExceptionOfType(CannotEatException.class)
                 .isThrownBy(() -> underTest.eat(destinationCell));
     }
 
@@ -425,7 +425,7 @@ class ManTest {
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // then
-        assertThatExceptionOfType(CanNotEatException.class)
+        assertThatExceptionOfType(CannotEatException.class)
                 .isThrownBy(() -> underTest.eat(destinationCell));
     }
 

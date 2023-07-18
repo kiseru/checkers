@@ -1,7 +1,10 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CanEatException;
+import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CannotEatException;
+import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
-import com.checkers.exceptions.*;
 
 public class King extends Piece {
 
@@ -200,11 +203,11 @@ public class King extends Piece {
     @Override
     public void eat(Cell to) throws CheckersException {
         if (!isCanEat()) {
-            throw new CanNotEatException();
+            throw new CannotEatException(cell, to);
         }
 
         if (!isAbleToEatTo(to)) {
-            throw new CanNotEatException();
+            throw new CannotEatException(cell, to);
         }
 
         Cell from = getCell();

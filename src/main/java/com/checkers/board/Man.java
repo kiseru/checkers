@@ -1,8 +1,8 @@
 package com.checkers.board;
 
 import com.checkers.exceptions.CanEatException;
-import com.checkers.exceptions.CanNotEatException;
 import com.checkers.exceptions.CanNotMoveException;
+import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import java.util.Objects;
@@ -114,11 +114,11 @@ public class Man extends Piece {
 
     public void eat(Cell destinationCell) throws CheckersException {
         if (!isCanEat()) {
-            throw new CanNotEatException();
+            throw new CannotEatException(cell, destinationCell);
         }
 
         if (!isAbleToEatTo(destinationCell)) {
-            throw new CanNotEatException();
+            throw new CannotEatException(cell, destinationCell);
         }
 
         cell.setPiece(null);
