@@ -1,0 +1,7 @@
+logging:
+  level:
+    web: DEBUG
+spring:
+  view:
+    prefix: /templates/
+    suffix: .jsp

@@ -1,35 +1,33 @@
-package com.checkers.servlets;
+package com.checkers.controllers;
 
 import com.checkers.board.Board;
 import com.checkers.exceptions.CheckersException;
 import com.checkers.game.Room;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/game")
-public class GameServlet extends HttpServlet {
+@Controller
+@RequestMapping("game")
+public class GameController {
 
     private final List<Room> rooms = new ArrayList<>();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @GetMapping
+    public String getGamePage(HttpServletRequest req) {
         try {
             var session = req.getSession();
-
             var login = (String) session.getAttribute("login");
             if (login == null || login.isEmpty()) {
-                resp.sendRedirect("/login");
-                return;
+                return "redirect:/login";
             }
 
             var roomId = (int) session.getAttribute("roomId");
@@ -51,10 +49,8 @@ public class GameServlet extends HttpServlet {
             }
 
             if (!board.isGaming()) {
-                req.setAttribute("winner", currentRoom.getTurn().toString());
-                rooms.remove(currentRoom);
-                req.getRequestDispatcher("/finish").forward(req, resp);
-                return;
+                session.setAttribute("winner", currentRoom.getTurn().toString());
+                return "redirect:/finish";
             }
 
             var firstPlayer = currentRoom.getFirstPlayer();
@@ -73,12 +69,13 @@ public class GameServlet extends HttpServlet {
                 }
             }
 
+
             req.setAttribute("room", currentRoom);
+            req.setAttribute("login", login);
 
-            req.getRequestDispatcher("views/game.jsp").forward(req, resp);
-
+            return "game";
         } catch (CheckersException e) {
-            resp.sendError(500, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 

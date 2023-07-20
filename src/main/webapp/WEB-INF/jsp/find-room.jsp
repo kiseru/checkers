@@ -11,7 +11,7 @@
             <form method="post" action="/find-room">
                 <div class="form-group">
                     <label for="log-in">Room ID</label>
-                    <input type="number" name="room-id" class="form-control" id="log-in" placeholder="Room ID">
+                    <input type="number" name="roomId" class="form-control" id="log-in" placeholder="Room ID">
                 </div>
                 <div class="row">
                     <a href="/login" class="btn btn-success btn-lg">Back</a>

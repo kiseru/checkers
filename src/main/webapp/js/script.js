@@ -9,7 +9,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "a1";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -26,7 +26,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "a3";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -43,7 +43,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "a5";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -60,7 +60,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "a7";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -77,7 +77,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "b2";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -94,7 +94,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "b4";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -111,7 +111,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "b6";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -128,7 +128,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "b8";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -145,7 +145,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "c1";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -162,7 +162,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "c3";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -179,7 +179,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "c5";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -196,7 +196,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "c7";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -213,7 +213,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "d2";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -230,7 +230,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "d4";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -247,7 +247,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "d6";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -264,7 +264,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "d8";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -281,7 +281,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "e1";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -298,7 +298,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "e3";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -315,7 +315,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "e5";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -332,7 +332,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "e7";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -349,7 +349,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "f2";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -366,7 +366,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "f4";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -383,7 +383,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "f6";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -400,7 +400,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "f8";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -417,7 +417,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "g1";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -434,7 +434,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "g3";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -451,7 +451,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "g5";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -467,7 +467,7 @@ $(document).ready(function () {
         } else if (from.localeCompare("g7") === 0) {
             from = "";h        } else {
             to = "g7";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -484,7 +484,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "h2";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -501,7 +501,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "h4";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -518,7 +518,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "h6";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
@@ -535,7 +535,7 @@ $(document).ready(function () {
             from = "";
         } else {
             to = "h8";
-            $.post('/game', {
+            $.get('/game', {
                 'from': from,
                 'to': to,
                 'login': $('#login').text(),
