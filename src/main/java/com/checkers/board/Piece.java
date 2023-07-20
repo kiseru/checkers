@@ -1,6 +1,5 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,4 +29,8 @@ public abstract class Piece {
     public abstract void move(Cell to);
 
     public abstract void eat(Cell to);
+
+    public abstract boolean isMan();
+
+    public abstract boolean isKing();
 }

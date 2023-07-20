@@ -1,5 +1,5 @@
 <%@ page import="com.checkers.user.User" %>
-<%@ page import="com.checkers.game.Room" %>
+<%@ page import="com.checkers.room.Room" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>

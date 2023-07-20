@@ -3,7 +3,6 @@ package com.checkers.board;
 import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
-import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 
 import java.util.Objects;
@@ -139,5 +138,15 @@ public class Man extends Piece {
 
     private Piece createKing() {
         return new King(color);
+    }
+
+    @Override
+    public boolean isMan() {
+        return true;
+    }
+
+    @Override
+    public boolean isKing() {
+        return false;
     }
 }

@@ -228,4 +228,14 @@ public class King extends Piece {
             return "#";
         }
     }
+
+    @Override
+    public boolean isMan() {
+        return false;
+    }
+
+    @Override
+    public boolean isKing() {
+        return true;
+    }
 }
