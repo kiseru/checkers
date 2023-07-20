@@ -3,7 +3,6 @@ package com.checkers.board;
 import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
-import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,7 +122,7 @@ class ManTest {
         given(board.getCell(eq(SOURCE_CELL_ROW - 1), eq(SOURCE_CELL_COLUMN - 1))).willReturn(emptyCell);
         given(board.getCell(eq(SOURCE_CELL_ROW - 1), eq(SOURCE_CELL_COLUMN + 1))).willReturn(emptyCell);
 
-        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getColumn()).willReturn(SOURCE_CELL_COLUMN);
         given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
         given(sourceCell.getBoard()).willReturn(board);
         given(sourceCell.diff(eq(destinationCell))).willReturn(1);
@@ -258,7 +257,7 @@ class ManTest {
     void testAnalyzeAbilityOfMove() {
         // given
         given(sourceCell.getBoard()).willReturn(board);
-        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getColumn()).willReturn(SOURCE_CELL_COLUMN);
         given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
 
         ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
@@ -277,7 +276,7 @@ class ManTest {
     void testAnalyzeAbilityOfEat() {
         // given
         given(sourceCell.getBoard()).willReturn(board);
-        given(sourceCell.getCol()).willReturn(SOURCE_CELL_COLUMN);
+        given(sourceCell.getColumn()).willReturn(SOURCE_CELL_COLUMN);
         given(sourceCell.getRow()).willReturn(SOURCE_CELL_ROW);
 
         given(underTest.isAbleToEatTo(any())).willReturn(Boolean.TRUE);

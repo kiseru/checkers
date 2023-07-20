@@ -23,7 +23,7 @@ public class Man extends Piece {
         }
 
         var board = cell.getBoard();
-        var column = cell.getCol();
+        var column = cell.getColumn();
         canMove = IntStream.of(column - 1, column + 1)
                 .filter(this::hasCoordinate)
                 .mapToObj(destinationColumn -> board.getCell(nextRow, destinationColumn))
@@ -31,7 +31,7 @@ public class Man extends Piece {
     }
 
     public void analyzeAbilityOfEat() {
-        var column = cell.getCol();
+        var column = cell.getColumn();
         var row = cell.getRow();
         var board = cell.getBoard();
         canEat = IntStream.of(row - 2, row + 2)
@@ -54,14 +54,14 @@ public class Man extends Piece {
 
         var board = cell.getBoard();
         var row = cell.getRow();
-        var col = cell.getCol();
+        var col = cell.getColumn();
         var nextRow = color == Color.WHITE ? row + 1 : row - 1;
         return Stream.of(board.getCell(nextRow, col + 1), board.getCell(nextRow, col - 1))
                 .anyMatch(nearCell -> nearCell == destinationCell);
     }
 
     private boolean isEnemyNear() {
-        var col = cell.getCol();
+        var col = cell.getColumn();
         var row = cell.getRow();
 
         var board = cell.getBoard();

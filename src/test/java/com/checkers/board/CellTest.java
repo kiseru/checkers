@@ -38,7 +38,7 @@ class CellTest {
         var board = mock(Board.class);
         var cell = new Cell(row, col, board);
 
-        assertThat(cell.getCol()).isEqualTo(col);
+        assertThat(cell.getColumn()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
         assertThat(cell.getColor()).isEqualTo(Color.BLACK);
@@ -52,7 +52,7 @@ class CellTest {
         var board = mock(Board.class);
         var cell = new Cell(row, col, board);
 
-        assertThat(cell.getCol()).isEqualTo(col);
+        assertThat(cell.getColumn()).isEqualTo(col);
         assertThat(cell.getRow()).isEqualTo(row);
         assertThat(cell.getBoard()).isEqualTo(board);
         assertThat(cell.getColor()).isEqualTo(Color.WHITE);

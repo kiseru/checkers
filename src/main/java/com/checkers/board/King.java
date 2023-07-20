@@ -18,7 +18,7 @@ public class King extends Piece {
         boolean thirdDirection = false;
         boolean forthDirection = false;
         int i = 1;
-        while (getCell().getRow() + i <= 8 && getCell().getCol() + i <= 8 && !firstDirection) {
+        while (getCell().getRow() + i <= 8 && getCell().getColumn() + i <= 8 && !firstDirection) {
             if (!isAbleToMoveTo(getCell().getNear(i, i))) {
                 firstDirection = false;
                 break;
@@ -27,7 +27,7 @@ public class King extends Piece {
             i++;
         }
         i = 1;
-        while (getCell().getRow() + i <= 8 && getCell().getCol() - i >= 1 && !secondDirection) {
+        while (getCell().getRow() + i <= 8 && getCell().getColumn() - i >= 1 && !secondDirection) {
             if (!isAbleToMoveTo(getCell().getNear(i, -i))) {
                 secondDirection = false;
                 break;
@@ -36,7 +36,7 @@ public class King extends Piece {
             i++;
         }
         i = 1;
-        while (getCell().getRow() - i >= 1 && getCell().getCol() + i <= 8 && !thirdDirection) {
+        while (getCell().getRow() - i >= 1 && getCell().getColumn() + i <= 8 && !thirdDirection) {
             if (!isAbleToMoveTo(getCell().getNear(-i, i))) {
                 thirdDirection = false;
                 break;
@@ -45,7 +45,7 @@ public class King extends Piece {
             i++;
         }
         i = 1;
-        while (getCell().getRow() - i >= 1 && getCell().getCol() - i >= 1 && !forthDirection) {
+        while (getCell().getRow() - i >= 1 && getCell().getColumn() - i >= 1 && !forthDirection) {
             if (!isAbleToMoveTo(getCell().getNear(-i, -i))) {
                 forthDirection = false;
                 break;
@@ -63,22 +63,22 @@ public class King extends Piece {
         boolean thirdDirection = false;
         boolean forthDirection = false;
         int i = 2;
-        while (getCell().getRow() + i <= 8 && getCell().getCol() + i <= 8 && !firstDirection) {
+        while (getCell().getRow() + i <= 8 && getCell().getColumn() + i <= 8 && !firstDirection) {
             firstDirection = isAbleToEatTo(getCell().getNear(i, i));
             i++;
         }
         i = 2;
-        while (getCell().getRow() + i <= 8 && getCell().getCol() - i >= 1 && !secondDirection) {
+        while (getCell().getRow() + i <= 8 && getCell().getColumn() - i >= 1 && !secondDirection) {
             secondDirection = isAbleToEatTo(getCell().getNear(i, -i));
             i++;
         }
         i = 2;
-        while (getCell().getRow() - i >= 1 && getCell().getCol() + i <= 8 && !thirdDirection) {
+        while (getCell().getRow() - i >= 1 && getCell().getColumn() + i <= 8 && !thirdDirection) {
             thirdDirection = isAbleToEatTo(getCell().getNear(-i, i));
             i++;
         }
         i = 2;
-        while (getCell().getRow() - i >= 1 && getCell().getCol() - i >= 1 && !forthDirection) {
+        while (getCell().getRow() - i >= 1 && getCell().getColumn() - i >= 1 && !forthDirection) {
             forthDirection = isAbleToEatTo(getCell().getNear(-i, -i));
             i++;
         }
@@ -95,48 +95,34 @@ public class King extends Piece {
             return false;
         }
 
-        boolean firstDirection = false;
-        boolean secondDirection = false;
-        boolean thirdDirection = false;
-        boolean forthDirection = false;
+        var row = cell.getRow();
+        var column = cell.getColumn();
+        var destinationRow = destinationCell.getRow();
+        var destinationColumn = destinationCell.getColumn();
+        var deltaColumn = destinationColumn - column;
+        var deltaRow = destinationRow - row;
+        var k = (float) deltaColumn / deltaRow;
+        if (Math.abs(k) != 1) {
+            return false;
+        }
 
-        int i = 1;
-        while (cell.getRow() + i <= 8 && cell.getCol() + i <= 8 && !firstDirection) {
-            if (cell.getNear(i, i).getPiece() != null && cell.getNear(i, i) != destinationCell) {
-                firstDirection = false;
-                break;
+        var deltaColumnSign = (int) Math.signum(deltaColumn);
+        var deltaRowSign = (int) Math.signum(deltaRow);
+
+        var board = cell.getBoard();
+        for (int i = 1; ; i++) {
+            int currentRow = row + deltaRowSign * i;
+            int currentColumn = column + deltaColumnSign * i;
+
+            if (currentRow == destinationRow && currentColumn == destinationColumn) {
+                return true;
             }
-            firstDirection = cell.getNear(i, i) == destinationCell;
-            i++;
-        }
-        i = 1;
-        while (cell.getRow() + i <= 8 && cell.getCol() - i >= 1 && !secondDirection) {
-            if (cell.getNear(i, -i).getPiece() != null && cell.getNear(i, -i) != destinationCell) {
-                secondDirection = false;
-                break;
+
+            var currentCell = board.getCell(currentRow, currentColumn);
+            if (!currentCell.isEmpty()) {
+                return false;
             }
-            secondDirection = cell.getNear(i, -i) == destinationCell;
-            i++;
         }
-        i = 1;
-        while (cell.getRow() - i >= 1 && cell.getCol() + i <= 8 && !thirdDirection) {
-            if (cell.getNear(-i, i).getPiece() != null && cell.getNear(-i, i) != destinationCell) {
-                thirdDirection = false;
-                break;
-            }
-            thirdDirection = cell.getNear(-i, i) == destinationCell;
-            i++;
-        }
-        i = 1;
-        while (cell.getRow() - i >= 1 && cell.getCol() - i >= 1 && !forthDirection) {
-            if (cell.getNear(-i, -i).getPiece() != null && cell.getNear(-i, -i) != destinationCell) {
-                forthDirection = false;
-                break;
-            }
-            forthDirection = cell.getNear(-i, -i) == destinationCell;
-            i++;
-        }
-        return firstDirection || secondDirection || thirdDirection || forthDirection;
     }
 
     @Override
@@ -150,18 +136,20 @@ public class King extends Piece {
             return false;
         }
 
-        byte signRow = (byte)((to.getRow() - pieceCell.getRow()) / Math.abs(to.getRow() - pieceCell.getRow()));
-        byte signCol = (byte)((to.getCol() - pieceCell.getCol()) / Math.abs(to.getCol() - pieceCell.getCol()));
+        byte signRow = (byte) ((to.getRow() - pieceCell.getRow()) / Math.abs(to.getRow() - pieceCell.getRow()));
+        byte signCol = (byte) ((to.getColumn() - pieceCell.getColumn()) / Math.abs(to.getColumn() - pieceCell.getColumn()));
         int i = 1;
         int count = 0;
-        while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getCol() + signCol * i <= 8 && pieceCell.getCol() + signCol * i >= 1 ) {
+        while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getColumn() + signCol * i <= 8 && pieceCell.getColumn() + signCol * i >= 1) {
             try {
                 if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColor() == pieceCell.getPiece().getColor()) {
                     return false;
                 } else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null) {
                     return true;
                 }
-            } catch (ArrayIndexOutOfBoundsException ex) {} catch (NullPointerException ex) {}
+            } catch (ArrayIndexOutOfBoundsException ex) {
+            } catch (NullPointerException ex) {
+            }
             try {
                 if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null) {
                     return false;
@@ -211,10 +199,10 @@ public class King extends Piece {
         Cell from = getCell();
         to.setPiece(this);
         from.setPiece(null);
-        byte signRow = (byte)((to.getRow() - from.getRow()) / Math.abs(to.getRow() - from.getRow()));
-        byte signCol = (byte)((to.getCol() - from.getCol()) / Math.abs(to.getCol() - from.getCol()));
+        byte signRow = (byte) ((to.getRow() - from.getRow()) / Math.abs(to.getRow() - from.getRow()));
+        byte signCol = (byte) ((to.getColumn() - from.getColumn()) / Math.abs(to.getColumn() - from.getColumn()));
         int i = 1;
-        while (from.getRow() + signRow * i != to.getRow() && from.getCol() + signCol * i != to.getCol()) {
+        while (from.getRow() + signRow * i != to.getRow() && from.getColumn() + signCol * i != to.getColumn()) {
             from.getNear(signRow * i, signCol * i).setPiece(null);
             i++;
         }

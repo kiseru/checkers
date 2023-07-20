@@ -10,7 +10,7 @@ public class Cell {
 
     private final int row;
 
-    private final int col;
+    private final int column;
 
     private final Board board;
 
@@ -24,7 +24,7 @@ public class Cell {
     }
 
     public Color getColor() {
-        if (((col + row) & 1) == 0) {
+        if (((column + row) & 1) == 0) {
             return Color.BLACK;
         } else {
             return Color.WHITE;
@@ -36,15 +36,15 @@ public class Cell {
     }
 
     public int diff(Cell second) {
-        if (Math.abs(col - second.col) == Math.abs(row - second.row)) {
-            return Math.abs(col - second.col);
+        if (Math.abs(column - second.column) == Math.abs(row - second.row)) {
+            return Math.abs(column - second.column);
         }
         return -1;
     }
 
     public Cell getNear(int diffRow, int diffCol) {
         int rowToFind = row + diffRow;
-        int colToFind = col + diffCol;
+        int colToFind = column + diffCol;
         if (rowToFind < 1 || rowToFind > 8 || colToFind < 1 || colToFind > 8) {
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -53,7 +53,7 @@ public class Cell {
     }
 
     public Cell between(Cell another, Board board) {
-        int colToFind = (col + another.col) / 2;
+        int colToFind = (column + another.column) / 2;
         int rowToFind = (row + another.row) / 2;
         return board.getCell(rowToFind, colToFind);
     }
@@ -64,7 +64,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        char letter = (char) ('a' + col - 1);
+        char letter = (char) ('a' + column - 1);
         return String.valueOf(letter) + row;
     }
 }
