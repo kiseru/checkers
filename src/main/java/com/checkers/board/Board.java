@@ -4,14 +4,15 @@ import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CellIsBusyException;
 import com.checkers.exceptions.CellIsEmptyException;
-import com.checkers.exceptions.CheckersException;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
+import lombok.Getter;
 
 public class Board {
 
     private static final int SIZE_OF_BOARD = 8;
 
+    @Getter
     private final Cell[][] board = new Cell[SIZE_OF_BOARD][SIZE_OF_BOARD];
 
     private int whitePieces = 12;

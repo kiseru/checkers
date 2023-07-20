@@ -1,4 +1,4 @@
-package com.checkers.game;
+package com.checkers.room;
 
 import com.checkers.board.Board;
 import com.checkers.user.User;

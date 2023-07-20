@@ -1,11 +1,12 @@
 package com.checkers.controllers;
 
-import com.checkers.board.Board;
 import com.checkers.exceptions.CheckersException;
-import com.checkers.game.Room;
+import com.checkers.room.Room;
+import com.checkers.room.RoomService;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,14 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("game")
 public class GameController {
 
-    private final List<Room> rooms = new ArrayList<>();
+    private final RoomService roomService;
 
     @GetMapping
     public String getGamePage(
@@ -42,7 +41,7 @@ public class GameController {
                 return "redirect:/find-room";
             }
 
-            Room currentRoom = findOrCreateRoom(roomId);
+            Room currentRoom = roomService.findOrCreateRoomById(roomId);
             var board = currentRoom.getBoard();
 
             if (currentRoom.getFirstPlayer() == null) {
@@ -77,6 +76,7 @@ public class GameController {
             }
 
 
+            model.addAttribute("board", board.getBoard());
             model.addAttribute("firstPlayer", firstPlayer);
             model.addAttribute("secondPlayer", secondPlayer);
             model.addAttribute("turn", turn);
@@ -87,18 +87,5 @@ public class GameController {
         } catch (CheckersException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
-    }
-
-    private Room findOrCreateRoom(int roomId) {
-        return rooms.stream()
-                .filter(room -> room.getId() == roomId)
-                .findFirst()
-                .orElseGet(() -> createNewRoom(roomId));
-    }
-
-    private Room createNewRoom(int roomId) {
-        var room = new Room(roomId, new Board());
-        rooms.add(room);
-        return room;
     }
 }
