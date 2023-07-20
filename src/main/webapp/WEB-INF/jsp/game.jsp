@@ -15,34 +15,19 @@
                 <%@include file="partials/board.jsp"%>
             </div>
 
-            <%
-                String login = (String) request.getAttribute("login");
-                Room room = (Room) request.getAttribute("room");
-
-                String turn = room.getTurn().toString();
-
-                String firstPlayer = room.getFirstPlayer().toString();
-
-                String secondPlayer = null;
-                if (room.getSecondPlayer() != null) {
-                    secondPlayer = room.getSecondPlayer().toString();
-                }
-            %>
-
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <p>Login: <span id="login">${login}</span></p>
-                        <p>Turn: <%= turn %></p>
+                        <p>Turn: ${turn}</p>
                         <p>Room ID: <span id="id">${room.getId()}</span></p>
                     </div>
                 </div>
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <p>White: <%= firstPlayer %></p>
-                        <p>Black: <%= secondPlayer %></p>
-                        <p>Message: <%= request.getAttribute("Message") %></p>
+                        <p>White: ${firstPlayer}</p>
+                        <p>Black: ${secondPlayer}</p>
                     </div>
                 </div>
             </div>

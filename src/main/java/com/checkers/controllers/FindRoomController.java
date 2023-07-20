@@ -16,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class FindRoomController {
 
     @GetMapping
-    public String getFindRoomPage(@SessionAttribute String login) {
+    public String getFindRoomPage(@SessionAttribute(required = false) String login) {
         if (!StringUtils.hasText(login)) {
             return "redirect:/login";
         }
