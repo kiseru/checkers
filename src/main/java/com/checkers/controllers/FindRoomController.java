@@ -1,12 +1,14 @@
 package com.checkers.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -14,9 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class FindRoomController {
 
     @GetMapping
-    public String getFindRoomPage(HttpServletRequest req) {
-        var session = req.getSession();
-        var login = (String) session.getAttribute("login");
+    public String getFindRoomPage(@SessionAttribute String login) {
         if (!StringUtils.hasText(login)) {
             return "redirect:/login";
         }
@@ -25,19 +25,16 @@ public class FindRoomController {
     }
 
     @PostMapping
-    protected String findRoom(HttpServletRequest req) {
-        var session = req.getSession();
-        var login = (String) session.getAttribute("login");
+    protected String findRoom(@RequestParam Integer roomId, @SessionAttribute String login, HttpSession session) {
         if (login == null || login.isEmpty()) {
             return "redirect:/login";
         }
 
-        var roomId = req.getParameter("roomId");
         if (roomId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room ID is required");
         }
 
-        session.setAttribute("roomId", Integer.valueOf(roomId));
+        session.setAttribute("roomId", roomId);
 
         return "redirect:/game";
     }
