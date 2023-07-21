@@ -3,6 +3,7 @@ package com.checkers.board;
 import com.checkers.exceptions.MustEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
+import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
 
 public class King extends Piece {
@@ -95,24 +96,24 @@ public class King extends Piece {
             return false;
         }
 
+        if (isOnOtherDiagonal(destinationCell)) {
+            return false;
+        }
+
         var row = cell.getRow();
         var column = cell.getColumn();
         var destinationRow = destinationCell.getRow();
         var destinationColumn = destinationCell.getColumn();
         var deltaColumn = destinationColumn - column;
         var deltaRow = destinationRow - row;
-        var k = (float) deltaColumn / deltaRow;
-        if (Math.abs(k) != 1) {
-            return false;
-        }
 
         var deltaColumnSign = (int) Math.signum(deltaColumn);
         var deltaRowSign = (int) Math.signum(deltaRow);
 
         var board = cell.getBoard();
-        for (int i = 1; ; i++) {
-            int currentRow = row + deltaRowSign * i;
-            int currentColumn = column + deltaColumnSign * i;
+        for (var i = 1; ; i++) {
+            var currentRow = row + deltaRowSign * i;
+            var currentColumn = column + deltaColumnSign * i;
 
             if (currentRow == destinationRow && currentColumn == destinationColumn) {
                 return true;
@@ -126,45 +127,58 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isAbleToEatTo(Cell to) {
-        Cell pieceCell = getCell();
-        if (to.getPiece() != null) {
+    public boolean isAbleToEatTo(Cell destinationCell) {
+        if (!destinationCell.isEmpty()) {
             return false;
         }
 
-        if (getCell().diff(to) < 2) {
+		if (isOnOtherDiagonal(destinationCell)) {
+			return false;
+		}
+
+        if (cell.diff(destinationCell) < 2) {
             return false;
         }
 
-        byte signRow = (byte) ((to.getRow() - pieceCell.getRow()) / Math.abs(to.getRow() - pieceCell.getRow()));
-        byte signCol = (byte) ((to.getColumn() - pieceCell.getColumn()) / Math.abs(to.getColumn() - pieceCell.getColumn()));
-        int i = 1;
-        int count = 0;
-        while (pieceCell.getRow() + signRow * i <= 8 && pieceCell.getRow() + signRow * i >= 1 && pieceCell.getColumn() + signCol * i <= 8 && pieceCell.getColumn() + signCol * i >= 1) {
-            try {
-                if (pieceCell.getNear(signRow * i, signCol * i).getPiece().getColor() == pieceCell.getPiece().getColor()) {
-                    return false;
-                } else if (pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() == null) {
-                    return true;
-                }
-            } catch (ArrayIndexOutOfBoundsException ex) {
-            } catch (NullPointerException ex) {
+        var row = cell.getRow();
+        var column = cell.getColumn();
+        var destinationRow = destinationCell.getRow();
+        var destinationColumn = destinationCell.getColumn();
+        var deltaColumn = destinationColumn - column;
+        var deltaRow = destinationRow - row;
+
+        var deltaColumnSign = (int) Math.signum(deltaColumn);
+        var deltaRowSign = (int) Math.signum(deltaRow);
+
+        var enemyPieceCount = 0;
+        var board = cell.getBoard();
+        for (var i = 1; ; i++) {
+            var currentRow = row + deltaRowSign * i;
+            var currentColumn = column + deltaColumnSign * i;
+
+            if (currentColumn == destinationColumn && currentRow == destinationRow) {
+                return enemyPieceCount == 1;
             }
-            try {
-                if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null && pieceCell.getNear(signRow * (i + 1), signCol * (i + 1)).getPiece() != null) {
-                    return false;
-                }
-            } catch (ArrayIndexOutOfBoundsException ex) {
+
+            var currentCell = board.getCell(currentRow, currentColumn);
+            if (currentCell.isEmpty()) {
+                continue;
+            }
+
+            var piece = currentCell.getPiece();
+            if (piece.getColor() == color) {
                 return false;
             }
-            if (pieceCell.getNear(signRow * i, signCol * i).getPiece() != null) count++;
 
-            i++;
+            enemyPieceCount++;
         }
-        if (count == 0) {
-            return false;
-        }
-        return true;
+    }
+
+    private boolean isOnOtherDiagonal(Cell destinationCell) {
+        var deltaColumn = destinationCell.getColumn() - cell.getColumn();
+        var deltaRow = destinationCell.getRow() - cell.getRow();
+        var k = (float) deltaColumn / deltaRow;
+        return Math.abs(k) != 1;
     }
 
     @Override
