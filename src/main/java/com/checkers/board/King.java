@@ -182,22 +182,21 @@ public class King extends Piece {
     }
 
     @Override
-    public void move(Cell to) {
-        if (isCanEat()) {
+    public void move(Cell destinationCell) {
+        if (canEat) {
             throw new MustEatException();
         }
 
-        if (!isCanMove()) {
-            throw new CannotMoveException(cell, to);
+        if (!canMove) {
+            throw new CannotMoveException(cell, destinationCell);
         }
 
-        if (!isAbleToMoveTo(to)) {
-            throw new CannotMoveException(cell, to);
+        if (!isAbleToMoveTo(destinationCell)) {
+            throw new CannotMoveException(cell, destinationCell);
         }
 
-        Cell from = getCell();
-        to.setPiece(this);
-        from.setPiece(null);
+        destinationCell.setPiece(this);
+        cell.setPiece(null);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CannotMoveException;
+import com.checkers.exceptions.MustEatException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -355,5 +360,66 @@ class KingTest {
 
         // then
         assertThat(actual).isFalse();
+    }
+
+    @Test
+    void testMoveWhileCanEat() {
+        // given
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(MustEatException.class)
+                .isThrownBy(() -> underTest.move(destinationCell));
+    }
+
+    @Test
+    void testMoveWhileCannotMove() {
+        // given
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "canMove", Boolean.FALSE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(CannotMoveException.class)
+                .isThrownBy(() -> underTest.move(destinationCell));
+    }
+
+    @Test
+    void testMoveWhileCannotMoveToDestination() {
+        // given
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "canMove", Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(CannotMoveException.class)
+                .isThrownBy(() -> underTest.move(destinationCell));
+    }
+
+    @Test
+    void testMoveWhileCanMoveToDestination() {
+        // given
+        ReflectionTestUtils.setField(sourceCell, "piece", underTest);
+        willCallRealMethod().given(sourceCell).setPiece(isNull());
+
+        ReflectionTestUtils.setField(destinationCell, "piece", null);
+        willCallRealMethod().given(destinationCell).setPiece(eq(underTest));
+
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "canMove", Boolean.TRUE);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).move(eq(destinationCell));
+
+        // when
+        underTest.move(destinationCell);
+
+        // then
+        var sourceCellPiece = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(sourceCellPiece).isNull();
+
+        var destinationCellPiece = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(destinationCellPiece).isSameAs(underTest);
     }
 }
