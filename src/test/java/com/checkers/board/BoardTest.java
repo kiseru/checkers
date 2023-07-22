@@ -4,7 +4,6 @@ import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CellIsBusyException;
 import com.checkers.exceptions.CellIsEmptyException;
-import com.checkers.exceptions.CheckersException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -274,5 +273,40 @@ public class BoardTest {
 
         // then
         then(piece).should(times(1)).move(eq(destinationCell));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDecrementPieceCountSource")
+    void testDecrementWhitePieceCount(int initialCount, int expectedCount) {
+        // given
+        ReflectionTestUtils.setField(underTest, "whitePieces", initialCount);
+
+        // when
+        underTest.decrementWhitePieceCount();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "whitePieces");
+        assertThat(actual).isEqualTo(expectedCount);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDecrementPieceCountSource")
+    void testDecrementBlackPieceCount(int initialCount, int expectedCount) {
+        // given
+        ReflectionTestUtils.setField(underTest, "blackPieces", initialCount);
+
+        // when
+        underTest.decrementBlackPieceCount();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "blackPieces");
+        assertThat(actual).isEqualTo(expectedCount);
+    }
+
+    private static Arguments[] testDecrementPieceCountSource() {
+        return new Arguments[]{
+                Arguments.of(12, 11),
+                Arguments.of(0, 0),
+        };
     }
 }

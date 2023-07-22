@@ -1,5 +1,6 @@
 package com.checkers.board;
 
+import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.MustEatException;
 import com.checkers.utils.Color;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 
@@ -418,6 +420,131 @@ class KingTest {
         // then
         var sourceCellPiece = ReflectionTestUtils.getField(sourceCell, "piece");
         assertThat(sourceCellPiece).isNull();
+
+        var destinationCellPiece = ReflectionTestUtils.getField(destinationCell, "piece");
+        assertThat(destinationCellPiece).isSameAs(underTest);
+    }
+
+    @Test
+    void testEatWhileCannotEat() {
+        // given
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(CannotEatException.class)
+                .isThrownBy(() -> underTest.eat(destinationCell));
+    }
+
+    @Test
+    void testEatWhileCannotEatToDestination() {
+        // given
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+
+        // when && then
+        assertThatExceptionOfType(CannotEatException.class)
+                .isThrownBy(() -> underTest.eat(destinationCell));
+    }
+
+    @Test
+    void testEatWhileThereIsNoSacrificedPiece() {
+        // given
+        var emptyCell = mock(Cell.class);
+        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
+
+        var board = mock(Board.class);
+        given(board.getCell(eq(3), eq(3))).willReturn(emptyCell);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+
+        given(destinationCell.getRow()).willReturn(4);
+        given(destinationCell.getColumn()).willReturn(4);
+
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(CannotEatException.class)
+                .isThrownBy(() -> underTest.eat(destinationCell));
+    }
+
+    @Test
+    void testEatWhileThereIsPlayerPiece() {
+        // given
+        var playerPiece = mock(Piece.class);
+        given(playerPiece.getColor()).willReturn(Color.WHITE);
+
+        var cellWithPlayerPiece = mock(Cell.class);
+        given(cellWithPlayerPiece.isEmpty()).willReturn(Boolean.FALSE);
+        given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
+
+        var board = mock(Board.class);
+        given(board.getCell(eq(3), eq(3))).willReturn(cellWithPlayerPiece);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+
+        given(destinationCell.getRow()).willReturn(4);
+        given(destinationCell.getColumn()).willReturn(4);
+
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+
+        // when & then
+        assertThatExceptionOfType(CannotEatException.class)
+                .isThrownBy(() -> underTest.eat(destinationCell));
+    }
+
+    @Test
+    void testEatWhileThereIsSacrificedPiece() {
+        // given
+        var enemyPiece = mock(Piece.class);
+        given(enemyPiece.getColor()).willReturn(Color.BLACK);
+
+        var cellWithEnemyPiece = mock(Cell.class);
+        ReflectionTestUtils.setField(cellWithEnemyPiece, "piece", enemyPiece);
+        given(cellWithEnemyPiece.isEmpty()).willReturn(Boolean.FALSE);
+        given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
+        willCallRealMethod().given(cellWithEnemyPiece).setPiece(isNull());
+
+        given(enemyPiece.getCell()).willReturn(cellWithEnemyPiece);
+
+        var board = mock(Board.class);
+        given(board.getCell(eq(3), eq(3))).willReturn(cellWithEnemyPiece);
+
+        ReflectionTestUtils.setField(sourceCell, "piece", underTest);
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getBoard()).willReturn(board);
+        willCallRealMethod().given(sourceCell).setPiece(isNull());
+
+        ReflectionTestUtils.setField(destinationCell, "piece", null);
+        given(destinationCell.getRow()).willReturn(4);
+        given(destinationCell.getColumn()).willReturn(4);
+        willCallRealMethod().given(destinationCell).setPiece(eq(underTest));
+
+        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).eat(eq(destinationCell));
+
+        // when
+        underTest.eat(destinationCell);
+
+        // then
+        var sourceCellPiece = ReflectionTestUtils.getField(sourceCell, "piece");
+        assertThat(sourceCellPiece).isNull();
+
+        var sacrificedPiece = ReflectionTestUtils.getField(cellWithEnemyPiece, "piece");
+        assertThat(sacrificedPiece).isNull();
 
         var destinationCellPiece = ReflectionTestUtils.getField(destinationCell, "piece");
         assertThat(destinationCellPiece).isSameAs(underTest);

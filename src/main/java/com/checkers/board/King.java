@@ -1,10 +1,11 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.MustEatException;
-import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CannotEatException;
-import com.checkers.utils.BoardUtils;
+import com.checkers.exceptions.CannotMoveException;
+import com.checkers.exceptions.MustEatException;
 import com.checkers.utils.Color;
+
+import java.util.Optional;
 
 public class King extends Piece {
 
@@ -200,24 +201,52 @@ public class King extends Piece {
     }
 
     @Override
-    public void eat(Cell to) {
-        if (!isCanEat()) {
-            throw new CannotEatException(cell, to);
+    public void eat(Cell destinationCell) {
+        if (!canEat) {
+            throw new CannotEatException(cell, destinationCell);
         }
 
-        if (!isAbleToEatTo(to)) {
-            throw new CannotEatException(cell, to);
+        if (!isAbleToEatTo(destinationCell)) {
+            throw new CannotEatException(cell, destinationCell);
         }
 
-        Cell from = getCell();
-        to.setPiece(this);
-        from.setPiece(null);
-        byte signRow = (byte) ((to.getRow() - from.getRow()) / Math.abs(to.getRow() - from.getRow()));
-        byte signCol = (byte) ((to.getColumn() - from.getColumn()) / Math.abs(to.getColumn() - from.getColumn()));
-        int i = 1;
-        while (from.getRow() + signRow * i != to.getRow() && from.getColumn() + signCol * i != to.getColumn()) {
-            from.getNear(signRow * i, signCol * i).setPiece(null);
-            i++;
+        var sacrificedPiece = getSacrificedPiece(destinationCell)
+                .orElseThrow(() -> new CannotEatException(cell, destinationCell));
+        var sacrificedPieceCell = sacrificedPiece.getCell();
+        sacrificedPieceCell.setPiece(null);
+        destinationCell.setPiece(this);
+        cell.setPiece(null);
+    }
+
+    private Optional<Piece> getSacrificedPiece(Cell destinationCell) {
+        var destinationRow = destinationCell.getRow();
+        var destinationColumn = destinationCell.getColumn();
+        var sourceRow = cell.getRow();
+        var sourceColumn = cell.getColumn();
+
+        var signRow = (int) Math.signum(destinationRow - sourceRow);
+        var signCol = (int) Math.signum(destinationColumn - sourceColumn);
+
+        var board = cell.getBoard();
+        for (var i = 1; ; i++) {
+            var currentRow = sourceRow + signRow * i;
+            var currentColumn = sourceColumn + signCol * i;
+
+            if (currentRow == destinationRow && currentColumn == destinationColumn) {
+                return Optional.empty();
+            }
+
+            var currentCell = board.getCell(currentRow, currentColumn);
+            if (currentCell.isEmpty()) {
+                continue;
+            }
+
+            var piece = currentCell.getPiece();
+            if (piece.getColor() == color) {
+                return Optional.empty();
+            } else {
+                return Optional.of(piece);
+            }
         }
     }
 

@@ -145,4 +145,16 @@ public class Board {
     public boolean isGaming() {
         return whitePieces != 0 && blackPieces != 0;
     }
+
+    public void decrementWhitePieceCount() {
+        if (whitePieces > 0) {
+            whitePieces--;
+        }
+    }
+
+    public void decrementBlackPieceCount() {
+        if (blackPieces > 0) {
+            blackPieces--;
+        }
+    }
 }
