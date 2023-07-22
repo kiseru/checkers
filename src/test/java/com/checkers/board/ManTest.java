@@ -530,4 +530,28 @@ class ManTest {
         // then
         assertThat(man.getColor()).isEqualTo(Color.BLACK);
     }
+
+    @Test
+    void testIsMan() {
+        // given
+        given(underTest.isMan()).willCallRealMethod();
+
+        // when
+        var actual = underTest.isMan();
+
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void testIsKing() {
+        // given
+        given(underTest.isKing()).willCallRealMethod();
+
+        // when
+        var actual = underTest.isKing();
+
+        // then
+        assertThat(actual).isFalse();
+    }
 }
