@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 
@@ -548,5 +547,26 @@ class KingTest {
 
         var destinationCellPiece = ReflectionTestUtils.getField(destinationCell, "piece");
         assertThat(destinationCellPiece).isSameAs(underTest);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testToStringSource")
+    void testToString(Color color, String expected) {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", color);
+        given(underTest.toString()).willCallRealMethod();
+
+        // when
+        var actual = underTest.toString();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private static Arguments[] testToStringSource() {
+        return new Arguments[] {
+                Arguments.of(Color.WHITE, "#"),
+                Arguments.of(Color.BLACK, "&")
+        };
     }
 }
