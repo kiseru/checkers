@@ -252,7 +252,7 @@ public class King extends Piece {
 
     @Override
     public String toString() {
-        if (getColor() == Color.BLACK) {
+        if (color == Color.BLACK) {
             return "&";
         } else {
             return "#";
