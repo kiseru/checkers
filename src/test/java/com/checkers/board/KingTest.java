@@ -16,10 +16,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 
@@ -548,5 +549,207 @@ class KingTest {
 
         var destinationCellPiece = ReflectionTestUtils.getField(destinationCell, "piece");
         assertThat(destinationCellPiece).isSameAs(underTest);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testToStringSource")
+    void testToString(Color color, String expected) {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", color);
+        given(underTest.toString()).willCallRealMethod();
+
+        // when
+        var actual = underTest.toString();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private static Arguments[] testToStringSource() {
+        return new Arguments[] {
+                Arguments.of(Color.WHITE, "#"),
+                Arguments.of(Color.BLACK, "&")
+        };
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileThereIsNoMoves() {
+        // given
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.FALSE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByFirstDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveBySecondDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByThirdDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByForthDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(targetCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfEatWhileThereIsNoMoves() {
+        // given
+        given(sourceCell.getRow()).willReturn(4);
+        given(sourceCell.getColumn()).willReturn(4);
+        given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfEat();
+
+        // when
+        underTest.analyzeAbilityOfEat();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        assertThat(actual).isEqualTo(Boolean.FALSE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testAnalyzeAbilityOfEatWhileCanMoveByOneDirectionSource")
+    void testAnalyzeAbilityOfEatWhileCanMoveByOneDirection(int diffRow, int diffColumn) {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(4);
+        given(sourceCell.getColumn()).willReturn(4);
+        given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(diffRow), eq(diffColumn))).willReturn(targetCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToEatTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfEat();
+
+        // when
+        underTest.analyzeAbilityOfEat();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    private static Arguments[] testAnalyzeAbilityOfEatWhileCanMoveByOneDirectionSource() {
+        return new Arguments[] {
+                Arguments.of(2, 2),
+                Arguments.of(2, -2),
+                Arguments.of(-2, -2),
+                Arguments.of(-2, 2)
+        };
     }
 }
