@@ -4,6 +4,7 @@ import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CellIsBusyException;
 import com.checkers.exceptions.CellIsEmptyException;
+import com.checkers.user.User;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,16 +12,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
@@ -308,5 +314,45 @@ public class BoardTest {
                 Arguments.of(12, 11),
                 Arguments.of(0, 0),
         };
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testAnalyzeWhileCannotEat(boolean isCanEat) {
+        // given
+        var user = mock(User.class);
+        given(user.getColor()).willReturn(Color.WHITE);
+        willCallRealMethod().given(user).setCanEat(anyBoolean());
+
+        var whiteCell = mock(Cell.class);
+        given(whiteCell.getColor()).willReturn(Color.WHITE);
+
+        var emptyCell = mock(Cell.class);
+        given(emptyCell.getPiece()).willReturn(null);
+
+        var playerPiece = mock(Piece.class);
+        given(playerPiece.getColor()).willReturn(Color.WHITE);
+        given(playerPiece.isCanEat()).willReturn(isCanEat);
+
+        var cellWithPlayerPiece = mock(Cell.class);
+        given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
+
+        var board = mock(Board.class);
+        var matrix = new Cell[8][8];
+        for (Cell[] cells : matrix) {
+            Arrays.fill(cells, emptyCell);
+        }
+        ReflectionTestUtils.setField(board, "board", matrix);
+        given(board.getCell(anyInt(), anyInt())).willReturn(emptyCell);
+        given(board.getCell(eq(1), eq(2))).willReturn(whiteCell);
+        given(board.getCell(eq(1), eq(3))).willReturn(cellWithPlayerPiece);
+        willCallRealMethod().given(board).analyze(eq(user));
+
+        // when
+        board.analyze(user);
+
+        // then
+        var actual = ReflectionTestUtils.getField(user, "canEat");
+        assertThat(actual).isEqualTo(isCanEat);
     }
 }
