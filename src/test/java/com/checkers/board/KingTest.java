@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
@@ -569,4 +570,132 @@ class KingTest {
                 Arguments.of(Color.BLACK, "&")
         };
     }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileThereIsNoMoves() {
+        // given
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.FALSE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByFirstDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveBySecondDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByThirdDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(targetCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    void testAnalyzeAbilityOfMoveWhileCanMoveByForthDirection() {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(2);
+        given(sourceCell.getColumn()).willReturn(2);
+        given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(targetCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfMove();
+
+        // when
+        underTest.analyzeAbilityOfMove();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
 }
