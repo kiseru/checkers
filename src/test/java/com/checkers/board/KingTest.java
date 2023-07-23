@@ -17,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
@@ -698,4 +699,57 @@ class KingTest {
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 
+    @Test
+    void testAnalyzeAbilityOfEatWhileThereIsNoMoves() {
+        // given
+        given(sourceCell.getRow()).willReturn(4);
+        given(sourceCell.getColumn()).willReturn(4);
+        given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfEat();
+
+        // when
+        underTest.analyzeAbilityOfEat();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        assertThat(actual).isEqualTo(Boolean.FALSE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testAnalyzeAbilityOfEatWhileCanMoveByOneDirectionSource")
+    void testAnalyzeAbilityOfEatWhileCanMoveByOneDirection(int diffRow, int diffColumn) {
+        // given
+        var targetCell = mock(Cell.class);
+
+        given(sourceCell.getRow()).willReturn(4);
+        given(sourceCell.getColumn()).willReturn(4);
+        given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
+        given(sourceCell.getNear(eq(diffRow), eq(diffColumn))).willReturn(targetCell);
+
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        given(underTest.isAbleToEatTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
+        willCallRealMethod().given(underTest).analyzeAbilityOfEat();
+
+        // when
+        underTest.analyzeAbilityOfEat();
+
+        // then
+        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        assertThat(actual).isEqualTo(Boolean.TRUE);
+    }
+
+    private static Arguments[] testAnalyzeAbilityOfEatWhileCanMoveByOneDirectionSource() {
+        return new Arguments[] {
+                Arguments.of(2, 2),
+                Arguments.of(2, -2),
+                Arguments.of(-2, -2),
+                Arguments.of(-2, 2)
+        };
+    }
 }
