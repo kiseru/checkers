@@ -3,6 +3,7 @@ package com.checkers.user;
 import com.checkers.board.Cell;
 import com.checkers.board.Board;
 import com.checkers.exceptions.*;
+import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,58 +24,48 @@ public class User {
     @Getter
     private boolean canEat = false;
 
-    public void makeTurn(String from, String to) throws CheckersException {
-        Cell cellFrom = getCell(from);
-        if (cellFrom.getPiece() == null) {
-            throw new PieceNotFoundException(cellFrom);
+    public void makeTurn(String from, String to) {
+        Cell sourceCell = convertCell(from);
+        if (sourceCell.isEmpty()) {
+            throw new CellException("Cell '%s' is empty".formatted(sourceCell));
         }
 
-        if (cellFrom.getPiece().getColor() != color) {
-            throw new YourPieceNotFoundException();
+        var piece = sourceCell.getPiece();
+        if (piece.getColor() != color) {
+            throw new PieceException("Piece in '%s' isn't yours".formatted(sourceCell));
         }
 
-        Cell cellTo = getCell(to);
-        if (cellTo.getPiece() != null) {
-            throw new EmptyCellNotFoundException(cellTo);
+        Cell destinationCell = convertCell(to);
+        if (!destinationCell.isEmpty()) {
+            throw new CellException("Cell '%s' isn't empty".formatted(destinationCell));
         }
 
         boolean wasEating = false;
         board.analyze(this);
         if (canEat) {
-            board.eat(cellFrom, cellTo);
+            board.eat(sourceCell, destinationCell);
             wasEating = true;
         } else {
-            board.move(cellFrom, cellTo);
+            board.move(sourceCell, destinationCell);
         }
         board.analyze(this);
         if (!wasEating) {
-            this.canEat = false;
+            canEat = false;
         }
     }
 
-    private Cell getCell(String cell) throws CheckersException {
+    private Cell convertCell(String cell) {
         if (cell.length() != 2) {
-            throw new CellDoesNotExistException(cell);
+            throw new ConvertCellException("Can't convert '%s' to cell".formatted(cell));
         }
 
-        int col, row;
-        if (cell.charAt(0) >= 'a' && cell.charAt(0) <= 'h') {
-            col = cell.charAt(0) - 'a' + 1;
-        } else {
-            throw new CellDoesNotExistException(cell);
-        }
-
-        if (cell.charAt(1) >= '1' && cell.charAt(1) <= '8') {
-            row = cell.charAt(1) - '1' + 1;
-        } else {
-            throw new CellDoesNotExistException(cell);
-        }
-
-        return board.getCell(row, col);
+        var column = BoardUtils.convertColumn(cell.charAt(0));
+        var row = BoardUtils.convertRow(cell.charAt(1));
+        return board.getCell(row, column);
     }
 
     @Override
     public String toString() {
-        return getName();
+        return name;
     }
 }
