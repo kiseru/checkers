@@ -196,8 +196,8 @@ public class King extends Piece {
             throw new CannotMoveException(cell, destinationCell);
         }
 
-        destinationCell.setPiece(this);
         cell.setPiece(null);
+        destinationCell.setPiece(this);
     }
 
     @Override
@@ -213,9 +213,9 @@ public class King extends Piece {
         var sacrificedPiece = getSacrificedPiece(destinationCell)
                 .orElseThrow(() -> new CannotEatException(cell, destinationCell));
         var sacrificedPieceCell = sacrificedPiece.getCell();
+        cell.setPiece(null);
         sacrificedPieceCell.setPiece(null);
         destinationCell.setPiece(this);
-        cell.setPiece(null);
     }
 
     private Optional<Piece> getSacrificedPiece(Cell destinationCell) {
