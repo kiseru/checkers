@@ -3,11 +3,9 @@ package com.checkers.user;
 import com.checkers.board.Board;
 import com.checkers.board.Cell;
 import com.checkers.board.Piece;
-import com.checkers.exceptions.CellDoesNotExistException;
-import com.checkers.exceptions.CheckersException;
-import com.checkers.exceptions.EmptyCellNotFoundException;
-import com.checkers.exceptions.PieceNotFoundException;
-import com.checkers.exceptions.YourPieceNotFoundException;
+import com.checkers.exceptions.ConvertCellException;
+import com.checkers.exceptions.CellException;
+import com.checkers.exceptions.PieceException;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +42,7 @@ class UserTest {
     @ValueSource(strings = {"a", "aaa", "`2", "i9", "a0", "a9"})
     void testMakeTurnWhileSourceCellNameIsNotValid(String from) {
         // when & then
-        assertThatExceptionOfType(CellDoesNotExistException.class)
+        assertThatExceptionOfType(ConvertCellException.class)
                 .isThrownBy(() -> underTest.makeTurn(from, "a2"));
     }
 
@@ -52,12 +50,12 @@ class UserTest {
     void testMakeTurnWhileSourceCellHasNotPiece() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.getPiece()).willReturn(null);
+        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(emptyCell);
 
         // when & then
-        assertThatExceptionOfType(PieceNotFoundException.class)
+        assertThatExceptionOfType(CellException.class)
                 .isThrownBy(() -> underTest.makeTurn("b2", "c3"));
     }
 
@@ -68,12 +66,13 @@ class UserTest {
         given(piece.getColor()).willReturn(Color.BLACK);
 
         var sourceCell = mock(Cell.class);
+        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
 
         // when & then
-        assertThatExceptionOfType(YourPieceNotFoundException.class)
+        assertThatExceptionOfType(PieceException.class)
                 .isThrownBy(() -> underTest.makeTurn("b2", "c3"));
     }
 
@@ -90,7 +89,7 @@ class UserTest {
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
 
         // when & then
-        assertThatExceptionOfType(CellDoesNotExistException.class)
+        assertThatExceptionOfType(ConvertCellException.class)
                 .isThrownBy(() -> underTest.makeTurn("b2", to));
     }
 
@@ -101,16 +100,17 @@ class UserTest {
         given(piece.getColor()).willReturn(Color.WHITE);
 
         var sourceCell = mock(Cell.class);
+        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.getPiece()).willReturn(piece);
+        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
 
         // when & then
-        assertThatExceptionOfType(EmptyCellNotFoundException.class)
+        assertThatExceptionOfType(CellException.class)
                 .isThrownBy(() -> underTest.makeTurn("b2", "c3"));
     }
 
@@ -124,7 +124,7 @@ class UserTest {
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.getPiece()).willReturn(null);
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
@@ -136,7 +136,7 @@ class UserTest {
     }
 
     @Test
-    void testMakeTurnWhileCannotEat() throws CheckersException {
+    void testMakeTurnWhileCannotEat() {
         // given
         var piece = mock(Piece.class);
         given(piece.getColor()).willReturn(Color.WHITE);
@@ -145,7 +145,7 @@ class UserTest {
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.getPiece()).willReturn(null);
+        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
