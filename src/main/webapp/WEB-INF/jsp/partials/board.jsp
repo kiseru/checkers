@@ -6,12 +6,12 @@
 <%@ page import="com.checkers.utils.Color" %>
 
 <c:set var="boardLength" value="${fn:length(board)}"/>
-<c:forEach var="i" begin="0" end="${boardLength}" step="1">
+<c:forEach var="i" begin="0" end="7" step="1">
     <div class="row">
-        <c:forEach var="cell" items="${board[boardLength - i - 1]}">
-            <c:set var="color" value="${cell.getColor()}"/>
+        <c:forEach var="j" begin="0" end="7" step="1">
+            <c:set var="cell" value="${board[7 - i][j]}"/>
 
-            <c:if test="${color == Color.BLACK}">
+            <c:if test="${(7 - i + j) % 2 == 0}">
                 <div id="${cell}" class="cell black-cell">
                     <c:if test="${!cell.isEmpty()}">
                         <c:set var="piece" value="${cell.getPiece()}"/>
@@ -39,7 +39,7 @@
                 </div>
             </c:if>
 
-            <c:if test="${color == Color.WHITE}">
+            <c:if test="${(7 - i + j) % 2 != 0}">
                 <div class="cell white-cell"></div>
             </c:if>
         </c:forEach>
