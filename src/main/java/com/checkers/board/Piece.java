@@ -2,10 +2,8 @@ package com.checkers.board;
 
 import com.checkers.utils.Color;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@RequiredArgsConstructor
 @Getter
 @Setter
 public abstract class Piece {
@@ -17,6 +15,10 @@ public abstract class Piece {
     protected boolean canMove;
 
     protected Cell cell;
+
+    public Piece(Color color) {
+        this.color = color;
+    }
 
     public abstract boolean isAbleToMoveTo(Cell to);
 
