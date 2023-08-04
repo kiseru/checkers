@@ -18,9 +18,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -47,6 +48,7 @@ class KingTest {
         // given
         given(sourceCell.diff(eq(destinationCell))).willReturn(-1);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -61,6 +63,7 @@ class KingTest {
         // given
         given(sourceCell.diff(eq(destinationCell))).willReturn(1);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -80,6 +83,7 @@ class KingTest {
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(3);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -109,6 +113,7 @@ class KingTest {
         given(destinationCell.getRow()).willReturn(6);
         given(destinationCell.getColumn()).willReturn(6);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -136,6 +141,7 @@ class KingTest {
         given(destinationCell.getRow()).willReturn(6);
         given(destinationCell.getColumn()).willReturn(6);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -148,6 +154,7 @@ class KingTest {
     @Test
     void isAbleToEatToWhileDestinationCellIsNotEmpty() {
         // given
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -173,6 +180,7 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(sourceColumn);
         given(sourceCell.diff(eq(destinationCell))).willReturn(1);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -198,6 +206,7 @@ class KingTest {
         given(sourceCell.getRow()).willReturn(2);
         given(sourceCell.getColumn()).willReturn(2);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -223,6 +232,7 @@ class KingTest {
         given(sourceCell.diff(eq(destinationCell))).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -236,7 +246,7 @@ class KingTest {
     void testIsAbleToEatToWhileThereIsPlayerPieceBetweenSourceAndDestination() {
         // given
         var playerPiece = mock(Piece.class);
-        ReflectionTestUtils.setField(playerPiece, "color", Color.WHITE);
+        given(playerPiece.getColor()).willReturn(Color.WHITE);
 
         var cellWithPlayerPiece = mock(Cell.class);
         given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
@@ -252,7 +262,8 @@ class KingTest {
         given(sourceCell.diff(eq(destinationCell))).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
-        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.getColor()).willReturn(Color.WHITE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -266,7 +277,7 @@ class KingTest {
     void testIsAbleToEatToWhileThereAreTwoEnemyPiecesBetweenSourceAndDestination() {
         // given
         var enemyPiece = mock(Piece.class);
-        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
+        given(enemyPiece.getColor()).willReturn(Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
@@ -283,7 +294,8 @@ class KingTest {
         given(sourceCell.diff(eq(destinationCell))).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
-        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.getColor()).willReturn(Color.WHITE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -297,7 +309,7 @@ class KingTest {
     void testIsAbleToEatToWhileThereIsOneEnemyPieceBetweenSourceAndDestination() {
         // given
         var enemyPiece = mock(Piece.class);
-        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
+        given(enemyPiece.getColor()).willReturn(Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
@@ -313,7 +325,8 @@ class KingTest {
         given(sourceCell.diff(eq(destinationCell))).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
-        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.getColor()).willReturn(Color.WHITE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -350,7 +363,7 @@ class KingTest {
     @Test
     void testMoveWhileCanEat() {
         // given
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // when & then
@@ -361,8 +374,8 @@ class KingTest {
     @Test
     void testMoveWhileCannotMove() {
         // given
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
-        ReflectionTestUtils.setField(underTest, "canMove", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "isCanEat", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "isCanMove", Boolean.FALSE);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // when & then
@@ -373,8 +386,8 @@ class KingTest {
     @Test
     void testMoveWhileCannotMoveToDestination() {
         // given
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
-        ReflectionTestUtils.setField(underTest, "canMove", Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
@@ -387,13 +400,14 @@ class KingTest {
     void testMoveWhileCanMoveToDestination() {
         // given
         ReflectionTestUtils.setField(sourceCell, "piece", underTest);
-        willCallRealMethod().given(sourceCell).setPiece(isNull());
+        willCallRealMethod().given(sourceCell).setPiece(any());
 
         ReflectionTestUtils.setField(destinationCell, "piece", null);
-        willCallRealMethod().given(destinationCell).setPiece(eq(underTest));
+        willCallRealMethod().given(destinationCell).setPiece(any());
 
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
-        ReflectionTestUtils.setField(underTest, "canMove", Boolean.TRUE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isCanEat()).willReturn(Boolean.FALSE);
+        given(underTest.isCanMove()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
@@ -411,7 +425,7 @@ class KingTest {
     @Test
     void testEatWhileCannotEat() {
         // given
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "isCanEat", Boolean.FALSE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // when & then
@@ -422,7 +436,7 @@ class KingTest {
     @Test
     void testEatWhileCannotEatToDestination() {
         // given
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
@@ -446,7 +460,8 @@ class KingTest {
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
 
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
@@ -459,7 +474,7 @@ class KingTest {
     void testEatWhileThereIsPlayerPiece() {
         // given
         var playerPiece = mock(Piece.class);
-        ReflectionTestUtils.setField(playerPiece, "color", Color.WHITE);
+        given(playerPiece.getColor()).willReturn(Color.WHITE);
 
         var cellWithPlayerPiece = mock(Cell.class);
         given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
@@ -474,8 +489,9 @@ class KingTest {
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
 
-        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.getColor()).willReturn(Color.WHITE);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
@@ -488,14 +504,14 @@ class KingTest {
     void testEatWhileThereIsSacrificedPiece() {
         // given
         var enemyPiece = mock(Piece.class);
-        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
+        given(enemyPiece.getColor()).willReturn(Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
         ReflectionTestUtils.setField(cellWithEnemyPiece, "piece", enemyPiece);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
-        willCallRealMethod().given(cellWithEnemyPiece).setPiece(isNull());
+        willCallRealMethod().given(cellWithEnemyPiece).setPiece(any());
 
-        ReflectionTestUtils.setField(enemyPiece, "cell", cellWithEnemyPiece);
+        given(enemyPiece.getCell()).willReturn(cellWithEnemyPiece);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(cellWithEnemyPiece);
@@ -504,15 +520,16 @@ class KingTest {
         given(sourceCell.getRow()).willReturn(2);
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
-        willCallRealMethod().given(sourceCell).setPiece(isNull());
+        willCallRealMethod().given(sourceCell).setPiece(any());
 
         ReflectionTestUtils.setField(destinationCell, "piece", null);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
-        willCallRealMethod().given(destinationCell).setPiece(eq(underTest));
+        willCallRealMethod().given(destinationCell).setPiece(any());
 
-        ReflectionTestUtils.setField(underTest, "color", Color.WHITE);
-        ReflectionTestUtils.setField(underTest, "canEat", Boolean.TRUE);
+        given(underTest.getCell()).willReturn(sourceCell);
+        given(underTest.getColor()).willReturn(Color.WHITE);
+        given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
@@ -534,7 +551,7 @@ class KingTest {
     @MethodSource("testToStringSource")
     void testToString(Color color, String expected) {
         // given
-        ReflectionTestUtils.setField(underTest, "color", color);
+        given(underTest.getColor()).willReturn(color);
         given(underTest.toString()).willCallRealMethod();
 
         // when
@@ -561,7 +578,7 @@ class KingTest {
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
@@ -569,7 +586,7 @@ class KingTest {
         underTest.analyzeAbilityOfMove();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanMove");
         assertThat(actual).isEqualTo(Boolean.FALSE);
     }
 
@@ -582,15 +599,16 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getNear(eq(1), eq(1))).willReturn(targetCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
         underTest.analyzeAbilityOfMove();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanMove");
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 
@@ -604,16 +622,17 @@ class KingTest {
         given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(1), eq(-1))).willReturn(targetCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
         underTest.analyzeAbilityOfMove();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanMove");
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 
@@ -628,16 +647,17 @@ class KingTest {
         given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(targetCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
         underTest.analyzeAbilityOfMove();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanMove");
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 
@@ -653,16 +673,17 @@ class KingTest {
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(1))).willReturn(targetCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
         underTest.analyzeAbilityOfMove();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canMove");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanMove");
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 
@@ -673,7 +694,7 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(4);
         given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).analyzeAbilityOfEat();
 
@@ -681,7 +702,7 @@ class KingTest {
         underTest.analyzeAbilityOfEat();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanEat");
         assertThat(actual).isEqualTo(Boolean.FALSE);
     }
 
@@ -697,16 +718,17 @@ class KingTest {
         given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
         given(sourceCell.getNear(eq(diffRow), eq(diffColumn))).willReturn(targetCell);
 
-        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToEatTo(eq(targetCell))).willReturn(Boolean.TRUE);
+        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfEat();
 
         // when
         underTest.analyzeAbilityOfEat();
 
         // then
-        var actual = ReflectionTestUtils.getField(underTest, "canEat");
+        var actual = ReflectionTestUtils.getField(underTest, "isCanEat");
         assertThat(actual).isEqualTo(Boolean.TRUE);
     }
 

@@ -16,7 +16,7 @@ class Man(color: Color) : Piece(color) {
 
         val board = cell.board
         val column = cell.column
-        canMove = sequenceOf(column - 1, column + 1)
+        isCanMove = sequenceOf(column - 1, column + 1)
             .filter { BoardUtils.isCoordinateExists(it) }
             .map { board.getCell(nextRow, it) }
             .any { isAbleToMoveTo(it) }
@@ -33,7 +33,7 @@ class Man(color: Color) : Piece(color) {
         val column = cell.column
         val row = cell.row
         val board = cell.board
-        canEat = sequenceOf(row - 2, row + 2)
+        isCanEat = sequenceOf(row - 2, row + 2)
             .filter { BoardUtils.isCoordinateExists(it) }
             .flatMap { nextRow ->
                 sequenceOf(column - 2, column + 2)
@@ -85,11 +85,11 @@ class Man(color: Color) : Piece(color) {
     }
 
     override fun move(destinationCell: Cell) {
-        if (canEat) {
+        if (isCanEat) {
             throw MustEatException()
         }
 
-        if (!canMove) {
+        if (!isCanMove) {
             throw CannotMoveException(cell, destinationCell)
         }
 
@@ -102,7 +102,7 @@ class Man(color: Color) : Piece(color) {
     }
 
     override fun eat(destinationCell: Cell) {
-        if (!canEat || !isAbleToEatTo(destinationCell)) {
+        if (!isCanEat || !isAbleToEatTo(destinationCell)) {
             throw CannotEatException(cell, destinationCell)
         }
 

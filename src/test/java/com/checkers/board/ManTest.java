@@ -196,7 +196,7 @@ class ManTest {
     void testIsAbleToEatToWhileSacrificePieceHasTheSameColor() {
         // given
         var sacrificePiece = mock(Man.class);
-        ReflectionTestUtils.setField(sacrificePiece, "color", Color.WHITE);
+        given(sacrificePiece.getColor()).willReturn(Color.WHITE);
 
         var cellWithSacrifice = mock(Cell.class);
         given(cellWithSacrifice.getPiece()).willReturn(sacrificePiece);
