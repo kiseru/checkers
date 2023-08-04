@@ -11,7 +11,7 @@ import kotlin.math.sign
 class King(color: Color) : Piece(color) {
 
     override fun analyzeAbilityOfMove() {
-        canMove = generateSequence(1) { it + 1 }
+        isCanMove = generateSequence(1) { it + 1 }
             .take(7)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
             .filter { BoardUtils.isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
@@ -19,11 +19,11 @@ class King(color: Color) : Piece(color) {
     }
 
     override fun move(destinationCell: Cell) {
-        if (canEat) {
+        if (isCanEat) {
             throw MustEatException()
         }
 
-        if (!canMove || !isAbleToMoveTo(destinationCell)) {
+        if (!isCanMove || !isAbleToMoveTo(destinationCell)) {
             throw CannotMoveException(cell, destinationCell)
         }
 
@@ -70,7 +70,7 @@ class King(color: Color) : Piece(color) {
     }
 
     override fun analyzeAbilityOfEat() {
-        canEat = generateSequence(2) { it + 1 }
+        isCanEat = generateSequence(2) { it + 1 }
             .take(6)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
             .filter { BoardUtils.isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
@@ -78,7 +78,7 @@ class King(color: Color) : Piece(color) {
     }
 
     override fun eat(destinationCell: Cell) {
-        if (!canEat || !isAbleToEatTo(destinationCell)) {
+        if (!isCanEat || !isAbleToEatTo(destinationCell)) {
             throw CannotEatException(cell, destinationCell)
         }
 
