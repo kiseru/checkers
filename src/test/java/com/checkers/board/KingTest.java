@@ -61,8 +61,6 @@ class KingTest {
         // given
         given(sourceCell.diff(eq(destinationCell))).willReturn(1);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
-
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -79,7 +77,6 @@ class KingTest {
         given(sourceCell.getRow()).willReturn(2);
         given(sourceCell.getColumn()).willReturn(2);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(3);
 
@@ -96,10 +93,9 @@ class KingTest {
     void isAbleToMoveToWhileThereIsPieceBetweenSourceCellAndDestinationCell() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var notEmptyCell = mock(Cell.class);
-        given(notEmptyCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(notEmptyCell.getPiece()).willReturn(mock(Piece.class));
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(emptyCell);
@@ -110,7 +106,6 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(6);
         given(destinationCell.getColumn()).willReturn(6);
 
@@ -127,7 +122,6 @@ class KingTest {
     void isAbleToMoveToWhileThereIsNoPieceBetweenSourceCellAndDestinationCell() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(emptyCell);
@@ -139,7 +133,6 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getBoard()).willReturn(board);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(6);
         given(destinationCell.getColumn()).willReturn(6);
 
@@ -155,8 +148,6 @@ class KingTest {
     @Test
     void isAbleToEatToWhileDestinationCellIsNotEmpty() {
         // given
-        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
-
         given(underTest.isAbleToEatTo(eq(destinationCell))).willCallRealMethod();
 
         // when
@@ -175,7 +166,6 @@ class KingTest {
             int destinationColumn
     ) {
         // given
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(destinationRow);
         given(destinationCell.getColumn()).willReturn(destinationColumn);
 
@@ -202,7 +192,6 @@ class KingTest {
     @Test
     void testIsAbleToEatToWhileDestinationCellIsOnOtherDiagonal() {
         // given
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(3);
 
@@ -222,12 +211,10 @@ class KingTest {
     void testIsAbleToEatToWhileThereIsNoPieceBetweenSourceAndDestination() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(emptyCell);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
 
@@ -249,16 +236,14 @@ class KingTest {
     void testIsAbleToEatToWhileThereIsPlayerPieceBetweenSourceAndDestination() {
         // given
         var playerPiece = mock(Piece.class);
-        given(playerPiece.getColor()).willReturn(Color.WHITE);
+        ReflectionTestUtils.setField(playerPiece, "color", Color.WHITE);
 
         var cellWithPlayerPiece = mock(Cell.class);
-        given(cellWithPlayerPiece.isEmpty()).willReturn(Boolean.FALSE);
         given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(cellWithPlayerPiece);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
 
@@ -281,17 +266,15 @@ class KingTest {
     void testIsAbleToEatToWhileThereAreTwoEnemyPiecesBetweenSourceAndDestination() {
         // given
         var enemyPiece = mock(Piece.class);
-        given(enemyPiece.getColor()).willReturn(Color.BLACK);
+        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
-        given(cellWithEnemyPiece.isEmpty()).willReturn(Boolean.FALSE);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(cellWithEnemyPiece);
         given(board.getCell(eq(4), eq(4))).willReturn(cellWithEnemyPiece);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(5);
         given(destinationCell.getColumn()).willReturn(5);
 
@@ -314,16 +297,14 @@ class KingTest {
     void testIsAbleToEatToWhileThereIsOneEnemyPieceBetweenSourceAndDestination() {
         // given
         var enemyPiece = mock(Piece.class);
-        given(enemyPiece.getColor()).willReturn(Color.BLACK);
+        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
-        given(cellWithEnemyPiece.isEmpty()).willReturn(Boolean.FALSE);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(cellWithEnemyPiece);
 
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
         given(destinationCell.getRow()).willReturn(4);
         given(destinationCell.getColumn()).willReturn(4);
 
@@ -454,7 +435,6 @@ class KingTest {
     void testEatWhileThereIsNoSacrificedPiece() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(emptyCell);
@@ -479,10 +459,9 @@ class KingTest {
     void testEatWhileThereIsPlayerPiece() {
         // given
         var playerPiece = mock(Piece.class);
-        given(playerPiece.getColor()).willReturn(Color.WHITE);
+        ReflectionTestUtils.setField(playerPiece, "color", Color.WHITE);
 
         var cellWithPlayerPiece = mock(Cell.class);
-        given(cellWithPlayerPiece.isEmpty()).willReturn(Boolean.FALSE);
         given(cellWithPlayerPiece.getPiece()).willReturn(playerPiece);
 
         var board = mock(Board.class);
@@ -509,15 +488,14 @@ class KingTest {
     void testEatWhileThereIsSacrificedPiece() {
         // given
         var enemyPiece = mock(Piece.class);
-        given(enemyPiece.getColor()).willReturn(Color.BLACK);
+        ReflectionTestUtils.setField(enemyPiece, "color", Color.BLACK);
 
         var cellWithEnemyPiece = mock(Cell.class);
         ReflectionTestUtils.setField(cellWithEnemyPiece, "piece", enemyPiece);
-        given(cellWithEnemyPiece.isEmpty()).willReturn(Boolean.FALSE);
         given(cellWithEnemyPiece.getPiece()).willReturn(enemyPiece);
         willCallRealMethod().given(cellWithEnemyPiece).setPiece(isNull());
 
-        given(enemyPiece.getCell()).willReturn(cellWithEnemyPiece);
+        ReflectionTestUtils.setField(enemyPiece, "cell", cellWithEnemyPiece);
 
         var board = mock(Board.class);
         given(board.getCell(eq(3), eq(3))).willReturn(cellWithEnemyPiece);
