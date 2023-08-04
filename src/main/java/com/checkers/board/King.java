@@ -3,9 +3,13 @@ package com.checkers.board;
 import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.MustEatException;
+import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class King extends Piece {
 
@@ -15,76 +19,26 @@ public class King extends Piece {
 
     @Override
     public void analyzeAbilityOfMove() {
-        boolean firstDirection = false;
-        boolean secondDirection = false;
-        boolean thirdDirection = false;
-        boolean forthDirection = false;
-        int i = 1;
-        while (getCell().getRow() + i <= 8 && getCell().getColumn() + i <= 8 && !firstDirection) {
-            if (!isAbleToMoveTo(getCell().getNear(i, i))) {
-                firstDirection = false;
-                break;
-            }
-            firstDirection = isAbleToMoveTo(getCell().getNear(i, i));
-            i++;
-        }
-        i = 1;
-        while (getCell().getRow() + i <= 8 && getCell().getColumn() - i >= 1 && !secondDirection) {
-            if (!isAbleToMoveTo(getCell().getNear(i, -i))) {
-                secondDirection = false;
-                break;
-            }
-            secondDirection = isAbleToMoveTo(getCell().getNear(i, -i));
-            i++;
-        }
-        i = 1;
-        while (getCell().getRow() - i >= 1 && getCell().getColumn() + i <= 8 && !thirdDirection) {
-            if (!isAbleToMoveTo(getCell().getNear(-i, i))) {
-                thirdDirection = false;
-                break;
-            }
-            thirdDirection = isAbleToMoveTo(getCell().getNear(-i, i));
-            i++;
-        }
-        i = 1;
-        while (getCell().getRow() - i >= 1 && getCell().getColumn() - i >= 1 && !forthDirection) {
-            if (!isAbleToMoveTo(getCell().getNear(-i, -i))) {
-                forthDirection = false;
-                break;
-            }
-            forthDirection = isAbleToMoveTo(getCell().getNear(-i, -i));
-            i++;
-        }
-        setCanMove(firstDirection || secondDirection || thirdDirection || forthDirection);
+        var row = cell.getRow();
+        var column = cell.getColumn();
+        canMove = IntStream.iterate(1, i -> i + 1)
+                .limit(7)
+                .boxed()
+                .flatMap(i -> Stream.of(Map.entry(i, i), Map.entry(i, -i), Map.entry(-i, -i), Map.entry(-i, i)))
+                .filter(entry -> BoardUtils.isCoordinatesExists(row + entry.getKey(), column + entry.getValue()))
+                .anyMatch(entry -> isAbleToMoveTo(cell.getNear(entry.getKey(), entry.getValue())));
     }
 
     @Override
     public void analyzeAbilityOfEat() {
-        boolean firstDirection = false;
-        boolean secondDirection = false;
-        boolean thirdDirection = false;
-        boolean forthDirection = false;
-        int i = 2;
-        while (getCell().getRow() + i <= 8 && getCell().getColumn() + i <= 8 && !firstDirection) {
-            firstDirection = isAbleToEatTo(getCell().getNear(i, i));
-            i++;
-        }
-        i = 2;
-        while (getCell().getRow() + i <= 8 && getCell().getColumn() - i >= 1 && !secondDirection) {
-            secondDirection = isAbleToEatTo(getCell().getNear(i, -i));
-            i++;
-        }
-        i = 2;
-        while (getCell().getRow() - i >= 1 && getCell().getColumn() + i <= 8 && !thirdDirection) {
-            thirdDirection = isAbleToEatTo(getCell().getNear(-i, i));
-            i++;
-        }
-        i = 2;
-        while (getCell().getRow() - i >= 1 && getCell().getColumn() - i >= 1 && !forthDirection) {
-            forthDirection = isAbleToEatTo(getCell().getNear(-i, -i));
-            i++;
-        }
-        setCanEat(firstDirection || secondDirection || thirdDirection || forthDirection);
+        var row = cell.getRow();
+        var column = cell.getColumn();
+        canEat = IntStream.iterate(2, i -> i + 1)
+                .limit(6)
+                .boxed()
+                .flatMap(i -> Stream.of(Map.entry(i, i), Map.entry(i, -i), Map.entry(-i, -i), Map.entry(-i, i)))
+                .filter(entry -> BoardUtils.isCoordinatesExists(row + entry.getKey(), column + entry.getValue()))
+                .anyMatch(entry -> isAbleToEatTo(cell.getNear(entry.getKey(), entry.getValue())));
     }
 
     @Override

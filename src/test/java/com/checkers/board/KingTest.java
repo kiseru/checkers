@@ -12,11 +12,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -582,9 +583,8 @@ class KingTest {
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
-        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
@@ -603,14 +603,9 @@ class KingTest {
         given(sourceCell.getRow()).willReturn(2);
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getNear(eq(1), eq(1))).willReturn(targetCell);
-        given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
-        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
-        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
-        given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
@@ -630,13 +625,10 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(2);
         given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(1), eq(-1))).willReturn(targetCell);
-        given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
-        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
@@ -657,12 +649,10 @@ class KingTest {
         given(sourceCell.getNear(eq(1), eq(1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(targetCell);
-        given(sourceCell.getNear(eq(-1), eq(1))).willReturn(destinationCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
@@ -685,10 +675,9 @@ class KingTest {
         given(sourceCell.getNear(eq(-1), eq(-1))).willReturn(destinationCell);
         given(sourceCell.getNear(eq(-1), eq(1))).willReturn(targetCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToMoveTo(eq(targetCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(underTest).setCanMove(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfMove();
 
         // when
@@ -706,9 +695,8 @@ class KingTest {
         given(sourceCell.getColumn()).willReturn(4);
         given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
-        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfEat();
 
         // when
@@ -719,6 +707,7 @@ class KingTest {
         assertThat(actual).isEqualTo(Boolean.FALSE);
     }
 
+    @MockitoSettings(strictness = Strictness.WARN)
     @ParameterizedTest
     @MethodSource("testAnalyzeAbilityOfEatWhileCanMoveByOneDirectionSource")
     void testAnalyzeAbilityOfEatWhileCanMoveByOneDirection(int diffRow, int diffColumn) {
@@ -730,10 +719,9 @@ class KingTest {
         given(sourceCell.getNear(anyInt(), anyInt())).willReturn(destinationCell);
         given(sourceCell.getNear(eq(diffRow), eq(diffColumn))).willReturn(targetCell);
 
-        given(underTest.getCell()).willReturn(sourceCell);
+        ReflectionTestUtils.setField(underTest, "cell", sourceCell);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         given(underTest.isAbleToEatTo(eq(targetCell))).willReturn(Boolean.TRUE);
-        willCallRealMethod().given(underTest).setCanEat(anyBoolean());
         willCallRealMethod().given(underTest).analyzeAbilityOfEat();
 
         // when
