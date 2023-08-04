@@ -4,6 +4,10 @@ import com.checkers.exceptions.ConvertCellException;
 
 public final class BoardUtils {
 
+    public static boolean isCoordinatesExists(int row, int column) {
+        return isCoordinateExists(row) && isCoordinateExists(column);
+    }
+
     public static boolean isCoordinateExists(int coordinate) {
         return coordinate >= 1 && coordinate <= 8;
     }
