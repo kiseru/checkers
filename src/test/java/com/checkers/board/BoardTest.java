@@ -4,6 +4,7 @@ import com.checkers.exceptions.CannotEatException;
 import com.checkers.exceptions.CannotMoveException;
 import com.checkers.exceptions.CellIsBusyException;
 import com.checkers.exceptions.CellIsEmptyException;
+import com.checkers.exceptions.CellNotFoundException;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -155,7 +155,6 @@ public class BoardTest {
     void testEatWhileSourceCellIsEmpty() {
         // given
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var destinationCell = mock(Cell.class);
 
@@ -168,10 +167,10 @@ public class BoardTest {
     void testEatWhileDestinationCellIsBusy() {
         // given
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(sourceCell.getPiece()).willReturn(mock(Piece.class));
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(destinationCell.getPiece()).willReturn(mock(Piece.class));
 
         // when & then
         assertThatExceptionOfType(CellIsBusyException.class)
@@ -182,13 +181,11 @@ public class BoardTest {
     void testEatWhileCannotEat() {
         // given
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var piece = mock(Piece.class);
         given(piece.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         // when & then
@@ -200,13 +197,11 @@ public class BoardTest {
     void testEatWhileCanEat() {
         // given
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var piece = mock(Piece.class);
         given(piece.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.TRUE);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         // when
@@ -222,7 +217,6 @@ public class BoardTest {
         var destinationCell = mock(Cell.class);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.TRUE);
 
         // when & then
         assertThatExceptionOfType(CellIsEmptyException.class)
@@ -233,10 +227,10 @@ public class BoardTest {
     void testMoveWhileDestinationCellIsBusy() {
         // given
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(destinationCell.getPiece()).willReturn(mock(Piece.class));
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(sourceCell.getPiece()).willReturn(mock(Piece.class));
 
         // when & then
         assertThatExceptionOfType(CellIsBusyException.class)
@@ -247,13 +241,11 @@ public class BoardTest {
     void testMoveWhileCannotMove() {
         // given
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var piece = mock(Piece.class);
         given(piece.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         // when & then
@@ -265,13 +257,11 @@ public class BoardTest {
     void testMoveWhileCanMove() {
         // given
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         var piece = mock(Piece.class);
         given(piece.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.TRUE);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         // when
@@ -310,14 +300,14 @@ public class BoardTest {
     }
 
     private static Arguments[] testDecrementPieceCountSource() {
-        return new Arguments[]{
+        return new Arguments[] {
                 Arguments.of(12, 11),
                 Arguments.of(0, 0),
         };
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
+    @ValueSource(booleans = { true, false })
     void testAnalyzeWhileCannotEat(boolean isCanEat) {
         // given
         var user = mock(User.class);
@@ -325,7 +315,6 @@ public class BoardTest {
         willCallRealMethod().given(user).setCanEat(anyBoolean());
 
         var whiteCell = mock(Cell.class);
-        given(whiteCell.getColor()).willReturn(Color.WHITE);
 
         var emptyCell = mock(Cell.class);
         given(emptyCell.getPiece()).willReturn(null);
@@ -342,17 +331,60 @@ public class BoardTest {
         for (Cell[] cells : matrix) {
             Arrays.fill(cells, emptyCell);
         }
+
+        matrix[0][1] = whiteCell;
+        matrix[0][2] = cellWithPlayerPiece;
         ReflectionTestUtils.setField(board, "board", matrix);
-        given(board.getCell(anyInt(), anyInt())).willReturn(emptyCell);
-        given(board.getCell(eq(1), eq(2))).willReturn(whiteCell);
-        given(board.getCell(eq(1), eq(3))).willReturn(cellWithPlayerPiece);
         willCallRealMethod().given(board).analyze(eq(user));
 
         // when
         board.analyze(user);
 
         // then
-        var actual = ReflectionTestUtils.getField(user, "canEat");
+        var actual = ReflectionTestUtils.getField(user, "isCanEat");
         assertThat(actual).isEqualTo(isCanEat);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testGetCellWhileCellExistsSource")
+    void testGetCellWhileCellExists(int row, int column) {
+        // given
+        var board = new Board();
+
+        // when
+        var actual = board.getCell(row, column);
+
+        // then
+        assertThat(actual).isNotNull();
+    }
+
+    private static Arguments[] testGetCellWhileCellExistsSource() {
+        return new Arguments[] {
+                Arguments.of(1, 5),
+                Arguments.of(5, 1),
+                Arguments.of(8, 5),
+                Arguments.of(5, 8)
+        };
+    }
+
+    @ParameterizedTest
+    @MethodSource("testGetCellWhileCellDoesNotExistSource")
+    void testGetCellWhileCellDoesNotExist(int row, int column) {
+        // given
+        var board = new Board();
+
+        // when & then
+        assertThatExceptionOfType(CellNotFoundException.class)
+                .isThrownBy(() -> board.getCell(row, column));
+
+    }
+
+    private static Arguments[] testGetCellWhileCellDoesNotExistSource() {
+        return new Arguments[] {
+                Arguments.of(0, 1),
+                Arguments.of(1, 0),
+                Arguments.of(9, 1),
+                Arguments.of(1, 9)
+        };
     }
 }
