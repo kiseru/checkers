@@ -1,13 +1,14 @@
 package com.checkers.user;
 
-import com.checkers.board.Cell;
 import com.checkers.board.Board;
-import com.checkers.exceptions.*;
+import com.checkers.board.Cell;
+import com.checkers.exceptions.CellException;
+import com.checkers.exceptions.ConvertCellException;
+import com.checkers.exceptions.PieceException;
 import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor
 public class User {
@@ -15,14 +16,11 @@ public class User {
     @Getter
     private final String name;
 
-    @Getter
     private final Color color;
 
     private final Board board;
 
-    @Setter
-    @Getter
-    private boolean canEat = false;
+    private boolean isCanEat = false;
 
     public void makeTurn(String from, String to) {
         Cell sourceCell = convertCell(from);
@@ -42,7 +40,7 @@ public class User {
 
         boolean wasEating = false;
         board.analyze(this);
-        if (canEat) {
+        if (isCanEat) {
             board.eat(sourceCell, destinationCell);
             wasEating = true;
         } else {
@@ -50,7 +48,7 @@ public class User {
         }
         board.analyze(this);
         if (!wasEating) {
-            canEat = false;
+            isCanEat = false;
         }
     }
 
@@ -67,5 +65,17 @@ public class User {
     @Override
     public String toString() {
         return name;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public boolean isCanEat() {
+        return isCanEat;
+    }
+
+    public void setCanEat(boolean isCanEat) {
+        this.isCanEat = isCanEat;
     }
 }
