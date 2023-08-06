@@ -7,13 +7,9 @@ import com.checkers.exceptions.ConvertCellException;
 import com.checkers.exceptions.PieceException;
 import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class User {
 
-    @Getter
     private final String name;
 
     private final Color color;
@@ -21,6 +17,12 @@ public class User {
     private final Board board;
 
     private boolean isCanEat = false;
+
+    public User(String name, Color color, Board board) {
+        this.name = name;
+        this.color = color;
+        this.board = board;
+    }
 
     public void makeTurn(String from, String to) {
         Cell sourceCell = convertCell(from);
@@ -64,6 +66,10 @@ public class User {
 
     @Override
     public String toString() {
+        return name;
+    }
+
+    public String getName() {
         return name;
     }
 
