@@ -10,13 +10,13 @@ import org.springframework.web.servlet.view.JstlView
 class CheckersApplication {
 
     @Bean
-    fun viewResolver(): InternalResourceViewResolver {
-        val viewResolver = InternalResourceViewResolver()
-        viewResolver.setViewClass(JstlView::class.java)
-        viewResolver.setPrefix("/WEB-INF/jsp/")
-        viewResolver.setSuffix(".jsp")
-        return viewResolver
-    }
+    fun viewResolver(): InternalResourceViewResolver =
+        InternalResourceViewResolver()
+            .also {
+                it.setViewClass(JstlView::class.java)
+                it.setPrefix("/WEB-INF/jsp/")
+                it.setSuffix(".jsp")
+            }
 }
 
 fun main(args: Array<String>) {
