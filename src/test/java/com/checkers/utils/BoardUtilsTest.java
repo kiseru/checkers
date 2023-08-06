@@ -1,6 +1,6 @@
 package com.checkers.utils;
 
-import com.checkers.exceptions.ConvertCellException;
+import com.checkers.exception.ConvertCellException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

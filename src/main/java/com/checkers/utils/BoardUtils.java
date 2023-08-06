@@ -1,6 +1,6 @@
 package com.checkers.utils;
 
-import com.checkers.exceptions.ConvertCellException;
+import com.checkers.exception.ConvertCellException;
 
 public final class BoardUtils {
 

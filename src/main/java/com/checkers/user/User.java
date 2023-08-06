@@ -2,9 +2,9 @@ package com.checkers.user;
 
 import com.checkers.board.Board;
 import com.checkers.board.Cell;
-import com.checkers.exceptions.CellException;
-import com.checkers.exceptions.ConvertCellException;
-import com.checkers.exceptions.PieceException;
+import com.checkers.exception.CellException;
+import com.checkers.exception.ConvertCellException;
+import com.checkers.exception.PieceException;
 import com.checkers.utils.BoardUtils;
 import com.checkers.utils.Color;
 

@@ -1,6 +1,6 @@
 package com.checkers.board
 
-import com.checkers.exceptions.*
+import com.checkers.exception.*
 import com.checkers.user.User
 import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color

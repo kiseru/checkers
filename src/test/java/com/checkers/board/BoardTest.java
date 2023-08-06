@@ -1,10 +1,10 @@
 package com.checkers.board;
 
-import com.checkers.exceptions.CannotEatException;
-import com.checkers.exceptions.CannotMoveException;
-import com.checkers.exceptions.CellIsBusyException;
-import com.checkers.exceptions.CellIsEmptyException;
-import com.checkers.exceptions.CellNotFoundException;
+import com.checkers.exception.CannotEatException;
+import com.checkers.exception.CannotMoveException;
+import com.checkers.exception.CellIsBusyException;
+import com.checkers.exception.CellIsEmptyException;
+import com.checkers.exception.CellNotFoundException;
 import com.checkers.user.User;
 import com.checkers.utils.Color;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,8 +1,8 @@
 package com.checkers.board
 
-import com.checkers.exceptions.CannotEatException
-import com.checkers.exceptions.CannotMoveException
-import com.checkers.exceptions.MustEatException
+import com.checkers.exception.CannotEatException
+import com.checkers.exception.CannotMoveException
+import com.checkers.exception.MustEatException
 import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
 import kotlin.math.abs
