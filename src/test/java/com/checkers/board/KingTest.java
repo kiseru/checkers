@@ -376,6 +376,7 @@ class KingTest {
         // given
         ReflectionTestUtils.setField(underTest, "isCanEat", Boolean.FALSE);
         ReflectionTestUtils.setField(underTest, "isCanMove", Boolean.FALSE);
+        given(underTest.getCell()).willReturn(sourceCell);
         willCallRealMethod().given(underTest).move(eq(destinationCell));
 
         // when & then
@@ -386,6 +387,7 @@ class KingTest {
     @Test
     void testMoveWhileCannotMoveToDestination() {
         // given
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isCanEat()).willReturn(Boolean.FALSE);
         given(underTest.isCanMove()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToMoveTo(eq(destinationCell))).willReturn(Boolean.FALSE);
@@ -426,6 +428,7 @@ class KingTest {
     void testEatWhileCannotEat() {
         // given
         ReflectionTestUtils.setField(underTest, "isCanEat", Boolean.FALSE);
+        given(underTest.getCell()).willReturn(sourceCell);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
 
         // when & then
@@ -436,6 +439,7 @@ class KingTest {
     @Test
     void testEatWhileCannotEatToDestination() {
         // given
+        given(underTest.getCell()).willReturn(sourceCell);
         given(underTest.isCanEat()).willReturn(Boolean.TRUE);
         given(underTest.isAbleToEatTo(eq(destinationCell))).willReturn(Boolean.FALSE);
         willCallRealMethod().given(underTest).eat(eq(destinationCell));
