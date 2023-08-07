@@ -11,7 +11,6 @@ class RoomServiceImpl : RoomService {
 
     private val rooms: MutableMap<Int, Room> = ConcurrentHashMap()
 
-    override fun findOrCreateRoomById(roomId: Int): Room {
-        return rooms.computeIfAbsent(roomId) { Room(roomId, Board()) }
-    }
+    override fun findOrCreateRoomById(roomId: Int): Room =
+        rooms.computeIfAbsent(roomId) { Room(roomId, Board()) }
 }
