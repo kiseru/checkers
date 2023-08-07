@@ -40,7 +40,7 @@ class GameController(
             val firstPlayer = User(login, Color.WHITE, currentRoom.board)
             currentRoom.firstPlayer = firstPlayer
             currentRoom.turn = firstPlayer
-        } else if (currentRoom.secondPlayer == null && login != currentRoom.firstPlayer.name) {
+        } else if (currentRoom.secondPlayer == null && login != currentRoom.firstPlayer?.name) {
             val secondPlayer = User(login, Color.BLACK, currentRoom.board)
             currentRoom.secondPlayer = secondPlayer
         }
@@ -53,7 +53,7 @@ class GameController(
         val firstPlayer = currentRoom.firstPlayer
         val secondPlayer = currentRoom.secondPlayer
         if (from != null && to != null && secondPlayer != null) {
-            if (login == firstPlayer.name && currentRoom.turn == firstPlayer) {
+            if (login == firstPlayer?.name && currentRoom.turn == firstPlayer) {
                 firstPlayer.makeTurn(from, to)
                 if (!firstPlayer.isCanEat) {
                     currentRoom.turn = secondPlayer
