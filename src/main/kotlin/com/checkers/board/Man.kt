@@ -3,21 +3,22 @@ package com.checkers.board
 import com.checkers.exception.CannotEatException
 import com.checkers.exception.CannotMoveException
 import com.checkers.exception.MustEatException
-import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
+import com.checkers.utils.isCoordinateExists
+import com.checkers.utils.isCoordinatesExists
 
 class Man(color: Color) : Piece(color) {
 
     override fun analyzeAbilityOfMove() {
         val nextRow = getNextRow()
-        if (!BoardUtils.isCoordinateExists(nextRow)) {
+        if (!isCoordinateExists(nextRow)) {
             return
         }
 
         val board = cell.board
         val column = cell.column
         isCanMove = sequenceOf(column - 1, column + 1)
-            .filter { BoardUtils.isCoordinateExists(it) }
+            .filter { isCoordinateExists(it) }
             .map { board.getCell(nextRow, it) }
             .any { isAbleToMoveTo(it) }
     }
@@ -34,10 +35,10 @@ class Man(color: Color) : Piece(color) {
         val row = cell.row
         val board = cell.board
         isCanEat = sequenceOf(row - 2, row + 2)
-            .filter { BoardUtils.isCoordinateExists(it) }
+            .filter { isCoordinateExists(it) }
             .flatMap { nextRow ->
                 sequenceOf(column - 2, column + 2)
-                    .filter { BoardUtils.isCoordinateExists(it) }
+                    .filter { isCoordinateExists(it) }
                     .map { board.getCell(nextRow, it) }
             }
             .any { isAbleToEatTo(it) }
@@ -49,14 +50,14 @@ class Man(color: Color) : Piece(color) {
         }
 
         val nextRow = getNextRow()
-        if (!BoardUtils.isCoordinateExists(nextRow)) {
+        if (!isCoordinateExists(nextRow)) {
             return false
         }
 
         val column = cell.column
         val board = cell.board
         return sequenceOf(column - 1, column + 1)
-            .filter { BoardUtils.isCoordinateExists(it) }
+            .filter { isCoordinateExists(it) }
             .map { board.getCell(nextRow, it) }
             .any { it == destinationCell }
     }
@@ -68,7 +69,7 @@ class Man(color: Color) : Piece(color) {
             cell.row - 1 to cell.column - 1,
             cell.row - 1 to cell.column + 1,
         )
-            .filter { BoardUtils.isCoordinateExists(it.first) && BoardUtils.isCoordinateExists(it.second) }
+            .filter { isCoordinatesExists(it.first, it.second) }
             .map { cell.board.getCell(it.first, it.second) }
             .any { hasEnemyIn(it) }
 

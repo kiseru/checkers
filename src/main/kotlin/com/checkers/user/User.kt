@@ -5,8 +5,9 @@ import com.checkers.board.Cell
 import com.checkers.exception.CellException
 import com.checkers.exception.ConvertCellException
 import com.checkers.exception.PieceException
-import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
+import com.checkers.utils.convertColumn
+import com.checkers.utils.convertRow
 
 class User(
     val name: String,
@@ -49,8 +50,8 @@ class User(
             throw ConvertCellException("Can't convert '$cell' to cell")
         }
 
-        val column = BoardUtils.convertColumn(cell[0])
-        val row = BoardUtils.convertRow(cell[1])
+        val column = convertColumn(cell[0])
+        val row = convertRow(cell[1])
         return board.getCell(row, column)
     }
 

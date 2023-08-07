@@ -3,8 +3,8 @@ package com.checkers.board
 import com.checkers.exception.CannotEatException
 import com.checkers.exception.CannotMoveException
 import com.checkers.exception.MustEatException
-import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
+import com.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -14,7 +14,7 @@ class King(color: Color) : Piece(color) {
         isCanMove = generateSequence(1) { it + 1 }
             .take(7)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
-            .filter { BoardUtils.isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
+            .filter { isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
             .any { isAbleToMoveTo(cell.getNear(it.first, it.second)) }
     }
 
@@ -73,7 +73,7 @@ class King(color: Color) : Piece(color) {
         isCanEat = generateSequence(2) { it + 1 }
             .take(6)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
-            .filter { BoardUtils.isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
+            .filter { isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
             .any { isAbleToEatTo(cell.getNear(it.first, it.second)) }
     }
 
