@@ -37,11 +37,13 @@ class GameController(
         val currentRoom = roomService.findOrCreateRoomById(roomId)
 
         if (currentRoom.firstPlayer == null) {
-            val firstPlayer = User(login, Color.WHITE, currentRoom.board)
+            val firstPlayer = User(login, Color.WHITE)
+            firstPlayer.board = currentRoom.board
             currentRoom.firstPlayer = firstPlayer
             currentRoom.turn = firstPlayer
         } else if (currentRoom.secondPlayer == null && login != currentRoom.firstPlayer?.name) {
-            val secondPlayer = User(login, Color.BLACK, currentRoom.board)
+            val secondPlayer = User(login, Color.BLACK)
+            secondPlayer.board = currentRoom.board
             currentRoom.secondPlayer = secondPlayer
         }
 
