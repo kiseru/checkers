@@ -6,9 +6,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.kiseru.checkers.exception.ConvertCellException;
 
-import static com.checkers.utils.BoardUtilsKt.convertColumn;
-import static com.checkers.utils.BoardUtilsKt.convertRow;
-import static com.checkers.utils.BoardUtilsKt.isCoordinateExists;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static ru.kiseru.checkers.utils.BoardUtilsKt.convertColumn;
