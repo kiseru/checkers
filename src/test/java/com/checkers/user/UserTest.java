@@ -27,11 +27,13 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class UserTest {
 
-    @InjectMocks
-    private User underTest;
+    private static final String NAME = "Some cool name";
 
     @Mock
     private Board board;
+
+    @InjectMocks
+    private User underTest = new User(NAME, Color.WHITE);
 
     @BeforeEach
     void setUp() {
@@ -50,7 +52,6 @@ class UserTest {
     void testMakeTurnWhileSourceCellHasNotPiece() {
         // given
         var emptyCell = mock(Cell.class);
-        given(emptyCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(emptyCell);
 
@@ -66,7 +67,6 @@ class UserTest {
         given(piece.getColor()).willReturn(Color.BLACK);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
@@ -100,11 +100,10 @@ class UserTest {
         given(piece.getColor()).willReturn(Color.WHITE);
 
         var sourceCell = mock(Cell.class);
-        given(sourceCell.isEmpty()).willReturn(Boolean.FALSE);
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.FALSE);
+        given(destinationCell.getPiece()).willReturn(mock(Piece.class));
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
@@ -124,7 +123,6 @@ class UserTest {
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
@@ -145,7 +143,6 @@ class UserTest {
         given(sourceCell.getPiece()).willReturn(piece);
 
         var destinationCell = mock(Cell.class);
-        given(destinationCell.isEmpty()).willReturn(Boolean.TRUE);
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell);
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell);
