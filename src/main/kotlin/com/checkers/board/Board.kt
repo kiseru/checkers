@@ -1,9 +1,13 @@
 package com.checkers.board
 
-import com.checkers.exception.*
+import com.checkers.exception.CannotEatException
+import com.checkers.exception.CannotMoveException
+import com.checkers.exception.CellIsBusyException
+import com.checkers.exception.CellIsEmptyException
+import com.checkers.exception.CellNotFoundException
 import com.checkers.user.User
-import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
+import com.checkers.utils.isCoordinatesExists
 
 class Board {
 
@@ -44,7 +48,7 @@ class Board {
             .mapNotNull { it.piece }
 
     fun getCell(row: Int, column: Int): Cell =
-        if (BoardUtils.isCoordinatesExists(row, column)) {
+        if (isCoordinatesExists(row, column)) {
             board[row - 1][column - 1]
         } else {
             throw CellNotFoundException(row, column)

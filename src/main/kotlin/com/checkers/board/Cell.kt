@@ -1,7 +1,7 @@
 package com.checkers.board
 
-import com.checkers.utils.BoardUtils
 import com.checkers.utils.Color
+import com.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
 
 data class Cell(
@@ -31,7 +31,7 @@ data class Cell(
     fun getNear(diffRow: Int, diffColumn: Int): Cell {
         val rowToFind = row + diffRow
         val columnToFind = column + diffColumn
-        if (BoardUtils.isCoordinateExists(rowToFind) && BoardUtils.isCoordinateExists(columnToFind)) {
+        if (isCoordinatesExists(rowToFind, columnToFind)) {
             return board.getCell(rowToFind, columnToFind)
         }
 

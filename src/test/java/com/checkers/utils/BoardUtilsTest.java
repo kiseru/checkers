@@ -6,6 +6,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.checkers.utils.BoardUtilsKt.convertColumn;
+import static com.checkers.utils.BoardUtilsKt.convertRow;
+import static com.checkers.utils.BoardUtilsKt.isCoordinateExists;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -15,7 +18,7 @@ class BoardUtilsTest {
     @MethodSource("testIsCoordinateExistsSource")
     void testIsCoordinateExists(int coordinate, boolean expected) {
         // when
-        var actual = BoardUtils.isCoordinateExists(coordinate);
+        var actual = isCoordinateExists(coordinate);
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -35,14 +38,14 @@ class BoardUtilsTest {
     void testConvertColumnWhileIllegalColumnName(char columnName) {
         // when & then
         assertThatExceptionOfType(ConvertCellException.class)
-                .isThrownBy(() -> BoardUtils.convertColumn(columnName));
+                .isThrownBy(() -> convertColumn(columnName));
     }
 
     @ParameterizedTest
     @MethodSource("testConvertColumnWhileLegalColumnNameSource")
     void testConvertColumnWhileLegalColumnName(char columnName, int expected) {
         // when
-        var actual = BoardUtils.convertColumn(columnName);
+        var actual = convertColumn(columnName);
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -66,14 +69,14 @@ class BoardUtilsTest {
     void testConvertRowWhileIllegalRowName(char rowName) {
         // when & then
         assertThatExceptionOfType(ConvertCellException.class)
-                .isThrownBy(() -> BoardUtils.convertRow(rowName));
+                .isThrownBy(() -> convertRow(rowName));
     }
 
     @ParameterizedTest
     @MethodSource("testConvertTowWhileLegalRowNameSource")
     void testConvertTowWhileLegalRowName(char rowName, int expected) {
         // when
-        var actual = BoardUtils.convertRow(rowName);
+        var actual = convertRow(rowName);
 
         // then
         assertThat(actual).isEqualTo(expected);
