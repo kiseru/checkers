@@ -25,9 +25,6 @@ data class Cell(
             Color.WHITE
         }
 
-    fun getMap() =
-        toString()
-
     fun getNear(diffRow: Int, diffColumn: Int): Cell {
         val rowToFind = row + diffRow
         val columnToFind = column + diffColumn
@@ -51,9 +48,6 @@ data class Cell(
         val rowToFind = (row + another.row) / 2
         return board.getCell(rowToFind, colToFind)
     }
-
-    fun isEmpty(): Boolean =
-        piece == null
 
     override fun toString(): String {
         val letter = ('a' + column - 1)
