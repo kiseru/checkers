@@ -33,7 +33,7 @@ class BoardUtilsTest {
         "8, true",
         "9, false",
     )
-    fun testIsCoordinateExists(coordinate: Int, expected: Boolean) {
+    fun `isCoordinateExists test`(coordinate: Int, expected: Boolean) {
         // when
         val actual = isCoordinateExists(coordinate)
 
@@ -43,7 +43,7 @@ class BoardUtilsTest {
 
     @ParameterizedTest
     @ValueSource(chars = ['`', 'i'])
-    fun testConvertColumnWhileIllegalColumnName(columnName: Char) {
+    fun `convertColumn test when illegal column name was given`(columnName: Char) {
         // when & then
         assertThatExceptionOfType(ConvertCellException::class.java)
             .isThrownBy { convertColumn(columnName) }
@@ -60,7 +60,7 @@ class BoardUtilsTest {
         "g, 7",
         "h, 8",
     )
-    fun testConvertColumnWhileLegalColumnName(columnName: Char, expected: Int) {
+    fun `convertColumn test when legal column name was given`(columnName: Char, expected: Int) {
         // when
         val actual = convertColumn(columnName)
 
@@ -70,7 +70,7 @@ class BoardUtilsTest {
 
     @ParameterizedTest
     @ValueSource(chars = ['0', '9'])
-    fun testConvertRowWhileIllegalRowName(rowName: Char) {
+    fun `convertRow test when illegal row name was given`(rowName: Char) {
         // when & then
         assertThatExceptionOfType(ConvertCellException::class.java)
             .isThrownBy { convertRow(rowName) }
@@ -87,7 +87,7 @@ class BoardUtilsTest {
         "7, 7",
         "8, 8",
     )
-    fun testConvertTowWhileLegalRowName(rowName: Char, expected: Int) {
+    fun `convertRow test when legal row name was given`(rowName: Char, expected: Int) {
         // when
         val actual = convertRow(rowName)
 
