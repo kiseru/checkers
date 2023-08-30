@@ -42,11 +42,10 @@ data class Cell(
 
         return -1
     }
-
-    fun between(another: Cell, board: Board): Cell {
-        val colToFind = (column + another.column) / 2
+    fun between(another: Cell): Cell {
+        val columnToFind = (column + another.column) / 2
         val rowToFind = (row + another.row) / 2
-        return board.getCell(rowToFind, colToFind)
+        return board.getCell(rowToFind, columnToFind)
     }
 
     override fun toString(): String {

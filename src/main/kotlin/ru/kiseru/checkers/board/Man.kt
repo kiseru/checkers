@@ -81,7 +81,7 @@ class Man(color: Color) : Piece(color) {
             return false
         }
 
-        return cell.between(destinationCell, cell.board)
+        return cell.between(destinationCell)
             .piece?.let { it.color != color } ?: false
     }
 
@@ -108,7 +108,7 @@ class Man(color: Color) : Piece(color) {
         }
 
         cell.piece = null
-        cell.between(destinationCell, cell.board).piece = null
+        cell.between(destinationCell).piece = null
         updatePiece(destinationCell)
     }
 

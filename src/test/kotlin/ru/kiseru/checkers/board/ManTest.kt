@@ -155,8 +155,7 @@ class ManTest {
         val cellWithSacrifice = mock<Cell>()
 
         given(cell.diff(eq(destinationCell))).willReturn(2)
-        given(cell.board).willReturn(board)
-        given(cell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice)
+        given(cell.between(eq(destinationCell))).willReturn(cellWithSacrifice)
 
         // when
         val actual = underTest.isAbleToEatTo(destinationCell)
@@ -175,8 +174,7 @@ class ManTest {
         given(cellWithSacrifice.piece).willReturn(sacrificePiece)
 
         given(cell.diff(eq(destinationCell))).willReturn(2)
-        given(cell.board).willReturn(board)
-        given(cell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice)
+        given(cell.between(eq(destinationCell))).willReturn(cellWithSacrifice)
 
         // when
         val actual = underTest.isAbleToEatTo(destinationCell)
@@ -195,8 +193,7 @@ class ManTest {
         given(cellWithSacrifice.piece).willReturn(sacrificePiece)
 
         given(cell.diff(eq(destinationCell))).willReturn(2)
-        given(cell.board).willReturn(board)
-        given(cell.between(eq(destinationCell), eq(board))).willReturn(cellWithSacrifice)
+        given(cell.between(eq(destinationCell))).willReturn(cellWithSacrifice)
 
         // when
         val actual = underTest.isAbleToEatTo(destinationCell)
@@ -239,7 +236,7 @@ class ManTest {
         given(cell.column).willReturn(sourceCellColumn)
         given(cell.row).willReturn(sourceCellRow)
         given(cell.diff(eq(emptyCell))).willReturn(2)
-        given(cell.between(eq(emptyCell), eq(board))).willReturn(cellWithEnemyPiece)
+        given(cell.between(eq(emptyCell))).willReturn(cellWithEnemyPiece)
 
         given(board.getCell(anyInt(), anyInt())).willReturn(emptyCell)
 
@@ -403,9 +400,8 @@ class ManTest {
         given(targetCell.piece).willReturn(enemy)
         willCallRealMethod().given(targetCell).piece = anyOrNull()
 
-        given(cell.between(eq(destinationCell), any())).willReturn(targetCell)
+        given(cell.between(eq(destinationCell))).willReturn(targetCell)
         given(cell.diff(eq(destinationCell))).willReturn(2)
-        given(cell.board).willReturn(board)
         willCallRealMethod().given(cell).piece = anyOrNull()
 
         underTest.isCanEat = true
@@ -439,8 +435,7 @@ class ManTest {
         given(targetCell.piece).willReturn(enemy)
         willCallRealMethod().given(targetCell).piece = anyOrNull()
 
-        given(cell.board).willReturn(board)
-        given(cell.between(eq(destinationCell), any())).willReturn(targetCell)
+        given(cell.between(eq(destinationCell))).willReturn(targetCell)
         given(cell.diff(eq(destinationCell))).willReturn(2)
         willCallRealMethod().given(cell).piece = anyOrNull()
 
@@ -475,8 +470,7 @@ class ManTest {
         given(targetCell.piece).willReturn(enemy)
         willCallRealMethod().given(targetCell).piece = anyOrNull()
 
-        given(cell.board).willReturn(board)
-        given(cell.between(eq(destinationCell), any())).willReturn(targetCell)
+        given(cell.between(eq(destinationCell))).willReturn(targetCell)
         given(cell.diff(eq(destinationCell))).willReturn(2)
         willCallRealMethod().given(cell).piece = anyOrNull()
 
