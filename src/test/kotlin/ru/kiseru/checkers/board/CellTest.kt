@@ -231,7 +231,7 @@ class CellTest {
         given(board.getCell(eq(rowToFind), eq(columnToFind))).willReturn(Cell(rowToFind, columnToFind, board))
 
         // when
-        val actual = underTest.between(cell, board)
+        val actual = underTest.between(cell)
 
         // then
         assertThat(actual.toString()).isEqualTo(expected)
