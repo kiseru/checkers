@@ -1,59 +1,22 @@
-body {
-    padding: 0px;
-    text-align: center;
-    font-family: cursive !important;
-}
-
-.header {
-    width: 100%;
-    border-radius: 0px !important;
-    background-color: #5cb85c !important;
-    border-color: #5cb85c !important;
-    color: #ffffff !important;
-}
-
-.header h1 {
-    margin: 10px 0px;
-}
-
-.btn-play {
-    width: 200px;
-    border-radius: 10px !important;
-    margin-top: 225px;
-}
-
-.btn-play p {
-    font-size: 32px;
-    margin: 10px auto;
-}
-
-.panel {
-    width: 400px;
-    margin: 0px auto;
-}
-
 .cell {
-    height: 65px;
-    width: 65px;
-    border: 1px solid black;
-    display: inline-block;
-    margin: -3px; /* костыль))) */
+    height: 64px;
+    width: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .black-cell {
-    background-color: #5cb85c;
-    border-color: #5cb85c;
+    background-color: #0dcaf0;
 }
 
 .white-cell {
-    background-color: #e9f5e9;
-    border-color: #e9f5e9;
+    background-color: #cff4fc;
 }
 
 .piece {
     width: 50px;
     height: 50px;
-    margin: 6px;
 }
 
 .black-man {
@@ -70,12 +33,4 @@ body {
 
 .white-king {
     background-image: url("/images/white-king.png");
-}
-
-.panel p {
-    font-size: 18px;
-}
-
-.btn-lg {
-    width: 150px;
 }
