@@ -3,14 +3,27 @@ package ru.kiseru.checkers.room.impl
 import org.springframework.stereotype.Service
 import ru.kiseru.checkers.domain.board.Board
 import ru.kiseru.checkers.domain.room.Room
+import ru.kiseru.checkers.domain.room.RoomRepository
 import ru.kiseru.checkers.room.RoomService
-import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class RoomServiceImpl : RoomService {
+class RoomServiceImpl(
+    private val roomRepository: RoomRepository,
+) : RoomService {
 
-    private val rooms: MutableMap<Int, Room> = ConcurrentHashMap()
+    override fun findOrCreateRoomById(roomId: Int): Room {
+        val room = roomRepository.findRoom(roomId)
+        if (room != null) {
+            return room
+        }
 
-    override fun findOrCreateRoomById(roomId: Int): Room =
-        rooms.computeIfAbsent(roomId) { Room(roomId, Board()) }
+        val newRoom = createRoom(roomId)
+        roomRepository.save(newRoom)
+        return newRoom
+    }
+
+    private fun createRoom(roomId: Int): Room {
+        val board = Board()
+        return Room(roomId, board)
+    }
 }
