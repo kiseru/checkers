@@ -1,26 +1,26 @@
 package ru.kiseru.checkers.room
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
-import org.springframework.test.util.ReflectionTestUtils
 import ru.kiseru.checkers.domain.room.Room
+import ru.kiseru.checkers.domain.room.RoomRepository
 import ru.kiseru.checkers.room.impl.RoomServiceImpl
 
 @ExtendWith(MockitoExtension::class)
 class RoomServiceTest {
 
-    private val underTest = RoomServiceImpl()
+    @InjectMocks
+    lateinit var underTest: RoomServiceImpl
 
-    private lateinit var rooms: MutableMap<Int, Room>
-
-    @BeforeEach
-    fun setUp() {
-        rooms = ReflectionTestUtils.getField(underTest, "rooms") as MutableMap<Int, Room>
-    }
+    @Mock
+    lateinit var roomRepository: RoomRepository
 
     @Test
     fun `findOrCreateRoom test when room doesn't exist`() {
@@ -30,14 +30,15 @@ class RoomServiceTest {
         // then
         assertThat(actual).isNotNull()
         assertThat(actual.id).isEqualTo(1)
-        assertThat(rooms.containsKey(1)).isTrue()
     }
 
     @Test
     fun `findOrCreateRoom test when room exists`() {
         // given
         val room = mock<Room>()
-        rooms[1] = room
+        
+        given { roomRepository.findRoom(eq(1)) }
+            .willReturn(room)
 
         // when
         val actual = underTest.findOrCreateRoomById(1)
