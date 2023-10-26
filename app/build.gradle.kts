@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":operational"))
     implementation(project(":repository"))
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")

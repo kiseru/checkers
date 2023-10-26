@@ -8,11 +8,15 @@ import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
 import ru.kiseru.checkers.domain.utils.convertColumn
 import ru.kiseru.checkers.domain.utils.convertRow
+import java.util.UUID
 
 class User(
     val name: String,
-    val color: Color,
 ) {
+
+    lateinit var id: UUID
+
+    lateinit var color: Color
 
     var isCanEat = false
 
