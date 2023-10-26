@@ -3,29 +3,29 @@ package ru.kiseru.checkers.controller
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
-import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.SessionAttribute
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @Controller
 @RequestMapping("find-room")
 class FindRoomController {
 
     @GetMapping
-    fun getFindRoomPage(@SessionAttribute login: String?): String =
-        if (StringUtils.hasText(login)) {
-            "find-room"
-        } else {
+    fun getFindRoomPage(@SessionAttribute uid: UUID?): String =
+        if (uid == null) {
             "redirect:/login"
+        } else {
+            "find-room"
         }
 
     @PostMapping
-    fun findRoom(@RequestParam roomId: Int?, @SessionAttribute login: String?, session: HttpSession): String {
-        if (login.isNullOrEmpty()) {
+    fun findRoom(@RequestParam roomId: Int?, @SessionAttribute uid: UUID?, session: HttpSession): String {
+        if (uid == null) {
             return "redirect:/login"
         }
 
