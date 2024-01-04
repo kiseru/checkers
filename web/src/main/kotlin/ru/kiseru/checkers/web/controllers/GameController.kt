@@ -1,4 +1,4 @@
-package ru.kiseru.checkers.controller
+package ru.kiseru.checkers.web.controllers
 
 import jakarta.servlet.http.HttpSession
 import java.lang.IllegalStateException
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.SessionAttribute
 import ru.kiseru.checkers.domain.room.Room
+import ru.kiseru.checkers.domain.room.RoomService
 import ru.kiseru.checkers.domain.user.User
 import ru.kiseru.checkers.domain.user.UserRepository
 import ru.kiseru.checkers.domain.utils.Color
-import ru.kiseru.checkers.room.RoomService
 
 @Controller
 @RequestMapping("game")

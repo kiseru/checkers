@@ -1,4 +1,4 @@
-package ru.kiseru.checkers.controller
+package ru.kiseru.checkers.web.controllers
 
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpStatus

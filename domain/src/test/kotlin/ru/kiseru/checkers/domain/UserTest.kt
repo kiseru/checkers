@@ -28,7 +28,7 @@ class UserTest {
     private val name = "Some cool name"
 
     @InjectMocks
-    private val underTest = User(name, Color.WHITE)
+    private val underTest = User(name)
 
     @Mock
     private lateinit var board: Board

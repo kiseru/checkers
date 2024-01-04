@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.kiseru.checkers.domain.board.Board
 import ru.kiseru.checkers.domain.room.Room
 import ru.kiseru.checkers.domain.room.RoomRepository
-import ru.kiseru.checkers.room.RoomService
+import ru.kiseru.checkers.domain.room.RoomService
 
 @Service
 class RoomServiceImpl(
