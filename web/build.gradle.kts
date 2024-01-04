@@ -7,14 +7,11 @@ plugins {
     kotlin("plugin.spring")
 }
 
+group = "ru.kiseru.checkers"
+version = "0.0.1-SNAPSHOT"
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-}
-
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
 }
 
 repositories {
@@ -24,9 +21,9 @@ repositories {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":operational"))
-    implementation(project(":repository"))
-    implementation(project(":web"))
-    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

@@ -1,4 +1,4 @@
-package ru.kiseru.checkers.controller
+package ru.kiseru.checkers.web.controllers
 
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
