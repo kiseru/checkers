@@ -1,15 +1,15 @@
-package ru.kiseru.checkers.room.impl
+package ru.kiseru.checkers.operational.impl
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import ru.kiseru.checkers.domain.board.Board
 import ru.kiseru.checkers.domain.room.Room
 import ru.kiseru.checkers.domain.room.RoomRepository
-import ru.kiseru.checkers.domain.room.RoomService
+import ru.kiseru.checkers.operational.FindOrCreateRoomUseCase
 
-@Service
-class RoomServiceImpl(
+@Component
+class FindOrCreateRoomUseCaseImpl(
     private val roomRepository: RoomRepository,
-) : RoomService {
+) : FindOrCreateRoomUseCase {
 
     override fun findOrCreateRoomById(roomId: Int): Room {
         val room = roomRepository.findRoom(roomId)
