@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.SessionAttribute
 import ru.kiseru.checkers.domain.room.Room
-import ru.kiseru.checkers.domain.room.RoomService
 import ru.kiseru.checkers.domain.user.User
 import ru.kiseru.checkers.domain.user.UserRepository
 import ru.kiseru.checkers.domain.utils.Color
+import ru.kiseru.checkers.operational.FindOrCreateRoomUseCase
 
 @Controller
 @RequestMapping("game")
 class GameController(
     private val userRepository: UserRepository,
-    private val roomService: RoomService,
+    private val findOrCreateRoomUseCase: FindOrCreateRoomUseCase,
 ) {
 
     @GetMapping
@@ -41,7 +41,7 @@ class GameController(
             return "redirect:/find-room"
         }
 
-        val currentRoom = roomService.findOrCreateRoomById(roomId)
+        val currentRoom = findOrCreateRoomUseCase.findOrCreateRoomById(roomId)
         if (!currentRoom.board.isGaming()) {
             session.setAttribute("winner", currentRoom.turn)
             return "redirect:/finish"
