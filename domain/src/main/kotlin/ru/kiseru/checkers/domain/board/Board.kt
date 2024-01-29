@@ -5,7 +5,6 @@ import ru.kiseru.checkers.domain.exception.CannotMoveException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
 import ru.kiseru.checkers.domain.exception.CellIsEmptyException
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
-import ru.kiseru.checkers.domain.user.User
 import ru.kiseru.checkers.domain.utils.Color
 import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 
@@ -84,12 +83,10 @@ class Board {
         }
     }
 
-    fun analyze(user: User) {
-        val userColor = user.color
-
+    fun analyze(userColor: Color): Boolean {
         analyzeAbilities()
 
-        user.isCanEat = pieces()
+        return pieces()
             .any { it.color == userColor && it.isCanEat }
     }
 

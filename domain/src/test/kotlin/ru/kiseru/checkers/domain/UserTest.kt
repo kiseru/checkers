@@ -62,6 +62,8 @@ class UserTest {
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell)
 
+        underTest.color = Color.WHITE
+
         // when & then
         assertThatExceptionOfType(PieceException::class.java)
             .isThrownBy { underTest.makeTurn("b2", "c3") }
@@ -78,6 +80,8 @@ class UserTest {
         given(sourceCell.piece).willReturn(piece)
 
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell)
+
+        underTest.color = Color.WHITE
 
         // when & then
         assertThatExceptionOfType(ConvertCellException::class.java)
@@ -99,6 +103,8 @@ class UserTest {
         given(board.getCell(eq(2), eq(2))).willReturn(sourceCell)
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell)
 
+        underTest.color = Color.WHITE
+
         // when & then
         assertThatExceptionOfType(CellException::class.java)
             .isThrownBy { underTest.makeTurn("b2", "c3") }
@@ -119,6 +125,7 @@ class UserTest {
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell)
 
         underTest.isCanEat = true
+        underTest.color = Color.WHITE
 
         // when & then
         assertThatNoException()
@@ -140,6 +147,7 @@ class UserTest {
         given(board.getCell(eq(3), eq(3))).willReturn(destinationCell)
 
         underTest.isCanEat = false
+        underTest.color = Color.WHITE
 
         // when
         underTest.makeTurn("b2", "c3")

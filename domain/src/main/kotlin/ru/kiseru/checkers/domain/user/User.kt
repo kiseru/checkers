@@ -36,14 +36,14 @@ class User(
         }
 
         var wasEating = false
-        board.analyze(this)
+        isCanEat = board.analyze(color)
         if (isCanEat) {
             board.eat(sourceCell, destinationCell)
             wasEating = true
         } else {
             board.move(sourceCell, destinationCell)
         }
-        board.analyze(this)
+        isCanEat = board.analyze(color)
         if (!wasEating) {
             isCanEat = false
         }

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.then
 import org.mockito.BDDMockito.willCallRealMethod
@@ -281,8 +280,6 @@ class BoardTest {
         val user = mock<User>()
         given(user.color).willReturn(Color.WHITE)
 
-        willCallRealMethod().given(user).isCanEat = anyBoolean()
-
         val whiteCell = mock<Cell>()
 
         val emptyCell = mock<Cell>()
@@ -302,13 +299,12 @@ class BoardTest {
         matrix[0][1] = whiteCell
         matrix[0][2] = cellWithPlayerPiece
         ReflectionTestUtils.setField(board, "board", matrix)
-        willCallRealMethod().given(board).analyze(eq(user))
+        willCallRealMethod().given(board).analyze(eq(Color.WHITE))
 
         // when
-        board.analyze(user)
+        val actual = board.analyze(user.color)
 
         // then
-        val actual = ReflectionTestUtils.getField(user, "isCanEat")
         assertThat(actual).isEqualTo(isCanEat)
     }
 
