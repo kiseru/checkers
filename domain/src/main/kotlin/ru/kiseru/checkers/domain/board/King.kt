@@ -10,6 +10,8 @@ import kotlin.math.sign
 
 class King(color: Color) : Piece(color) {
 
+    override val type: PieceType = PieceType.KING
+
     override fun analyzeAbilityOfMove() {
         isCanMove = generateSequence(1) { it + 1 }
             .take(7)
