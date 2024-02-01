@@ -16,6 +16,8 @@ dependencies {
     implementation(project(":domain"))
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<KotlinCompile> {
@@ -27,5 +29,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<BootJar> {
     enabled = false
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 

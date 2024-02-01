@@ -42,7 +42,7 @@ class Board {
         board.asSequence()
             .flatMap { it.asSequence() }
 
-    private fun pieces(): Sequence<Piece> =
+    fun pieces(): Sequence<Piece> =
         cells()
             .mapNotNull { it.piece }
 

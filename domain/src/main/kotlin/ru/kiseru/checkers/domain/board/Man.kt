@@ -9,6 +9,8 @@ import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 
 class Man(color: Color) : Piece(color) {
 
+    override val type: PieceType = PieceType.MAN
+
     override fun analyzeAbilityOfMove() {
         val nextRow = getNextRow()
         if (!isCoordinateExists(nextRow)) {

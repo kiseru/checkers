@@ -10,6 +10,8 @@ abstract class Piece(val color: Color) {
     
     lateinit var cell: Cell
 
+    abstract val type: PieceType
+
     abstract fun analyzeAbilityOfMove()
 
     abstract fun move(destinationCell: Cell)
