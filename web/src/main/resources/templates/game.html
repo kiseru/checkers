@@ -80,66 +80,6 @@
         crossorigin="anonymous"
 ></script>
 
-<script>
-    setInterval(() => drawCheckers(), 1000);
-
-    async function drawCheckers() {
-        const roomId = +id.textContent;
-        const pieces = await getPieces(roomId);
-        if (pieces.length === 0) {
-            return;
-        }
-
-        clearBoard();
-        for (let piece of pieces) {
-            const className = getClassName(piece.type, piece.color);
-            const div = createPieceDiv(className)
-            const cell = document.getElementById(piece.cell);
-            cell.append(div);
-        }
-    }
-
-    async function getPieces(roomId) {
-        try {
-            const response = await fetch(`/room/${roomId}/piece`);
-            return await response.json();
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function clearBoard() {
-        const cells = document.getElementsByClassName('cell');
-        for (let cell of cells) {
-            for (let elem of cell.children) {
-                elem.remove();
-            }
-        }
-    }
-
-    function getClassName(type, color) {
-        if (type === 'MAN') {
-            if (color === 'WHITE') {
-                return "piece white-man";
-            } else {
-                return "piece black-man";
-            }
-        } else {
-            if (color === 'WHITE') {
-                return "piece white-king";
-            } else {
-                return "piece black-king";
-            }
-        }
-    }
-
-    function createPieceDiv(className) {
-        const div = document.createElement('div');
-        div.className = className;
-        return div;
-    }
-</script>
-
 <script src="/js/script.js"></script>
 </body>
 </html>
