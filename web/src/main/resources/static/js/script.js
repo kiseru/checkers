@@ -6,6 +6,9 @@ for (let cell of cells) {
     cell.onclick = createMoveHandler(cell.id);
 }
 
+const roomId = +id.textContent;
+subscribe(roomId, 0);
+
 function createMoveHandler(cell) {
     return async function() {
         if (from === "") {
@@ -21,18 +24,28 @@ function createMoveHandler(cell) {
                 id: id.textContent,
             });
             await fetch("/game?" + queryParams);
-            await drawCheckers();
             from = "";
             to = "";
         }
     }
 }
 
-let timerId = setTimeout(() => drawCheckers(), 0);
+async function subscribe(roomId, version) {
+    const response = await fetch(`/room/${roomId}/board?version=${version}`);
+    if (response.status == 502) {
+        await subscribe(roomId, version);
+    } else if (response.status != 200) {
+        console.log(response.statusText);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await subscribe(roomId, version);
+    } else {
+        const board = await response.json();
+        drawPieces(board.pieces);
+        await subscribe(roomId, board.version);
+    }
+}
 
-async function drawCheckers() {
-    const roomId = +id.textContent;
-    const pieces = await getPieces(roomId);
+function drawPieces(pieces) {
     if (pieces.length === 0) {
         return;
     }
@@ -42,16 +55,6 @@ async function drawCheckers() {
         const div = createPieceDiv(piece.type, piece.color);
         const cell = document.getElementById(piece.cell);
         cell.append(div);
-    }
-    timerId = setTimeout(() => drawCheckers(), 1000);
-}
-
-async function getPieces(roomId) {
-    try {
-        const response = await fetch(`/room/${roomId}/piece`);
-        return await response.json();
-    } catch (e) {
-        return [];
     }
 }
 

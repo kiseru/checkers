@@ -4,22 +4,34 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
-import ru.kiseru.checkers.operational.RoomSearchService
+import ru.kiseru.checkers.operational.BoardSearchByRoomIdService
+import ru.kiseru.checkers.web.controllers.dto.BoardDto
 import ru.kiseru.checkers.web.controllers.dto.PieceDto
+import kotlin.concurrent.thread
 
 @RequestMapping("room")
 @RestController
 class RoomController(
-    private val roomSearchService: RoomSearchService,
+    private val boardSearchByRoomIdService: BoardSearchByRoomIdService,
 ) {
 
-    @GetMapping("{roomId}/piece")
-    fun getRoomPieces(@PathVariable roomId: Int): Sequence<PieceDto> {
-        val room = roomSearchService.find(roomId)
+    @GetMapping("{roomId}/board")
+    fun getRoomBoard(@PathVariable roomId: Int, @RequestParam version: Int): DeferredResult<BoardDto> {
+        val board = boardSearchByRoomIdService.find(roomId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
-        return room.board.pieces()
-            .map { PieceDto(it.cell.toString(), it.color, it.type) }
+
+        val result = DeferredResult<BoardDto>(15000)
+        thread {
+            board.waitNewVersion(version)
+            val pieces = board.pieces()
+                .map { PieceDto(it.cell.toString(), it.color, it.type) }
+            val boardDto = BoardDto(board.version, pieces)
+            result.setResult(boardDto)
+        }
+        return result
     }
 }
