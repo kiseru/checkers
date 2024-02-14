@@ -6,11 +6,11 @@
     align-items: center;
 }
 
-.black-cell {
+.cell.cell_black {
     background-color: #0dcaf0;
 }
 
-.white-cell {
+.cell.cell_white {
     background-color: #cff4fc;
 }
 
@@ -19,18 +19,18 @@
     height: 50px;
 }
 
-.black-man {
+.piece.piece_black-man {
     background-image: url("/images/black-man.png");
 }
 
-.white-man {
+.piece.piece_white-man {
     background-image: url("/images/white-man.png");
 }
 
-.black-king {
+.piece.piece_black-king {
     background-image: url("/images/black-king.png");
 }
 
-.white-king {
+.piece.piece_white-king {
     background-image: url("/images/white-king.png");
 }

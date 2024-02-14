@@ -26,15 +26,9 @@
             >
                 <div
                         th:each="j : ${#numbers.sequence(0, board[i].length - 1, 1)}"
-                        th:class="${(7 - i + j) % 2 == 0}? 'cell white-cell':'cell black-cell'"
+                        th:class="${(7 - i + j) % 2 == 0}? 'cell cell_white':'cell cell_black'"
                         th:id="${board[i][j]}"
                 >
-                    <div
-                            th:if="${board[i][j].getPiece() != null}"
-                            th:id="${board[i][j]}"
-                            th:class="${board[i][j].getPiece().getCssClass()}"
-                    >
-                    </div>
                 </div>
             </div>
         </div>

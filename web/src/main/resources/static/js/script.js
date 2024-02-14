@@ -1,7 +1,6 @@
 let from = "";
-let to = "";
 
-const cells = document.getElementsByClassName('black-cell');
+const cells = document.getElementsByClassName('cell_black');
 for (let cell of cells) {
     cell.onclick = createMoveHandler(cell.id);
 }
@@ -16,25 +15,23 @@ function createMoveHandler(cell) {
         } else if (from === cell) {
             from = "";
         } else {
-            to = cell;
             const queryParams = new URLSearchParams({
                 from,
-                to,
+                to: cell,
                 login: login.textContent,
                 id: id.textContent,
             });
             await fetch("/game?" + queryParams);
             from = "";
-            to = "";
         }
     }
 }
 
 async function subscribe(roomId, version) {
     const response = await fetch(`/room/${roomId}/board?version=${version}`);
-    if (response.status == 502) {
+    if (response.status === 502) {
         await subscribe(roomId, version);
-    } else if (response.status != 200) {
+    } else if (response.status !== 200) {
         console.log(response.statusText);
         await new Promise(resolve => setTimeout(resolve, 1000));
         await subscribe(roomId, version);
@@ -77,15 +74,15 @@ function createPieceDiv(type, color) {
 function getClassName(type, color) {
     if (type === "MAN") {
         if (color === "WHITE") {
-            return "piece white-man";
+            return "piece piece_white-man";
         } else {
-            return "piece black-man";
+            return "piece piece_black-man";
         }
     } else {
         if (color === "WHITE") {
-            return "piece white-king";
+            return "piece piece_white-king";
         } else {
-            return "piece black-king";
+            return "piece piece_black-king";
         }
     }
 }
