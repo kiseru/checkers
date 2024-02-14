@@ -299,6 +299,7 @@ class BoardTest {
         matrix[0][1] = whiteCell
         matrix[0][2] = cellWithPlayerPiece
         ReflectionTestUtils.setField(board, "board", matrix)
+        willCallRealMethod().given(board).pieces()
         willCallRealMethod().given(board).analyze(eq(Color.WHITE))
 
         // when

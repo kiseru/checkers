@@ -8,6 +8,10 @@ plugins {
     kotlin("plugin.spring")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
 repositories {
     mavenCentral()
 }
@@ -23,15 +27,14 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
-}
-
-tasks.withType<BootJar> {
-    enabled = false
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.withType<BootJar> {
+    enabled = false
+}
