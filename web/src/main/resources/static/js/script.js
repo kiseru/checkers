@@ -12,8 +12,10 @@ function createMoveHandler(cell) {
     return async function() {
         if (from === "") {
             from = cell;
+            onCellChecked(cell);
         } else if (from === cell) {
             from = "";
+            onCellUnchecked(cell);
         } else {
             const queryParams = new URLSearchParams({
                 from,
@@ -25,6 +27,16 @@ function createMoveHandler(cell) {
             from = "";
         }
     }
+}
+
+function onCellChecked(cell) {
+    const cellElement = document.getElementById(cell);
+    cellElement.classList.add("cell_checked");
+}
+
+function onCellUnchecked(cell) {
+    const cellElement = document.getElementById(cell);
+    cellElement.classList.remove("cell_checked");
 }
 
 async function subscribe(roomId, version) {
@@ -58,6 +70,7 @@ function drawPieces(pieces) {
 function clearBoard() {
     const cells = document.getElementsByClassName("cell");
     for (let cell of cells) {
+        cell.classList.remove("cell_checked");
         for (let elem of cell.children) {
             elem.remove();
         }
