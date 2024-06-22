@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.BDDMockito.willCallRealMethod
 import org.mockito.InjectMocks
@@ -72,6 +74,23 @@ class ManTest {
     }
 
     @Test
+    fun `isAbleToMoveTo test when cell diff more than one`() {
+        // given
+        val emptyCell = mock<Cell>()
+
+        given(board.getCell(anyInt(), anyInt())).willReturn(emptyCell)
+
+        given(cell.board).willReturn(board)
+        given(cell.diff(eq(destinationCell))).willReturn(2)
+
+        // when
+        val actual = underTest.isAbleToMoveTo(destinationCell)
+
+        // then
+        assertThat(actual).isFalse()
+    }
+
+    @Test
     fun `isAbleToMoveTo test when there is no next row`() {
         // given
         val emptyCell = mock<Cell>()
@@ -124,7 +143,7 @@ class ManTest {
     }
 
     @Test
-    fun `isAbleToMoveTo test when diff is more than two`() {
+    fun `isAbleToEatTo test when diff is more than two`() {
         // given
         given(cell.diff(eq(destinationCell))).willReturn(3)
 
@@ -221,6 +240,21 @@ class ManTest {
         assertThat(underTest.isCanMove).isTrue()
     }
 
+    @CsvSource("8,WHITE", "1,BLACK")
+    @ParameterizedTest
+    fun `analyzeAbilityOfMove on the last line test`(row: Int, color: Color) {
+        // given
+        given(cell.row).willReturn(row)
+
+        ReflectionTestUtils.setField(underTest, "color", color)
+
+        // when
+        underTest.analyzeAbilityOfMove()
+
+        // then
+        assertThat(underTest.isCanMove).isFalse()
+    }
+
     @Test
     fun `analyzeAbilityOfEat test`() {
         // given
@@ -281,18 +315,22 @@ class ManTest {
             .isThrownBy { underTest.move(destinationCell) }
     }
 
-    @Test
-    fun `move test`() {
+    @ParameterizedTest
+    @CsvSource("WHITE,4,4,5,5", "BLACK,5,5,4,4")
+    fun `move test`(color: Color, sourceRow: Int, sourceColumn: Int, destinationRow: Int, destinationColumn: Int) {
         // given
         underTest.isCanEat = false
         underTest.isCanMove = true
+        ReflectionTestUtils.setField(underTest, "color", color)
 
         given(board.getCell(anyInt(), anyInt())).willReturn(mock<Cell>())
-        given(board.getCell(eq(1), eq(1))).willReturn(destinationCell)
+        given(board.getCell(eq(destinationRow), eq(destinationColumn))).willReturn(destinationCell)
 
         willCallRealMethod().given(cell).piece = anyOrNull()
         given(cell.board).willReturn(board)
         given(cell.diff(eq(destinationCell))).willReturn(1)
+        given(cell.row).willReturn(sourceRow)
+        given(cell.column).willReturn(sourceColumn)
 
         willCallRealMethod().given(destinationCell).piece = any<Piece>()
 
@@ -307,22 +345,46 @@ class ManTest {
         assertThat(pieceInSourceCell).isNull()
     }
 
-    @Test
-    fun `move test when white piece becomes king`() {
+    @ParameterizedTest
+    @CsvSource(
+        "WHITE,7,1,8,2",
+        "WHITE,7,3,8,2",
+        "WHITE,7,3,8,4",
+        "WHITE,7,5,8,4",
+        "WHITE,7,5,8,4",
+        "WHITE,7,5,8,6",
+        "WHITE,7,7,8,6",
+        "WHITE,7,7,8,8",
+        "BLACK,2,2,1,1",
+        "BLACK,2,2,1,3",
+        "BLACK,2,4,1,3",
+        "BLACK,2,4,1,5",
+        "BLACK,2,6,1,5",
+        "BLACK,2,6,1,7",
+        "BLACK,2,8,1,7",
+    )
+    fun `move test when piece becomes king`(
+        color: Color,
+        sourceRow: Int,
+        sourceColumn: Int,
+        destinationRow: Int,
+        destinationColumn: Int,
+    ) {
         // given
         underTest.isCanEat = false
         underTest.isCanMove = true
+        ReflectionTestUtils.setField(underTest, "color", color)
 
         given(board.getCell(anyInt(), anyInt())).willReturn(mock<Cell>())
-        given(board.getCell(eq(8), eq(2))).willReturn(destinationCell)
+        given(board.getCell(eq(destinationRow), eq(destinationColumn))).willReturn(destinationCell)
 
         given(cell.board).willReturn(board)
         given(cell.diff(eq(destinationCell))).willReturn(1)
-        given(cell.row).willReturn(7)
-        given(cell.column).willReturn(1)
+        given(cell.row).willReturn(sourceRow)
+        given(cell.column).willReturn(sourceColumn)
         willCallRealMethod().given(cell).piece = anyOrNull()
 
-        given(destinationCell.row).willReturn(8)
+        given(destinationCell.row).willReturn(destinationRow)
         willCallRealMethod().given(destinationCell).piece = any<Piece>()
 
         // when
@@ -332,39 +394,7 @@ class ManTest {
         val pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece")
         assertThat(pieceInDestinationCell).isNotNull()
         assertThat(pieceInDestinationCell).isInstanceOf(King::class.java)
-        assertThat((pieceInDestinationCell as King).color).isEqualTo(Color.WHITE)
-
-        val pieceInSourceCell = ReflectionTestUtils.getField(cell, "piece")
-        assertThat(pieceInSourceCell).isNull()
-    }
-
-    @Test
-    fun `move test when black piece becomes king`() {
-        // given
-        underTest.isCanEat = false
-        underTest.isCanMove = true
-        ReflectionTestUtils.setField(underTest, "color", Color.BLACK)
-
-        given(board.getCell(anyInt(), anyInt())).willReturn(mock<Cell>())
-        given(board.getCell(eq(1), eq(1))).willReturn(destinationCell)
-
-        given(cell.board).willReturn(board)
-        given(cell.diff(eq(destinationCell))).willReturn(1)
-        given(cell.row).willReturn(2)
-        given(cell.column).willReturn(2)
-        willCallRealMethod().given(cell).piece = anyOrNull()
-
-        given(destinationCell.row).willReturn(1)
-        willCallRealMethod().given(destinationCell).piece = any<Piece>()
-
-        // when
-        underTest.move(destinationCell)
-
-        // then
-        val pieceInDestinationCell = ReflectionTestUtils.getField(destinationCell, "piece")
-        assertThat(pieceInDestinationCell).isNotNull()
-        assertThat(pieceInDestinationCell).isInstanceOf(King::class.java)
-        assertThat((pieceInDestinationCell as King).color).isEqualTo(Color.BLACK)
+        assertThat((pieceInDestinationCell as King).color).isEqualTo(color)
 
         val pieceInSourceCell = ReflectionTestUtils.getField(cell, "piece")
         assertThat(pieceInSourceCell).isNull()
@@ -518,5 +548,18 @@ class ManTest {
 
         // then
         assertThat(actual).isFalse()
+    }
+
+    @ParameterizedTest
+    @CsvSource("WHITE,piece white-man", "BLACK,piece black-man")
+    fun `getCssClass test`(color: Color, expected: String) {
+        // given
+        ReflectionTestUtils.setField(underTest, "color", color)
+
+        // when
+        val actual = underTest.getCssClass()
+
+        // then
+        assertThat(actual).isEqualTo(expected)
     }
 }
