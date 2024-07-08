@@ -1,32 +1,43 @@
 package ru.kiseru.checkers.domain.board
 
 import ru.kiseru.checkers.domain.utils.Color
+import kotlin.math.abs
 
-abstract class Piece(val color: Color) {
-    
+abstract class Piece(
+    val color: Color,
+    var row: Int,
+    var column: Int,
+) {
+
     var isCanEat = false
-    
-    var isCanMove = false
-    
-    lateinit var cell: Cell
 
     abstract val type: PieceType
 
     abstract fun analyzeAbilityOfMove()
 
-    abstract fun move(destinationCell: Cell)
+    abstract fun move(destination: Pair<Int, Int>)
 
-    abstract fun isAbleToMoveTo(destinationCell: Cell): Boolean
+    abstract fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean
 
     abstract fun analyzeAbilityOfEat()
 
-    abstract fun eat(destinationCell: Cell)
+    abstract fun eat(destination: Pair<Int, Int>)
 
-    abstract fun isAbleToEatTo(destinationCell: Cell): Boolean
+    abstract fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean
 
     abstract fun isMan(): Boolean
 
     abstract fun isKing(): Boolean
 
     abstract fun getCssClass(): String
+
+    fun diff(another: Pair<Int, Int>): Int =
+        if (abs(column - another.second) == abs(row - another.first)) {
+            abs(column - another.second)
+        } else {
+            -1
+        }
+
+    fun isPieceEatable(): Boolean =
+        row != 1 && row != 8 && column != 1 && column != 8
 }

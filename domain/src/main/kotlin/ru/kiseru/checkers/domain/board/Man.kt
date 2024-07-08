@@ -2,14 +2,22 @@ package ru.kiseru.checkers.domain.board
 
 import ru.kiseru.checkers.domain.exception.CannotEatException
 import ru.kiseru.checkers.domain.exception.CannotMoveException
+import ru.kiseru.checkers.domain.exception.CellNotFoundException
 import ru.kiseru.checkers.domain.exception.MustEatException
 import ru.kiseru.checkers.domain.utils.Color
 import ru.kiseru.checkers.domain.utils.isCoordinateExists
 import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 
-class Man(color: Color) : Piece(color) {
+class Man(
+    color: Color,
+    row: Int,
+    column: Int,
+    private val board: Board,
+) : Piece(color, row, column) {
 
     override val type: PieceType = PieceType.MAN
+
+    var isCanMove = false
 
     override fun analyzeAbilityOfMove() {
         val nextRow = getNextRow()
@@ -17,112 +25,111 @@ class Man(color: Color) : Piece(color) {
             return
         }
 
-        val board = cell.board
-        val column = cell.column
         isCanMove = sequenceOf(column - 1, column + 1)
             .filter { isCoordinateExists(it) }
-            .map { board.getCell(nextRow, it) }
-            .any { isAbleToMoveTo(it) }
+            .any { isAbleToMoveTo(nextRow to it) }
     }
 
     private fun getNextRow(): Int =
         if (color == Color.WHITE) {
-            cell.row + 1
+            row + 1
         } else {
-            cell.row - 1
+            row - 1
         }
 
     override fun analyzeAbilityOfEat() {
-        val column = cell.column
-        val row = cell.row
-        val board = cell.board
         isCanEat = sequenceOf(row - 2, row + 2)
             .filter { isCoordinateExists(it) }
             .flatMap { nextRow ->
                 sequenceOf(column - 2, column + 2)
                     .filter { isCoordinateExists(it) }
-                    .map { board.getCell(nextRow, it) }
+                    .map { nextRow to it }
             }
             .any { isAbleToEatTo(it) }
     }
 
-    override fun isAbleToMoveTo(destinationCell: Cell): Boolean {
-        if (destinationCell.piece != null || isEnemyNear() || cell.diff(destinationCell) != 1) {
+    override fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
+        if (board.getPiece(destination) != null || isEnemyNear() || diff(destination) != 1) {
             return false
         }
 
         val nextRow = getNextRow()
-        if (!isCoordinateExists(nextRow)) {
-            return false
-        }
-
-        val column = cell.column
-        val board = cell.board
         return sequenceOf(column - 1, column + 1)
             .filter { isCoordinateExists(it) }
-            .map { board.getCell(nextRow, it) }
-            .any { it == destinationCell }
+            .map { nextRow to it }
+            .any { it == destination }
     }
 
     private fun isEnemyNear(): Boolean =
         sequenceOf(
-            cell.row + 1 to cell.column + 1,
-            cell.row + 1 to cell.column - 1,
-            cell.row - 1 to cell.column - 1,
-            cell.row - 1 to cell.column + 1,
+            row + 1 to column + 1,
+            row + 1 to column - 1,
+            row - 1 to column - 1,
+            row - 1 to column + 1,
         )
-            .filter { isCoordinatesExists(it.first, it.second) }
-            .map { cell.board.getCell(it.first, it.second) }
-            .any { hasEnemyIn(it) }
+            .filter { isCoordinatesExists(it) }
+            .any { canEatEnemy(it) }
 
-    private fun hasEnemyIn(cell: Cell): Boolean =
-        cell.piece?.let { it.color != color } ?: false
-
-    override fun isAbleToEatTo(destinationCell: Cell): Boolean {
-        if (cell.diff(destinationCell) != 2 || destinationCell.piece != null) {
-            return false
-        }
-
-        return cell.between(destinationCell)
-            .piece?.let { it.color != color } ?: false
+    private fun canEatEnemy(coordinates: Pair<Int, Int>): Boolean {
+        val piece = board.getPiece(coordinates) ?: return false
+        return piece.color != color && piece.isPieceEatable()
     }
 
-    override fun move(destinationCell: Cell) {
+    override fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean =
+        if (diff(destination) != 2 || board.getPiece(destination) != null) {
+            false
+        } else {
+            val (rowToFind, columnToFind) = between(destination)
+            board.board[rowToFind - 1][columnToFind - 1]?.let { it.color != color } ?: false
+        }
+
+    override fun move(destination: Pair<Int, Int>) {
         if (isCanEat) {
             throw MustEatException()
         }
 
         if (!isCanMove) {
-            throw CannotMoveException(cell, destinationCell)
+            throw CannotMoveException(row to column, destination)
         }
 
-        if (!isAbleToMoveTo(destinationCell)) {
-            throw CannotMoveException(cell, destinationCell)
+        if (!isAbleToMoveTo(destination)) {
+            throw CannotMoveException(row to column, destination)
         }
 
-        cell.piece = null
-        updatePiece(destinationCell)
+        board.board[row - 1][column - 1] = null
+        updatePiece(destination)
     }
 
-    override fun eat(destinationCell: Cell) {
-        if (!isCanEat || !isAbleToEatTo(destinationCell)) {
-            throw CannotEatException(cell, destinationCell)
+    override fun eat(destination: Pair<Int, Int>) {
+        if (!isCanEat || !isAbleToEatTo(destination)) {
+            throw CannotEatException(row to column, destination)
         }
 
-        cell.piece = null
-        cell.between(destinationCell).piece = null
-        updatePiece(destinationCell)
+        board.board[row - 1][column - 1] = null
+        val (rowToFind, columnToFind) = between(destination)
+        board.board[rowToFind - 1][columnToFind - 1] = null
+        updatePiece(destination)
     }
 
-    private fun updatePiece(cell: Cell) =
-        if (color == Color.WHITE && cell.row == 8 || color == Color.BLACK && cell.row == 1) {
-            cell.piece = createKing()
+    private fun between(destination: Pair<Int, Int>): Pair<Int, Int> =
+        if (isCoordinatesExists(destination)) {
+            val columnToFind = (column + destination.second) / 2
+            val rowToFind = (row + destination.first) / 2
+            rowToFind to columnToFind
         } else {
-            cell.piece = this
+            throw CellNotFoundException(destination.first, destination.second)
         }
 
-    private fun createKing(): Piece =
-        King(color)
+    private fun updatePiece(target: Pair<Int, Int>) {
+        board.board[target.first - 1][target.second - 1] =
+            if (color == Color.WHITE && target.first == 8 || color == Color.BLACK && target.first == 1) {
+                King(color, target.first, target.second, board)
+            } else {
+                row = target.first
+                column = target.second
+                this
+            }
+    }
 
     override fun isMan(): Boolean =
         true
