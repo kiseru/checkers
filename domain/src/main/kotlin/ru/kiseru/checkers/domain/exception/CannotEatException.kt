@@ -1,6 +1,6 @@
 package ru.kiseru.checkers.domain.exception
 
-import ru.kiseru.checkers.domain.board.Cell
+import ru.kiseru.checkers.domain.utils.getCellCaption
 
-class CannotEatException(sourceCell: Cell, destinationCell: Cell) :
-    RuntimeException("Can't eat from $sourceCell to $destinationCell")
+class CannotEatException(source: Pair<Int, Int>, destination: Pair<Int, Int>) :
+    RuntimeException("Can't eat from ${getCellCaption(source)} to ${getCellCaption(destination)}")

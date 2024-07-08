@@ -1,5 +1,6 @@
 package ru.kiseru.checkers.domain.exception
 
-import ru.kiseru.checkers.domain.board.Cell
+import ru.kiseru.checkers.domain.utils.getCellCaption
 
-class CellIsBusyException(cell: Cell) : RuntimeException("Cell $cell already has the piece")
+class CellIsBusyException(row: Int, column: Int) :
+    RuntimeException("Cell ${getCellCaption(row, column)} already has the piece")

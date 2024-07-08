@@ -2,9 +2,11 @@ package ru.kiseru.checkers.domain.utils
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
+import ru.kiseru.checkers.domain.exception.CellNotFoundException
 import ru.kiseru.checkers.domain.exception.ConvertCellException
 
 class BoardUtilsTest {
@@ -93,5 +95,21 @@ class BoardUtilsTest {
 
         // then
         assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun `test getCellCaption when coordinates exist`() {
+        // when
+        val actual = getCellCaption(1 to 1)
+
+        // then
+        assertThat(actual).isEqualTo("a1")
+    }
+
+    @Test
+    fun `test getCellCaption when coordinates don't exist`() {
+        // when & then
+        assertThatExceptionOfType(CellNotFoundException::class.java)
+            .isThrownBy { getCellCaption(0 to 0) }
     }
 }

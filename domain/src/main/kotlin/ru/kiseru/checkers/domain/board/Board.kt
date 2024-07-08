@@ -12,11 +12,7 @@ import kotlin.concurrent.withLock
 
 class Board {
 
-    val board: Array<Array<Cell>> = Array(SIZE_OF_BOARD) { row ->
-        Array(SIZE_OF_BOARD) { column ->
-            Cell(row + 1, column + 1, this)
-        }
-    }
+    val board: Array<Array<Piece?>> = Array(SIZE_OF_BOARD) { arrayOfNulls(SIZE_OF_BOARD) }
 
     var version = 1
         private set
@@ -37,67 +33,70 @@ class Board {
 
     private fun initWhitePieces() =
         (0..2).asSequence()
-            .flatMap { board[it].asSequence() }
-            .filter { it.color == Color.BLACK }
-            .forEach { it.piece = Man(Color.WHITE) }
+            .flatMap { row ->
+                (0..7).asSequence()
+                    .map { column -> row to column }
+            }
+            .filter { (it.first + it.second) % 2 == 0 }
+            .forEach { board[it.first][it.second] = Man(Color.WHITE, it.first + 1, it.second + 1, this) }
 
     private fun initBlackPieces() =
         (5..7).asSequence()
-            .flatMap { board[it].asSequence() }
-            .filter { it.color == Color.BLACK }
-            .forEach { it.piece = Man(Color.BLACK) }
-
-    private fun cells(): Sequence<Cell> =
-        board.asSequence()
-            .flatMap { it.asSequence() }
+            .flatMap { row ->
+                (0..7).asSequence()
+                    .map { column -> row to column }
+            }
+            .filter { (it.first + it.second) % 2 == 0 }
+            .forEach { board[it.first][it.second] = Man(Color.BLACK, it.first + 1, it.second + 1, this) }
 
     fun pieces(): Sequence<Piece> =
-        cells()
-            .mapNotNull { it.piece }
+        board.asSequence()
+            .flatMap { it.asSequence() }
+            .filterNotNull()
 
-    fun getCell(row: Int, column: Int): Cell =
-        if (isCoordinatesExists(row, column)) {
-            board[row - 1][column - 1]
+    fun move(source: Pair<Int, Int>, destination: Pair<Int, Int>) =
+        lock.withLock {
+            val piece = getPiece(source)
+                ?: throw CellIsEmptyException(source.first, source.second)
+
+            if (getPiece(destination) != null) {
+                throw CellIsBusyException(destination.first, destination.second)
+            }
+
+            if (piece.isAbleToMoveTo(destination)) {
+                piece.move(destination)
+            } else {
+                throw CannotMoveException(source, destination)
+            }
+
+            updateVersion()
+            condition.signalAll()
+        }
+
+    fun eat(source: Pair<Int, Int>, destination: Pair<Int, Int>) =
+        lock.withLock {
+            val piece = getPiece(source)
+                ?: throw CellIsEmptyException(source.first, source.second)
+
+            if (getPiece(destination) != null) {
+                throw CellIsBusyException(destination.first, destination.second)
+            }
+
+            if (piece.isAbleToEatTo(destination)) {
+                piece.eat(destination)
+            } else {
+                throw CannotEatException(source, destination)
+            }
+
+            updateVersion()
+            condition.signalAll()
+        }
+
+    fun getPiece(coordinates: Pair<Int, Int>): Piece? =
+        if (isCoordinatesExists(coordinates)) {
+            board[coordinates.first - 1][coordinates.second - 1]
         } else {
-            throw CellNotFoundException(row, column)
-        }
-
-    fun move(sourceCell: Cell, destinationCell: Cell) =
-        lock.withLock {
-            val piece = sourceCell.piece
-                ?: throw CellIsEmptyException(sourceCell)
-
-            if (destinationCell.piece != null) {
-                throw CellIsBusyException(destinationCell)
-            }
-
-            if (piece.isAbleToMoveTo(destinationCell)) {
-                piece.move(destinationCell)
-            } else {
-                throw CannotMoveException(sourceCell, destinationCell)
-            }
-
-            updateVersion()
-            condition.signalAll()
-        }
-
-    fun eat(sourceCell: Cell, destinationCell: Cell) =
-        lock.withLock {
-            val piece = sourceCell.piece
-                ?: throw CellIsEmptyException(sourceCell)
-
-            if (destinationCell.piece != null) {
-                throw CellIsBusyException(destinationCell)
-            }
-
-            if (piece.isAbleToEatTo(destinationCell)) {
-                piece.eat(destinationCell)
-            } else {
-                throw CannotEatException(sourceCell, destinationCell)
-            }
-
-            updateVersion()
-            condition.signalAll()
+            throw CellNotFoundException(coordinates.first, coordinates.second)
         }
 
     private fun updateVersion() {

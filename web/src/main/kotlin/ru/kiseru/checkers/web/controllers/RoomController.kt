@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
+import ru.kiseru.checkers.domain.utils.getCellCaption
 import ru.kiseru.checkers.operational.BoardSearchByRoomIdService
 import ru.kiseru.checkers.web.controllers.dto.BoardDto
 import ru.kiseru.checkers.web.controllers.dto.PieceDto
@@ -28,7 +29,7 @@ class RoomController(
         thread {
             board.waitNewVersion(version)
             val pieces = board.pieces()
-                .map { PieceDto(it.cell.toString(), it.color, it.type) }
+                .map { PieceDto(getCellCaption(it.row, it.column), it.color, it.type) }
             val boardDto = BoardDto(board.version, pieces)
             result.setResult(boardDto)
         }

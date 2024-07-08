@@ -8,62 +8,70 @@ import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 import kotlin.math.abs
 import kotlin.math.sign
 
-class King(color: Color) : Piece(color) {
+class King(
+    color: Color,
+    row: Int,
+    column: Int,
+    private val board: Board,
+) : Piece(color, row, column) {
 
     override val type: PieceType = PieceType.KING
+
+    var isCanMove = false
 
     override fun analyzeAbilityOfMove() {
         isCanMove = generateSequence(1) { it + 1 }
             .take(7)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
-            .filter { isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
-            .any { isAbleToMoveTo(cell.getNear(it.first, it.second)) }
+            .filter { isCoordinatesExists(row + it.first, column + it.second) }
+            .map { getNear(it.first, it.second) }
+            .any { isAbleToMoveTo(it) }
     }
 
-    override fun move(destinationCell: Cell) {
+    override fun move(destination: Pair<Int, Int>) {
         if (isCanEat) {
             throw MustEatException()
         }
 
-        if (!isCanMove || !isAbleToMoveTo(destinationCell)) {
-            throw CannotMoveException(cell, destinationCell)
+        if (!isCanMove || !isAbleToMoveTo(destination)) {
+            throw CannotMoveException(row to column, destination)
         }
 
-        cell.piece = null
-        destinationCell.piece = this
+        board.board[row - 1][column - 1] = null
+        board.board[destination.first - 1][destination.second - 1] = this
+        row = destination.first
+        column = destination.second
     }
 
-    override fun isAbleToMoveTo(destinationCell: Cell): Boolean {
-        if (cell.diff(destinationCell) == -1) {
+    override fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
+        if (diff(destination) == -1) {
             return false
         }
 
-        if (destinationCell.piece != null) {
+        if (board.getPiece(destination) != null) {
             return false
         }
 
-        if (isOnOtherDiagonal(destinationCell)) {
+        if (isOnOtherDiagonal(destination)) {
             return false
         }
 
-        val deltaColumn = destinationCell.column - cell.column
-        val deltaRow = destinationCell.row - cell.row
+        val deltaColumn = destination.second - column
+        val deltaRow = destination.first - row
 
         val deltaColumnSign = sign(deltaColumn.toDouble()).toInt()
         val deltaRowSign = sign(deltaRow.toDouble()).toInt()
 
-        val board = cell.board
         var i = 1
         while (true) {
-            val currentRow = cell.row + deltaRowSign * i
-            val currentColumn = cell.column + deltaColumnSign * i
+            val currentRow = row + deltaRowSign * i
+            val currentColumn = column + deltaColumnSign * i
 
-            if (currentRow == destinationCell.row && currentColumn == destinationCell.column) {
+            if (currentRow == destination.first && currentColumn == destination.second) {
                 return true
             }
 
-            val currentCell = board.getCell(currentRow, currentColumn)
-            if (currentCell.piece != null) {
+            if (board.getPiece(currentRow to currentColumn) != null) {
                 return false
             }
 
@@ -75,37 +83,50 @@ class King(color: Color) : Piece(color) {
         isCanEat = generateSequence(2) { it + 1 }
             .take(6)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
-            .filter { isCoordinatesExists(cell.row + it.first, cell.column + it.second) }
-            .any { isAbleToEatTo(cell.getNear(it.first, it.second)) }
+            .filter { isCoordinatesExists(row + it.first, column + it.second) }
+            .map { getNear(it.first, it.second) }
+            .any { isAbleToEatTo(it) }
     }
 
-    override fun eat(destinationCell: Cell) {
-        if (!isCanEat || !isAbleToEatTo(destinationCell)) {
-            throw CannotEatException(cell, destinationCell)
+    private fun getNear(diffRow: Int, diffColumn: Int): Pair<Int, Int> {
+        val rowToFind = row + diffRow
+        val columnToFind = column + diffColumn
+        if (isCoordinatesExists(rowToFind, columnToFind)) {
+            return rowToFind to columnToFind
         }
 
-        val sacrificedPiece = getSacrificedPiece(destinationCell) ?: throw CannotEatException(cell, destinationCell)
-        val sacrificedPieceCell = sacrificedPiece.cell
-        cell.piece = null
-        sacrificedPieceCell.piece = null
-        destinationCell.piece = this
+        throw ArrayIndexOutOfBoundsException()
     }
 
-    override fun isAbleToEatTo(destinationCell: Cell): Boolean {
-        if (destinationCell.piece != null) {
+    override fun eat(destination: Pair<Int, Int>) {
+        if (!isCanEat || !isAbleToEatTo(destination)) {
+            throw CannotEatException(row to column, destination)
+        }
+
+        val sacrificedPiece = getSacrificedPiece(destination)
+            ?: throw CannotEatException(row to column, destination)
+        board.board[sacrificedPiece.row - 1][sacrificedPiece.column - 1] = null
+        board.board[row - 1][column - 1] = null
+        board.board[destination.first - 1][destination.second - 1] = this
+        row = destination.first
+        column = destination.second
+    }
+
+    override fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean {
+        if (board.getPiece(destination) != null) {
             return false
         }
 
-        if (isOnOtherDiagonal(destinationCell)) {
+        if (isOnOtherDiagonal(destination)) {
             return false
         }
 
-        if (cell.diff(destinationCell) < 2) {
+        if (diff(destination) < 2) {
             return false
         }
 
-        val deltaColumn = destinationCell.column - cell.column
-        val deltaRow = destinationCell.row - cell.row
+        val deltaColumn = destination.second - column
+        val deltaRow = destination.first - row
 
         val deltaColumnSign = sign(deltaColumn.toFloat()).toInt()
         val deltaRowSign = sign(deltaRow.toFloat()).toInt()
@@ -113,14 +134,13 @@ class King(color: Color) : Piece(color) {
         var enemyPieceCount = 0
         var i = 1
         while (true) {
-            val currentRow = cell.row + deltaRowSign * i
-            val currentColumn = cell.column + deltaColumnSign * i
-            if (currentColumn == destinationCell.column && currentRow == destinationCell.row) {
+            val currentRow = row + deltaRowSign * i
+            val currentColumn = column + deltaColumnSign * i
+            if (currentColumn == destination.second && currentRow == destination.first) {
                 return enemyPieceCount == 1
             }
 
-            val currentCell = cell.board.getCell(currentRow, currentColumn)
-            val piece = currentCell.piece
+            val piece = board.getPiece(currentRow to currentColumn)
             if (piece == null) {
                 i++
                 continue
@@ -135,32 +155,26 @@ class King(color: Color) : Piece(color) {
         }
     }
 
-    private fun isOnOtherDiagonal(destinationCell: Cell): Boolean {
-        val deltaColumn = destinationCell.column - cell.column
-        val deltaRow = destinationCell.row - cell.row
+    private fun isOnOtherDiagonal(destination: Pair<Int, Int>): Boolean {
+        val deltaColumn = destination.second - column
+        val deltaRow = destination.first - row
         val k = deltaColumn.toFloat() / deltaRow
         return abs(k) != 1f
     }
 
-    private fun getSacrificedPiece(destinationCell: Cell): Piece? {
-        val destinationRow = destinationCell.row
-        val destinationColumn = destinationCell.column
-        val sourceRow = cell.row
-        val sourceColumn = cell.column
-
-        val signRow = sign((destinationCell.row - cell.row).toFloat()).toInt()
-        val signCol = sign((destinationCell.column - cell.column).toFloat()).toInt()
+    private fun getSacrificedPiece(destination: Pair<Int, Int>): Piece? {
+        val signRow = sign((destination.first - row).toFloat()).toInt()
+        val signCol = sign((destination.second - column).toFloat()).toInt()
 
         var i = 1
         while (true) {
-            val currentRow = sourceRow + signRow * i
-            val currentColumn = sourceColumn + signCol * i
-            if (currentRow == destinationRow && currentColumn == destinationColumn) {
+            val currentRow = row + signRow * i
+            val currentColumn = column + signCol * i
+            if (currentRow == destination.first && currentColumn == destination.second) {
                 return null
             }
 
-            val currentCell = cell.board.getCell(currentRow, currentColumn)
-            val piece = currentCell.piece
+            val piece = board.getPiece(currentRow to currentColumn)
             if (piece == null) {
                 i++
                 continue

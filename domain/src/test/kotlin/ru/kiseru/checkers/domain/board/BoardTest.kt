@@ -2,27 +2,22 @@ package ru.kiseru.checkers.domain.board
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
-import org.mockito.BDDMockito.willCallRealMethod
-import org.mockito.Mockito.times
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
 import org.springframework.test.util.ReflectionTestUtils
 import ru.kiseru.checkers.domain.exception.CannotEatException
 import ru.kiseru.checkers.domain.exception.CannotMoveException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
 import ru.kiseru.checkers.domain.exception.CellIsEmptyException
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
-import ru.kiseru.checkers.domain.user.User
 import ru.kiseru.checkers.domain.utils.Color
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 @ExtendWith(MockitoExtension::class)
 class BoardTest {
@@ -45,8 +40,17 @@ class BoardTest {
 
         board.forEach { assertThat(it.size).isEqualTo(boardSize) }
 
-        board.flatMap { it.asSequence() }
-            .forEach { assertThat(it).isNotNull }
+        val pieceCount = board.flatMap { it.asSequence() }
+            .count { it != null }
+        assertThat(pieceCount).isEqualTo(24)
+
+        val whitePieceCount = board.flatMap { it.asSequence() }
+            .count { it?.color == Color.WHITE }
+        assertThat(whitePieceCount).isEqualTo(12)
+
+        val blackPieceCount = board.flatMap { it.asSequence() }
+            .count { it?.color == Color.BLACK }
+        assertThat(blackPieceCount).isEqualTo(12)
     }
 
     @ParameterizedTest
@@ -79,8 +83,7 @@ class BoardTest {
     fun testWhitePieceInitialization(row: Int, column: Int, expected: Color) {
         // given
         val board = underTest.board
-        val cell = board[row - 1][column - 1]
-        val piece = cell.piece
+        val piece = board[row - 1][column - 1]
 
         // then
         assertThat(piece).isNotNull
@@ -122,121 +125,88 @@ class BoardTest {
 
     @Test
     fun testEatWhileSourceCellIsEmpty() {
-        // given
-        val sourceCell = mock<Cell>()
-        val destinationCell = mock<Cell>()
-
         // when & then
         assertThatExceptionOfType(CellIsEmptyException::class.java)
-            .isThrownBy { underTest.eat(sourceCell, destinationCell) }
+            .isThrownBy { underTest.eat(5 to 5, 6 to 6) }
     }
 
     @Test
     fun testEatWhileDestinationCellIsBusy() {
         // given
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(mock<Piece>())
-
-        val destinationCell = mock<Cell>()
-        given(destinationCell.piece).willReturn(mock<Piece>())
+        val board = underTest.board
+        board[4][4] = board[6][6]
+        board[6][6] = null
+        board[3][3] = board[2][2]
+        board[2][2] = null
 
         // when & then
         assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.eat(sourceCell, destinationCell) }
+            .isThrownBy { underTest.eat(4 to 4, 6 to 6) }
     }
 
     @Test
     fun testEatWhileCannotEat() {
-        // given
-        val destinationCell = mock<Cell>()
-
-        val piece = mock<Piece>()
-        given(piece.isAbleToEatTo(eq(destinationCell))).willReturn(false)
-
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(piece)
-
         // when & then
         assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { underTest.eat(sourceCell, destinationCell) }
+            .isThrownBy { underTest.eat(3 to 3, 5 to 5) }
     }
 
     @Test
     fun testEatWhileCanEat() {
         // given
-        val destinationCell = mock<Cell>()
+        val board = underTest.board
+        board[3][3] = board[5][5]
+        board[5][5] = null
 
-        val piece = mock<Piece>()
-        given(piece.isAbleToEatTo(eq(destinationCell))).willReturn(true)
+        val sourcePiece = board[2][2]
 
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(piece)
+        underTest.analyze(Color.WHITE)
 
         // when
-        underTest.eat(sourceCell, destinationCell)
+        underTest.eat(3 to 3, 5 to 5)
 
         // then
-        then(piece).should(times(1)).eat(eq(destinationCell))
+        assertThat(board[2][2]).isNull()
+        assertThat(board[3][3]).isNull()
+        assertThat(board[4][4]).isSameAs(sourcePiece)
     }
 
     @Test
     fun testMoveWhileSourceCellIsEmpty() {
-        // given
-        val destinationCell = mock<Cell>()
-
-        val sourceCell = mock<Cell>()
-
         // when & then
         assertThatExceptionOfType(CellIsEmptyException::class.java)
-            .isThrownBy { underTest.move(sourceCell, destinationCell) }
+            .isThrownBy { underTest.move(4 to 4, 5 to 5) }
     }
 
     @Test
     fun testMoveWhileDestinationCellIsBusy() {
-        // given
-        val destinationCell = mock<Cell>()
-        given(destinationCell.piece).willReturn(mock<Piece>())
-
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(mock<Piece>())
-
         // when & then
         assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.move(sourceCell, destinationCell) }
+            .isThrownBy { underTest.move(2 to 2, 3 to 3) }
     }
 
     @Test
     fun testMoveWhileCannotMove() {
         // given
-        val destinationCell = mock<Cell>()
-
-        val piece = mock<Piece>()
-        given(piece.isAbleToMoveTo(eq(destinationCell))).willReturn(false)
-
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(piece)
+        val board = underTest.board
+        board[3][3] = board[6][6]
+        board[6][6] = null
+        underTest.analyze(Color.WHITE)
 
         // when & then
         assertThatExceptionOfType(CannotMoveException::class.java)
-            .isThrownBy { underTest.move(sourceCell, destinationCell) }
+            .isThrownBy { underTest.move(3 to 3, 4 to 2) }
     }
 
     @Test
     fun testMoveWhileCanMove() {
-        // given
-        val destinationCell = mock<Cell>()
-
-        val piece = mock<Piece>()
-        given(piece.isAbleToMoveTo(eq(destinationCell))).willReturn(true)
-
-        val sourceCell = mock<Cell>()
-        given(sourceCell.piece).willReturn(piece)
-
         // when
-        underTest.move(sourceCell, destinationCell)
+        underTest.move(3 to 3, 4 to 4)
 
         // then
-        then(piece).should(times(1)).move(eq(destinationCell))
+        val board = underTest.board
+        assertThat(board[2][2]).isNull()
+        assertThat(board[3][3]).isNotNull
     }
 
     @ParameterizedTest
@@ -273,73 +243,36 @@ class BoardTest {
         assertThat(actual).isEqualTo(expectedCount)
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [true, false])
-    fun testAnalyzeWhileCannotEat(isCanEat: Boolean) {
+    @Test
+    fun testAnalyzeWhileCannotEat() {
+        // when
+        val actual = underTest.analyze(Color.WHITE)
+
+        // then
+        assertThat(actual).isEqualTo(false)
+    }
+
+    @Test
+    fun `test waitNewVersion`() {
         // given
-        val user = mock<User>()
-        given(user.color).willReturn(Color.WHITE)
-
-        val whiteCell = mock<Cell>()
-
-        val emptyCell = mock<Cell>()
-        given(emptyCell.piece).willReturn(null)
-
-        val playerPiece = mock<Piece>()
-        given(playerPiece.color).willReturn(Color.WHITE)
-        given(playerPiece.isCanEat).willReturn(isCanEat)
-
-        val cellWithPlayerPiece = mock<Cell>()
-        given(cellWithPlayerPiece.piece).willReturn(playerPiece)
-
-        val board = mock<Board>()
-        val matrix = Array(8) {
-            Array(8) { emptyCell }
+        thread {
+            TimeUnit.SECONDS.sleep(1)
+            underTest.move(3 to 3, 4 to 4)
         }
-        matrix[0][1] = whiteCell
-        matrix[0][2] = cellWithPlayerPiece
-        ReflectionTestUtils.setField(board, "board", matrix)
-        willCallRealMethod().given(board).pieces()
-        willCallRealMethod().given(board).analyze(eq(Color.WHITE))
 
         // when
-        val actual = board.analyze(user.color)
+        assertThatNoException()
+            .isThrownBy { underTest.waitNewVersion(1) }
 
         // then
-        assertThat(actual).isEqualTo(isCanEat)
+        assertThat(underTest.version).isEqualTo(2)
     }
 
     @ParameterizedTest
-    @CsvSource(
-        "1, 5",
-        "5, 1",
-        "8, 5",
-        "5, 8",
-    )
-    fun testGetCellWhileCellExists(row: Int, column: Int) {
-        // given
-        val board = Board()
-
-        // when
-        val actual = board.getCell(row, column)
-
-        // then
-        assertThat(actual).isNotNull()
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "0, 1",
-        "1, 0",
-        "9, 1",
-        "1, 9",
-    )
-    fun testGetCellWhileCellDoesNotExist(row: Int, column: Int) {
-        // given
-        val board = Board()
-
+    @CsvSource("0,4", "4, 0", "9,4", "4,9")
+    fun `test move while source does not exist`(row: Int, column: Int) {
         // when & then
         assertThatExceptionOfType(CellNotFoundException::class.java)
-            .isThrownBy { board.getCell(row, column) }
+            .isThrownBy { underTest.move(row to column, 1 to 1) }
     }
 }

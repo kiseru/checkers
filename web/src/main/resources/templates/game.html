@@ -21,13 +21,13 @@
     <div class="row">
         <div class="col-8">
             <div
-                    th:each="i : ${#numbers.sequence(board.length - 1, 0, -1)}"
+                    th:each="i : ${ #numbers.sequence(8, 1, -1) }"
                     class="d-flex justify-content-center"
             >
                 <div
-                        th:each="j : ${#numbers.sequence(0, board[i].length - 1, 1)}"
+                        th:each="j : ${ #numbers.sequence(1, 8) }"
                         th:class="${(7 - i + j) % 2 == 0}? 'cell cell_white':'cell cell_black'"
-                        th:id="${board[i][j]}"
+                        th:id="${ #strings.toString(#conversions.convert(96 + j, 'java.lang.Character')) + #strings.toString(i) }"
                 >
                 </div>
             </div>
