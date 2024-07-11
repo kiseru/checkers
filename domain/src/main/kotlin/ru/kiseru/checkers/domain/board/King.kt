@@ -188,19 +188,6 @@ class King(
         }
     }
 
-    override fun isMan(): Boolean =
-        false
-
-    override fun isKing(): Boolean =
-        true
-
-    override fun getCssClass(): String =
-        if (color == Color.WHITE) {
-            "piece white-king"
-        } else {
-            "piece black-king"
-        }
-
     override fun toString(): String =
         if (color == Color.BLACK) {
             "&"

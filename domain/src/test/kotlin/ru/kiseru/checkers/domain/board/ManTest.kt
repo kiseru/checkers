@@ -514,42 +514,6 @@ class ManTest {
         assertThat(man.color).isEqualTo(Color.BLACK)
     }
 
-    @Test
-    fun `isMan test`() {
-        // given
-        val underTest = Man(Color.WHITE, 4, 4, board)
-
-        // when
-        val actual = underTest.isMan()
-
-        // then
-        assertThat(actual).isTrue()
-    }
-
-    @Test
-    fun `isKing test`() {
-        val underTest = Man(Color.WHITE, 4, 4, board)
-
-        // when
-        val actual = underTest.isKing()
-
-        // then
-        assertThat(actual).isFalse()
-    }
-
-    @ParameterizedTest
-    @CsvSource("WHITE,piece white-man", "BLACK,piece black-man")
-    fun `getCssClass test`(color: Color, expected: String) {
-        // given
-        val underTest = Man(color, 4, 4, board)
-
-        // when
-        val actual = underTest.getCssClass()
-
-        // then
-        assertThat(actual).isEqualTo(expected)
-    }
-
     @ParameterizedTest
     @CsvSource(
         "4, 4, 5, 5, 1",

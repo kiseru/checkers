@@ -192,30 +192,6 @@ class KingTest {
     }
 
     @Test
-    fun `isKing test`() {
-        // given
-        val underTest = King(Color.WHITE, 1, 1, board)
-
-        // when
-        val actual = underTest.isKing()
-
-        // then
-        assertThat(actual).isTrue()
-    }
-
-    @Test
-    fun `isMan test`() {
-        // given
-        val underTest = King(Color.WHITE, 1, 1, board)
-
-        // when
-        val actual = underTest.isMan()
-
-        // then
-        assertThat(actual).isFalse()
-    }
-
-    @Test
     fun `move test when can eat`() {
         // given
         val underTest = King(Color.WHITE, 3, 3, board)
@@ -493,21 +469,5 @@ class KingTest {
 
         // then
         assertThat(underTest.isCanEat).isTrue()
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "WHITE,piece white-king",
-        "BLACK,piece black-king",
-    )
-    fun `getCssClass test`(color: Color, expected: String) {
-        // given
-        val underTest = King(color, 1, 1, board)
-
-        // when
-        val actual = underTest.getCssClass()
-
-        // then
-        assertThat(actual).isEqualTo(expected)
     }
 }
