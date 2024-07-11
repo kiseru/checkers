@@ -5,8 +5,6 @@ import ru.kiseru.checkers.domain.exception.CellException
 import ru.kiseru.checkers.domain.exception.ConvertCellException
 import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
-import ru.kiseru.checkers.domain.utils.convertColumn
-import ru.kiseru.checkers.domain.utils.convertRow
 import ru.kiseru.checkers.domain.utils.getCellCaption
 import java.util.UUID
 
@@ -18,34 +16,31 @@ class User(
 
     lateinit var color: Color
 
-    var isCanEat = false
-
     lateinit var board: Board
 
-    fun makeTurn(from: String, to: String) {
+    fun makeTurn(from: String, to: String): Boolean {
         val source = convertCell(from)
-        val piece = board.getPiece(source) ?: throw CellException("Cell '${getCellCaption(source)}' is empty")
-
-        if (piece.color != color) {
-            throw PieceException("Piece in '${getCellCaption(source)}' isn't yours")
-        }
-
+        checkPieceOwner(source)
         val destination = convertCell(to)
-        if (board.getPiece(destination) != null) {
-            throw CellException("Cell '${getCellCaption(destination)}' isn't empty")
-        }
+        return makeTurn(source, destination)
+    }
 
-        var wasEating = false
-        isCanEat = board.analyze(color)
-        if (isCanEat) {
+    private fun checkPieceOwner(pieceLocation: Pair<Int, Int>) {
+        val piece = board.getPiece(pieceLocation)
+            ?: throw CellException("Cell '${getCellCaption(pieceLocation)}' is empty")
+        if (piece.color != color) {
+            throw PieceException("Piece in '${getCellCaption(pieceLocation)}' isn't yours")
+        }
+    }
+
+    private fun makeTurn(source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
+        val isCanEat = board.analyze(color)
+        return if (isCanEat) {
             board.eat(source, destination)
-            wasEating = true
+            board.analyze(color)
         } else {
             board.move(source, destination)
-        }
-        isCanEat = board.analyze(color)
-        if (!wasEating) {
-            isCanEat = false
+            false
         }
     }
 
@@ -58,6 +53,20 @@ class User(
         val row = convertRow(cell[1])
         return row to column
     }
+
+    private fun convertColumn(columnName: Char): Int =
+        if (columnName < 'a' || columnName > 'h') {
+            throw ConvertCellException("Column '$columnName' doesn't exists")
+        } else {
+            columnName.code - 'a'.code + 1
+        }
+
+    private fun convertRow(rowName: Char): Int =
+        if (rowName < '1' || rowName > '8') {
+            throw ConvertCellException("Row '$rowName' doesn't exists")
+        } else {
+            rowName.code - '1'.code + 1
+        }
 
     override fun toString(): String =
         name

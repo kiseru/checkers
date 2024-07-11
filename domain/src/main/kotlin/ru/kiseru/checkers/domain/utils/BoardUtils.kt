@@ -1,7 +1,6 @@
 package ru.kiseru.checkers.domain.utils
 
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
-import ru.kiseru.checkers.domain.exception.ConvertCellException
 
 fun getCellCaption(cell: Pair<Int, Int>): String =
     getCellCaption(cell.first, cell.second)
@@ -22,17 +21,3 @@ fun isCoordinatesExists(row: Int, column: Int): Boolean =
 
 fun isCoordinateExists(coordinate: Int): Boolean =
     coordinate in 1..8
-
-fun convertColumn(columnName: Char): Int =
-    if (columnName < 'a' || columnName > 'h') {
-        throw ConvertCellException("Column '$columnName' doesn't exists")
-    } else {
-        columnName.code - 'a'.code + 1
-    }
-
-fun convertRow(rowName: Char): Int =
-    if (rowName < '1' || rowName > '8') {
-        throw ConvertCellException("Row '$rowName' doesn't exists")
-    } else {
-        rowName.code - '1'.code + 1
-    }

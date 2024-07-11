@@ -2,7 +2,6 @@ package ru.kiseru.checkers.domain
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
-import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -78,44 +77,61 @@ class UserTest {
     }
 
     @Test
-    fun `makeTurn test when destination cell has a piece`() {
+    fun `makeTurn test when can move`() {
         // given
-        board.board[1][1] = Man(Color.WHITE, 2, 2, board)
-        board.board[2][2] = Man(Color.WHITE, 3, 3, board)
+        val piece = Man(Color.WHITE, 4, 4, board)
+        board.board[3][3] = piece
 
-        underTest.color = Color.WHITE
-
-        // when & then
-        assertThatExceptionOfType(CellException::class.java)
-            .isThrownBy { underTest.makeTurn("b2", "c3") }
-    }
-
-    @Test
-    fun `makeTurn test when user can eat`() {
-        // given
-        board.board[1][1] = Man(Color.WHITE, 2, 2, board)
-
-        underTest.isCanEat = true
-        underTest.color = Color.WHITE
-
-        // when & then
-        assertThatNoException()
-            .isThrownBy { underTest.makeTurn("b2", "c3") }
-    }
-
-    @Test
-    fun `makeTurn test when user can't eat`() {
-        // given
-        board.board[1][1] = Man(Color.WHITE, 2, 2, board)
-
-        underTest.isCanEat = false
         underTest.color = Color.WHITE
 
         // when
-        underTest.makeTurn("b2", "c3")
+        val actual = underTest.makeTurn("d4", "e5")
 
         // then
-        assertThat(underTest.isCanEat).isFalse()
+        assertThat(actual).isFalse()
+        assertThat(board.board[3][3]).isNull()
+        assertThat(board.board[4][4]).isSameAs(piece)
+    }
+
+    @Test
+    fun `makeTurn test when can eat`() {
+        // given
+        val piece = Man(Color.WHITE, 4, 4, board)
+        board.board[3][3] = piece
+
+        board.board[4][4] = Man(Color.BLACK, 5, 5, board)
+
+        underTest.color = Color.WHITE
+
+        // when
+        val actual = underTest.makeTurn("d4", "f6")
+
+        // then
+        assertThat(actual).isFalse()
+        assertThat(board.board[3][3]).isNull()
+        assertThat(board.board[4][4]).isNull()
+        assertThat(board.board[5][5]).isSameAs(piece)
+    }
+
+    @Test
+    fun `makeTurn test when can eat two pieces`() {
+        // given
+        val piece = Man(Color.WHITE, 4, 4, board)
+        board.board[3][3] = piece
+
+        board.board[4][4] = Man(Color.BLACK, 5, 5, board)
+        board.board[6][6] = Man(Color.BLACK, 5, 5, board)
+
+        underTest.color = Color.WHITE
+
+        // when
+        val actual = underTest.makeTurn("d4", "f6")
+
+        // then
+        assertThat(actual).isTrue()
+        assertThat(board.board[3][3]).isNull()
+        assertThat(board.board[4][4]).isNull()
+        assertThat(board.board[5][5]).isSameAs(piece)
     }
 
     @Test
