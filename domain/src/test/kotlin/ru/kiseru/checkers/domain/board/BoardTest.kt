@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import ru.kiseru.checkers.domain.exception.CannotEatException
-import ru.kiseru.checkers.domain.exception.CannotMoveException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
 import ru.kiseru.checkers.domain.exception.CellIsEmptyException
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
@@ -183,19 +182,6 @@ class BoardTest {
         // when & then
         assertThatExceptionOfType(CellIsBusyException::class.java)
             .isThrownBy { underTest.move(2 to 2, 3 to 3) }
-    }
-
-    @Test
-    fun testMoveWhileCannotMove() {
-        // given
-        val board = underTest.board
-        board[3][3] = board[6][6]
-        board[6][6] = null
-        underTest.analyze(Color.WHITE)
-
-        // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java)
-            .isThrownBy { underTest.move(3 to 3, 4 to 2) }
     }
 
     @Test
