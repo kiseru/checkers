@@ -73,8 +73,8 @@ class GameController(
             return "game"
         }
 
-        currentUser.makeTurn(from, to)
-        if (!currentUser.isCanEat) {
+        val isCanEat = currentUser.makeTurn(from, to)
+        if (!isCanEat) {
             currentRoom.turn = getEnemy(currentUser, currentRoom)
         }
 
