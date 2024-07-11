@@ -17,13 +17,9 @@ abstract class Piece(
 
     abstract fun move(destination: Pair<Int, Int>)
 
-    abstract fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean
-
     abstract fun analyzeAbilityOfEat()
 
     abstract fun eat(destination: Pair<Int, Int>)
-
-    abstract fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean
 
     fun diff(another: Pair<Int, Int>): Int =
         if (abs(column - another.second) == abs(row - another.first)) {

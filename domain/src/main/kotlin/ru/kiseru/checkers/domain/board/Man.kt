@@ -48,7 +48,7 @@ class Man(
             .any { isAbleToEatTo(it) }
     }
 
-    override fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
+    private fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
         if (board.getPiece(destination) != null || isEnemyNear() || diff(destination) != 1) {
             return false
         }
@@ -75,7 +75,7 @@ class Man(
         return piece.color != color && piece.isPieceEatable()
     }
 
-    override fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean =
+    private fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean =
         if (diff(destination) != 2 || board.getPiece(destination) != null) {
             false
         } else {
@@ -101,6 +101,10 @@ class Man(
     }
 
     override fun eat(destination: Pair<Int, Int>) {
+        if (!isAbleToEatTo(destination)) {
+            throw CannotEatException(row to column, destination)
+        }
+
         if (!isCanEat || !isAbleToEatTo(destination)) {
             throw CannotEatException(row to column, destination)
         }

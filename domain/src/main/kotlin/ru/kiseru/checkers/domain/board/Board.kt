@@ -1,7 +1,5 @@
 package ru.kiseru.checkers.domain.board
 
-import ru.kiseru.checkers.domain.exception.CannotEatException
-import ru.kiseru.checkers.domain.exception.CannotMoveException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
 import ru.kiseru.checkers.domain.exception.CellIsEmptyException
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
@@ -63,12 +61,7 @@ class Board {
                 throw CellIsBusyException(destination.first, destination.second)
             }
 
-            if (piece.isAbleToMoveTo(destination)) {
-                piece.move(destination)
-            } else {
-                throw CannotMoveException(source, destination)
-            }
-
+            piece.move(destination)
             updateVersion()
             condition.signalAll()
         }
@@ -82,12 +75,7 @@ class Board {
                 throw CellIsBusyException(destination.first, destination.second)
             }
 
-            if (piece.isAbleToEatTo(destination)) {
-                piece.eat(destination)
-            } else {
-                throw CannotEatException(source, destination)
-            }
-
+            piece.eat(destination)
             updateVersion()
             condition.signalAll()
         }

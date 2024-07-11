@@ -24,8 +24,7 @@ class King(
             .take(7)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
             .filter { isCoordinatesExists(row + it.first, column + it.second) }
-            .map { getNear(it.first, it.second) }
-            .any { isAbleToMoveTo(it) }
+            .any { isAbleToMoveTo(row + it.first to column + it.second) }
     }
 
     override fun move(destination: Pair<Int, Int>) {
@@ -43,7 +42,7 @@ class King(
         column = destination.second
     }
 
-    override fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
+    private fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
         if (diff(destination) == -1) {
             return false
         }
@@ -84,18 +83,7 @@ class King(
             .take(6)
             .flatMap { sequenceOf(it to it, it to -it, -it to -it, -it to it) }
             .filter { isCoordinatesExists(row + it.first, column + it.second) }
-            .map { getNear(it.first, it.second) }
-            .any { isAbleToEatTo(it) }
-    }
-
-    private fun getNear(diffRow: Int, diffColumn: Int): Pair<Int, Int> {
-        val rowToFind = row + diffRow
-        val columnToFind = column + diffColumn
-        if (isCoordinatesExists(rowToFind, columnToFind)) {
-            return rowToFind to columnToFind
-        }
-
-        throw ArrayIndexOutOfBoundsException()
+            .any { isAbleToEatTo(row + it.first to column + it.second) }
     }
 
     override fun eat(destination: Pair<Int, Int>) {
@@ -112,7 +100,7 @@ class King(
         column = destination.second
     }
 
-    override fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean {
+    private fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean {
         if (board.getPiece(destination) != null) {
             return false
         }
