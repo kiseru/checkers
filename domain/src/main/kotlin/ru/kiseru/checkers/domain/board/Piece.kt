@@ -25,12 +25,6 @@ abstract class Piece(
 
     abstract fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean
 
-    abstract fun isMan(): Boolean
-
-    abstract fun isKing(): Boolean
-
-    abstract fun getCssClass(): String
-
     fun diff(another: Pair<Int, Int>): Int =
         if (abs(column - another.second) == abs(row - another.first)) {
             abs(column - another.second)

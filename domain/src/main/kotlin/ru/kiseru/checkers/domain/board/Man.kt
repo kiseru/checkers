@@ -130,17 +130,4 @@ class Man(
                 this
             }
     }
-
-    override fun isMan(): Boolean =
-        true
-
-    override fun isKing(): Boolean =
-        false
-
-    override fun getCssClass(): String =
-        if (color == Color.WHITE) {
-            "piece white-man"
-        } else {
-            "piece black-man"
-        }
 }
