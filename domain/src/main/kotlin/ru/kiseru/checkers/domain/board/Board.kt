@@ -39,7 +39,7 @@ class Board {
                     .map { column -> row to column }
             }
             .filter { (it.first + it.second) % 2 == 0 }
-            .forEach { board[it.first][it.second] = Man(Color.WHITE, it.first + 1, it.second + 1, this) }
+            .forEach { board[it.first][it.second] = Man(Color.WHITE) }
 
     private fun initBlackPieces() =
         (5..7).asSequence()
@@ -48,12 +48,22 @@ class Board {
                     .map { column -> row to column }
             }
             .filter { (it.first + it.second) % 2 == 0 }
-            .forEach { board[it.first][it.second] = Man(Color.BLACK, it.first + 1, it.second + 1, this) }
+            .forEach { board[it.first][it.second] = Man(Color.BLACK) }
 
     fun pieces(): Sequence<Piece> =
-        board.asSequence()
-            .flatMap { it.asSequence() }
-            .filterNotNull()
+        piecesCoordinates()
+            .mapNotNull { board[it.first - 1][it.second - 1] }
+
+    fun piecesCoordinates(): Sequence<Pair<Int, Int>> =
+        sequence {
+            for (row in board.indices) {
+                for (column in board.indices) {
+                    if (board[row][column] != null) {
+                        yield(row + 1 to column + 1)
+                    }
+                }
+            }
+        }
 
     fun makeTurn(userColor: Color, from: String, to: String): Boolean =
         lock.withLock {
@@ -61,7 +71,7 @@ class Board {
             val destination = convertCell(to)
             val piece = getUserPiece(source, userColor)
             checkForPiece(destination)
-            val isCanEat = makeTurn(userColor, piece, destination)
+            val isCanEat = makeTurn(userColor, piece, source, destination)
             condition.signalAll()
             updateVersion()
             return isCanEat
@@ -109,13 +119,13 @@ class Board {
         }
     }
 
-    private fun makeTurn(userColor: Color, piece: Piece, destination: Pair<Int, Int>): Boolean {
+    private fun makeTurn(userColor: Color, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
         val isCanEat = analyze(userColor)
         return if (isCanEat) {
-            piece.eat(destination)
+            piece.eat(this, source, destination)
             analyze(userColor)
         } else {
-            piece.move(destination)
+            piece.move(this, source, destination)
             false
         }
     }
@@ -139,10 +149,11 @@ class Board {
     }
 
     private fun analyzeAbilities() =
-        pieces()
+        piecesCoordinates()
             .forEach {
-                it.analyzeAbilityOfMove()
-                it.analyzeAbilityOfEat()
+                val piece = board[it.first - 1][it.second - 1]!!
+                piece.analyzeAbilityOfMove(this, it)
+                piece.analyzeAbilityOfEat(this, it)
             }
 
     fun isGaming(): Boolean =

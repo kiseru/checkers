@@ -5,29 +5,27 @@ import kotlin.math.abs
 
 abstract class Piece(
     val color: Color,
-    var row: Int,
-    var column: Int,
 ) {
 
     var isCanEat = false
 
     abstract val type: PieceType
 
-    abstract fun analyzeAbilityOfMove()
+    abstract fun analyzeAbilityOfMove(board: Board, source: Pair<Int, Int>)
 
-    abstract fun move(destination: Pair<Int, Int>)
+    abstract fun move(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>)
 
-    abstract fun analyzeAbilityOfEat()
+    abstract fun analyzeAbilityOfEat(board: Board, source: Pair<Int, Int>)
 
-    abstract fun eat(destination: Pair<Int, Int>)
+    abstract fun eat(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>)
 
-    fun diff(another: Pair<Int, Int>): Int =
-        if (abs(column - another.second) == abs(row - another.first)) {
-            abs(column - another.second)
+    fun diff(source: Pair<Int, Int>, destination: Pair<Int, Int>): Int =
+        if (abs(source.second - destination.second) == abs(source.first - destination.first)) {
+            abs(source.second - destination.second)
         } else {
             -1
         }
 
-    fun isPieceEatable(): Boolean =
-        row != 1 && row != 8 && column != 1 && column != 8
+    fun isPieceEatable(source: Pair<Int, Int>): Boolean =
+        source.first in 2..7 && source.second in 2..7
 }

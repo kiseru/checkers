@@ -10,127 +10,122 @@ import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 
 class Man(
     color: Color,
-    row: Int,
-    column: Int,
-    private val board: Board,
-) : Piece(color, row, column) {
+) : Piece(color) {
 
     override val type: PieceType = PieceType.MAN
 
     var isCanMove = false
 
-    override fun analyzeAbilityOfMove() {
-        val nextRow = getNextRow()
+    override fun analyzeAbilityOfMove(board: Board, source: Pair<Int, Int>) {
+        val nextRow = getNextRow(source)
         if (!isCoordinateExists(nextRow)) {
             return
         }
 
-        isCanMove = sequenceOf(column - 1, column + 1)
+        isCanMove = sequenceOf(source.second - 1, source.second + 1)
             .filter { isCoordinateExists(it) }
-            .any { isAbleToMoveTo(nextRow to it) }
+            .any { isAbleToMoveTo(board, source, nextRow to it) }
     }
 
-    private fun getNextRow(): Int =
+    private fun getNextRow(source: Pair<Int, Int>): Int =
         if (color == Color.WHITE) {
-            row + 1
+            source.first + 1
         } else {
-            row - 1
+            source.first - 1
         }
 
-    override fun analyzeAbilityOfEat() {
-        isCanEat = sequenceOf(row - 2, row + 2)
+    override fun analyzeAbilityOfEat(board: Board, source: Pair<Int, Int>) {
+        isCanEat = sequenceOf(source.first - 2, source.first + 2)
             .filter { isCoordinateExists(it) }
             .flatMap { nextRow ->
-                sequenceOf(column - 2, column + 2)
+                sequenceOf(source.second - 2, source.second + 2)
                     .filter { isCoordinateExists(it) }
                     .map { nextRow to it }
             }
-            .any { isAbleToEatTo(it) }
+            .any { isAbleToEatTo(board, source, it) }
     }
 
-    private fun isAbleToMoveTo(destination: Pair<Int, Int>): Boolean {
-        if (board.getPiece(destination) != null || isEnemyNear() || diff(destination) != 1) {
+    private fun isAbleToMoveTo(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
+        if (board.getPiece(destination) != null || isEnemyNear(board, source) || diff(source, destination) != 1) {
             return false
         }
 
-        val nextRow = getNextRow()
-        return sequenceOf(column - 1, column + 1)
+        val nextRow = getNextRow(source)
+        return sequenceOf(source.second - 1, source.second + 1)
             .filter { isCoordinateExists(it) }
             .map { nextRow to it }
             .any { it == destination }
     }
 
-    private fun isEnemyNear(): Boolean =
+    private fun isEnemyNear(board: Board, source: Pair<Int, Int>): Boolean =
         sequenceOf(
-            row + 1 to column + 1,
-            row + 1 to column - 1,
-            row - 1 to column - 1,
-            row - 1 to column + 1,
+            source.first + 1 to source.second + 1,
+            source.first + 1 to source.second - 1,
+            source.first - 1 to source.second - 1,
+            source.first - 1 to source.second + 1,
         )
             .filter { isCoordinatesExists(it) }
-            .any { canEatEnemy(it) }
+            .any { canEatEnemy(board, it) }
 
-    private fun canEatEnemy(coordinates: Pair<Int, Int>): Boolean {
-        val piece = board.getPiece(coordinates) ?: return false
-        return piece.color != color && piece.isPieceEatable()
+    private fun canEatEnemy(board: Board, destination: Pair<Int, Int>): Boolean {
+        val piece = board.getPiece(destination) ?: return false
+        return piece.color != color && piece.isPieceEatable(destination)
     }
 
-    private fun isAbleToEatTo(destination: Pair<Int, Int>): Boolean =
-        if (diff(destination) != 2 || board.getPiece(destination) != null) {
+    private fun isAbleToEatTo(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean =
+        if (diff(source, destination) != 2 || board.getPiece(destination) != null) {
             false
         } else {
-            val (rowToFind, columnToFind) = between(destination)
+            val (rowToFind, columnToFind) = between(source, destination)
             board.board[rowToFind - 1][columnToFind - 1]?.let { it.color != color } ?: false
         }
 
-    override fun move(destination: Pair<Int, Int>) {
+    override fun move(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>) {
         if (isCanEat) {
             throw MustEatException()
         }
 
         if (!isCanMove) {
-            throw CannotMoveException(row to column, destination)
+            throw CannotMoveException(source, destination)
         }
 
-        if (!isAbleToMoveTo(destination)) {
-            throw CannotMoveException(row to column, destination)
+        if (!isAbleToMoveTo(board, source, destination)) {
+            throw CannotMoveException(source, destination)
         }
 
-        board.board[row - 1][column - 1] = null
-        updatePiece(destination)
+        board.board[source.first - 1][source.second - 1] = null
+        updatePiece(board, destination)
     }
 
-    override fun eat(destination: Pair<Int, Int>) {
-        if (!isAbleToEatTo(destination)) {
-            throw CannotEatException(row to column, destination)
+    override fun eat(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>) {
+        if (!isAbleToEatTo(board, source, destination)) {
+            throw CannotEatException(source, destination)
         }
 
-        if (!isCanEat || !isAbleToEatTo(destination)) {
-            throw CannotEatException(row to column, destination)
+        if (!isCanEat || !isAbleToEatTo(board, source, destination)) {
+            throw CannotEatException(source, destination)
         }
 
-        board.board[row - 1][column - 1] = null
-        val (rowToFind, columnToFind) = between(destination)
+        board.board[source.first - 1][source.second - 1] = null
+        val (rowToFind, columnToFind) = between(source, destination)
         board.board[rowToFind - 1][columnToFind - 1] = null
-        updatePiece(destination)
+        updatePiece(board, destination)
     }
 
-    private fun between(destination: Pair<Int, Int>): Pair<Int, Int> =
+    private fun between(source: Pair<Int, Int>, destination: Pair<Int, Int>): Pair<Int, Int> =
         if (isCoordinatesExists(destination)) {
-            val columnToFind = (column + destination.second) / 2
-            val rowToFind = (row + destination.first) / 2
+            val columnToFind = (source.second + destination.second) / 2
+            val rowToFind = (source.first + destination.first) / 2
             rowToFind to columnToFind
         } else {
             throw CellNotFoundException(destination.first, destination.second)
         }
 
-    private fun updatePiece(target: Pair<Int, Int>) {
+    private fun updatePiece(board: Board, target: Pair<Int, Int>) {
         board.board[target.first - 1][target.second - 1] =
             if (color == Color.WHITE && target.first == 8 || color == Color.BLACK && target.first == 1) {
-                King(color, target.first, target.second, board)
+                King(color)
             } else {
-                row = target.first
-                column = target.second
                 this
             }
     }

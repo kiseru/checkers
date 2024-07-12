@@ -251,7 +251,7 @@ class BoardTest {
         // given
         clearBoard(underTest)
 
-        underTest.board[1][1] = Man(Color.BLACK, 2, 2, underTest)
+        underTest.board[1][1] = Man(Color.BLACK)
 
         // when & then
         assertThatExceptionOfType(PieceException::class.java)
@@ -264,7 +264,7 @@ class BoardTest {
         // given
         clearBoard(underTest)
 
-        underTest.board[1][1] = Man(Color.WHITE, 2, 2, underTest)
+        underTest.board[1][1] = Man(Color.WHITE)
 
         // when & then
         assertThatExceptionOfType(ConvertCellException::class.java)
@@ -276,7 +276,7 @@ class BoardTest {
         // given
         clearBoard(underTest)
 
-        val piece = Man(Color.WHITE, 4, 4, underTest)
+        val piece = Man(Color.WHITE)
         underTest.board[3][3] = piece
 
         // when
@@ -293,10 +293,10 @@ class BoardTest {
         // given
         clearBoard(underTest)
 
-        val piece = Man(Color.WHITE, 4, 4, underTest)
+        val piece = Man(Color.WHITE)
         underTest.board[3][3] = piece
 
-        underTest.board[4][4] = Man(Color.BLACK, 5, 5, underTest)
+        underTest.board[4][4] = Man(Color.BLACK)
 
         // when
         val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")
@@ -313,11 +313,11 @@ class BoardTest {
         // given
         clearBoard(underTest)
 
-        val piece = Man(Color.WHITE, 4, 4, underTest)
+        val piece = Man(Color.WHITE)
         underTest.board[3][3] = piece
 
-        underTest.board[4][4] = Man(Color.BLACK, 5, 5, underTest)
-        underTest.board[6][6] = Man(Color.BLACK, 5, 5, underTest)
+        underTest.board[4][4] = Man(Color.BLACK)
+        underTest.board[6][6] = Man(Color.BLACK)
 
         // when
         val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")

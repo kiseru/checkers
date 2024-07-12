@@ -28,8 +28,11 @@ class RoomController(
         val result = DeferredResult<BoardDto>(15000)
         thread {
             board.waitNewVersion(version)
-            val pieces = board.pieces()
-                .map { PieceDto(getCellCaption(it.row, it.column), it.color, it.type) }
+            val pieces = board.piecesCoordinates()
+                .map {
+                    val piece = board.getPiece(it)!!
+                    PieceDto(getCellCaption(it.first, it.second), piece.color, piece.type)
+                }
             val boardDto = BoardDto(board.version, pieces)
             result.setResult(boardDto)
         }
