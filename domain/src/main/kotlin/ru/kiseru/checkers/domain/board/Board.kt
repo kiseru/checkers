@@ -1,9 +1,12 @@
 package ru.kiseru.checkers.domain.board
 
+import ru.kiseru.checkers.domain.exception.CellException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
-import ru.kiseru.checkers.domain.exception.CellIsEmptyException
 import ru.kiseru.checkers.domain.exception.CellNotFoundException
+import ru.kiseru.checkers.domain.exception.ConvertCellException
+import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
+import ru.kiseru.checkers.domain.utils.getCellCaption
 import ru.kiseru.checkers.domain.utils.isCoordinatesExists
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -52,33 +55,70 @@ class Board {
             .flatMap { it.asSequence() }
             .filterNotNull()
 
-    fun move(source: Pair<Int, Int>, destination: Pair<Int, Int>) =
+    fun makeTurn(userColor: Color, from: String, to: String): Boolean =
         lock.withLock {
-            val piece = getPiece(source)
-                ?: throw CellIsEmptyException(source.first, source.second)
-
-            if (getPiece(destination) != null) {
-                throw CellIsBusyException(destination.first, destination.second)
-            }
-
-            piece.move(destination)
-            updateVersion()
+            val source = convertCell(from)
+            val destination = convertCell(to)
+            val piece = getUserPiece(source, userColor)
+            checkForPiece(destination)
+            val isCanEat = makeTurn(userColor, piece, destination)
             condition.signalAll()
+            updateVersion()
+            return isCanEat
         }
 
-    fun eat(source: Pair<Int, Int>, destination: Pair<Int, Int>) =
-        lock.withLock {
-            val piece = getPiece(source)
-                ?: throw CellIsEmptyException(source.first, source.second)
+    private fun convertCell(cell: String): Pair<Int, Int> {
+        if (cell.length != 2) {
+            throw ConvertCellException("Can't convert '$cell' to cell")
+        }
 
-            if (getPiece(destination) != null) {
-                throw CellIsBusyException(destination.first, destination.second)
-            }
+        val column = convertColumn(cell[0])
+        val row = convertRow(cell[1])
+        return row to column
+    }
 
+    private fun convertColumn(columnName: Char): Int =
+        if (columnName < 'a' || columnName > 'h') {
+            throw ConvertCellException("Column '$columnName' doesn't exists")
+        } else {
+            columnName.code - 'a'.code + 1
+        }
+
+    private fun convertRow(rowName: Char): Int =
+        if (rowName < '1' || rowName > '8') {
+            throw ConvertCellException("Row '$rowName' doesn't exists")
+        } else {
+            rowName.code - '1'.code + 1
+        }
+
+    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Piece {
+        val piece = getPiece(source) ?: throw CellException("Cell '${getCellCaption(source)}' is empty")
+        checkPieceOwner(userColor, piece)
+        return piece
+    }
+
+    private fun checkPieceOwner(userColor: Color, piece: Piece) {
+        if (piece.color != userColor) {
+            throw PieceException("The piece does not belong to the $userColor user")
+        }
+    }
+
+    private fun checkForPiece(destination: Pair<Int, Int>) {
+        if (getPiece(destination) != null) {
+            throw CellIsBusyException(destination.first, destination.second)
+        }
+    }
+
+    private fun makeTurn(userColor: Color, piece: Piece, destination: Pair<Int, Int>): Boolean {
+        val isCanEat = analyze(userColor)
+        return if (isCanEat) {
             piece.eat(destination)
-            updateVersion()
-            condition.signalAll()
+            analyze(userColor)
+        } else {
+            piece.move(destination)
+            false
         }
+    }
 
     fun getPiece(coordinates: Pair<Int, Int>): Piece? =
         if (isCoordinatesExists(coordinates)) {
