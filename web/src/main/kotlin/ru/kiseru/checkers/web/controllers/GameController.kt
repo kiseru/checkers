@@ -73,7 +73,7 @@ class GameController(
             return "game"
         }
 
-        val isCanEat = currentUser.makeTurn(from, to)
+        val isCanEat = currentRoom.board.makeTurn(currentUser.color, from, to)
         if (!isCanEat) {
             currentRoom.turn = getEnemy(currentUser, currentRoom)
         }
@@ -94,13 +94,11 @@ class GameController(
         room.firstPlayer = user
         room.turn = user
         user.color = Color.WHITE
-        user.board = room.board
     }
 
     private fun initBlackPlayer(user: User, room: Room) {
         room.secondPlayer = user
         user.color = Color.BLACK
-        user.board = room.board
     }
 
     private fun isCurrentUserTurn(user: User, room: Room): Boolean {

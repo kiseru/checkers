@@ -8,12 +8,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import ru.kiseru.checkers.domain.exception.CannotEatException
+import ru.kiseru.checkers.domain.exception.CellException
 import ru.kiseru.checkers.domain.exception.CellIsBusyException
-import ru.kiseru.checkers.domain.exception.CellIsEmptyException
-import ru.kiseru.checkers.domain.exception.CellNotFoundException
+import ru.kiseru.checkers.domain.exception.ConvertCellException
+import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -31,7 +32,7 @@ class BoardTest {
     }
 
     @Test
-    fun testInitializing() {
+    fun `init test`() {
         // then
         val board = underTest.board
         assertThat(board).isNotNull()
@@ -79,7 +80,7 @@ class BoardTest {
         "8, 6, BLACK",
         "8, 8, BLACK",
     )
-    fun testWhitePieceInitialization(row: Int, column: Int, expected: Color) {
+    fun `init white pieces test`(row: Int, column: Int, expected: Color) {
         // given
         val board = underTest.board
         val piece = board[row - 1][column - 1]
@@ -90,7 +91,7 @@ class BoardTest {
     }
 
     @Test
-    fun testIsGamingWhileThereIsPiecesOnBoard() {
+    fun `isGaming test while there are pieces on the board`() {
         // when
         val actual = underTest.isGaming()
 
@@ -99,7 +100,7 @@ class BoardTest {
     }
 
     @Test
-    fun testIsGamingWhileThereIsOnlyWhitePiecesOnBoard() {
+    fun `isGaming test while there are only white pieces on the board`() {
         // given
         ReflectionTestUtils.setField(underTest, "blackPieces", 0)
 
@@ -111,7 +112,7 @@ class BoardTest {
     }
 
     @Test
-    fun testIsGamingWhileThereIsOnlyBlackPiecesObBoard() {
+    fun `isGaming test while there are only black pieces on the board`() {
         // given
         ReflectionTestUtils.setField(underTest, "whitePieces", 0)
 
@@ -123,35 +124,7 @@ class BoardTest {
     }
 
     @Test
-    fun testEatWhileSourceCellIsEmpty() {
-        // when & then
-        assertThatExceptionOfType(CellIsEmptyException::class.java)
-            .isThrownBy { underTest.eat(5 to 5, 6 to 6) }
-    }
-
-    @Test
-    fun testEatWhileDestinationCellIsBusy() {
-        // given
-        val board = underTest.board
-        board[4][4] = board[6][6]
-        board[6][6] = null
-        board[3][3] = board[2][2]
-        board[2][2] = null
-
-        // when & then
-        assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.eat(4 to 4, 6 to 6) }
-    }
-
-    @Test
-    fun testEatWhileCannotEat() {
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { underTest.eat(3 to 3, 5 to 5) }
-    }
-
-    @Test
-    fun testEatWhileCanEat() {
+    fun `makeTurn test when user can eat`() {
         // given
         val board = underTest.board
         board[3][3] = board[5][5]
@@ -159,10 +132,8 @@ class BoardTest {
 
         val sourcePiece = board[2][2]
 
-        underTest.analyze(Color.WHITE)
-
         // when
-        underTest.eat(3 to 3, 5 to 5)
+        underTest.makeTurn(Color.WHITE, "c3", "e5")
 
         // then
         assertThat(board[2][2]).isNull()
@@ -171,23 +142,23 @@ class BoardTest {
     }
 
     @Test
-    fun testMoveWhileSourceCellIsEmpty() {
+    fun `makeTurn test when source cell is empty`() {
         // when & then
-        assertThatExceptionOfType(CellIsEmptyException::class.java)
-            .isThrownBy { underTest.move(4 to 4, 5 to 5) }
+        assertThatExceptionOfType(CellException::class.java)
+            .isThrownBy { underTest.makeTurn(Color.WHITE, "d4", "e5") }
     }
 
     @Test
-    fun testMoveWhileDestinationCellIsBusy() {
+    fun `makeTurn test when destination cell is busy`() {
         // when & then
         assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.move(2 to 2, 3 to 3) }
+            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
     }
 
     @Test
-    fun testMoveWhileCanMove() {
+    fun `makeTurn test when user cannot move`() {
         // when
-        underTest.move(3 to 3, 4 to 4)
+        underTest.makeTurn(Color.WHITE, "c3", "d4")
 
         // then
         val board = underTest.board
@@ -200,7 +171,7 @@ class BoardTest {
         "12, 11",
         "0, 0",
     )
-    fun testDecrementWhitePieceCount(initialCount: Int, expectedCount: Int) {
+    fun `decrementWhitePieceCount test`(initialCount: Int, expectedCount: Int) {
         // given
         ReflectionTestUtils.setField(underTest, "whitePieces", initialCount)
 
@@ -217,7 +188,7 @@ class BoardTest {
         "12, 11",
         "0, 0",
     )
-    fun testDecrementBlackPieceCount(initialCount: Int, expectedCount: Int) {
+    fun `decrementBlackPieceCount test`(initialCount: Int, expectedCount: Int) {
         // given
         ReflectionTestUtils.setField(underTest, "blackPieces", initialCount)
 
@@ -230,7 +201,7 @@ class BoardTest {
     }
 
     @Test
-    fun testAnalyzeWhileCannotEat() {
+    fun `analyze test when user cannot eat`() {
         // when
         val actual = underTest.analyze(Color.WHITE)
 
@@ -239,11 +210,11 @@ class BoardTest {
     }
 
     @Test
-    fun `test waitNewVersion`() {
+    fun `waitNewVersion test`() {
         // given
         thread {
             TimeUnit.SECONDS.sleep(1)
-            underTest.move(3 to 3, 4 to 4)
+            underTest.makeTurn(Color.WHITE, "c3", "d4")
         }
 
         // when
@@ -255,10 +226,114 @@ class BoardTest {
     }
 
     @ParameterizedTest
-    @CsvSource("0,4", "4, 0", "9,4", "4,9")
-    fun `test move while source does not exist`(row: Int, column: Int) {
+    @ValueSource(strings = ["a", "aaa", "`2", "i8", "a0", "a9"])
+    fun `makeTurn test when source cell isn't valid`(from: String) {
+        // given
+        clearBoard(underTest)
+
         // when & then
-        assertThatExceptionOfType(CellNotFoundException::class.java)
-            .isThrownBy { underTest.move(row to column, 1 to 1) }
+        assertThatExceptionOfType(ConvertCellException::class.java)
+            .isThrownBy { underTest.makeTurn(Color.WHITE, from, "a2") }
+    }
+
+    @Test
+    fun `makeTurn test when source cell hasn't piece`() {
+        // given
+        clearBoard(underTest)
+
+        // when & then
+        assertThatExceptionOfType(CellException::class.java)
+            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
+    }
+
+    @Test
+    fun `makeTurn test when source cell hasn't player piece`() {
+        // given
+        clearBoard(underTest)
+
+        underTest.board[1][1] = Man(Color.BLACK, 2, 2, underTest)
+
+        // when & then
+        assertThatExceptionOfType(PieceException::class.java)
+            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["a", "aaa", "`2", "i8", "a0", "a9"])
+    fun `makeTurn test when destination cell name isn't valid`(to: String) {
+        // given
+        clearBoard(underTest)
+
+        underTest.board[1][1] = Man(Color.WHITE, 2, 2, underTest)
+
+        // when & then
+        assertThatExceptionOfType(ConvertCellException::class.java)
+            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", to) }
+    }
+
+    @Test
+    fun `makeTurn test when can move`() {
+        // given
+        clearBoard(underTest)
+
+        val piece = Man(Color.WHITE, 4, 4, underTest)
+        underTest.board[3][3] = piece
+
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, "d4", "e5")
+
+        // then
+        assertThat(actual).isFalse()
+        assertThat(underTest.board[3][3]).isNull()
+        assertThat(underTest.board[4][4]).isSameAs(piece)
+    }
+
+    @Test
+    fun `makeTurn test when can eat`() {
+        // given
+        clearBoard(underTest)
+
+        val piece = Man(Color.WHITE, 4, 4, underTest)
+        underTest.board[3][3] = piece
+
+        underTest.board[4][4] = Man(Color.BLACK, 5, 5, underTest)
+
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")
+
+        // then
+        assertThat(actual).isFalse()
+        assertThat(underTest.board[3][3]).isNull()
+        assertThat(underTest.board[4][4]).isNull()
+        assertThat(underTest.board[5][5]).isSameAs(piece)
+    }
+
+    @Test
+    fun `makeTurn test when can eat two pieces`() {
+        // given
+        clearBoard(underTest)
+
+        val piece = Man(Color.WHITE, 4, 4, underTest)
+        underTest.board[3][3] = piece
+
+        underTest.board[4][4] = Man(Color.BLACK, 5, 5, underTest)
+        underTest.board[6][6] = Man(Color.BLACK, 5, 5, underTest)
+
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")
+
+        // then
+        assertThat(actual).isTrue()
+        assertThat(underTest.board[3][3]).isNull()
+        assertThat(underTest.board[4][4]).isNull()
+        assertThat(underTest.board[5][5]).isSameAs(piece)
+    }
+
+    private fun clearBoard(board: Board) {
+        for (cells in board.board) {
+            for (i in cells.indices) {
+                cells[i] = null
+            }
+        }
     }
 }
