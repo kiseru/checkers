@@ -12,6 +12,7 @@ import ru.kiseru.checkers.domain.exception.CannotEatException
 import ru.kiseru.checkers.domain.exception.CannotMoveException
 import ru.kiseru.checkers.domain.exception.MustEatException
 import ru.kiseru.checkers.domain.utils.Color
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class ManTest {
@@ -20,7 +21,7 @@ class ManTest {
 
     @BeforeEach
     fun setUp() {
-        board = Board()
+        board = Board(UUID.randomUUID())
         for (cells in board.board) {
             for (i in cells.indices) {
                 cells[i] = null

@@ -8,19 +8,14 @@ import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
 import ru.kiseru.checkers.domain.utils.getCellCaption
 import ru.kiseru.checkers.domain.utils.isCoordinatesExists
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import java.util.*
 
-class Board {
+class Board(val id: UUID) {
 
     val board: Array<Array<Piece?>> = Array(SIZE_OF_BOARD) { arrayOfNulls(SIZE_OF_BOARD) }
 
     var version = 1
         private set
-
-    private val lock = ReentrantLock()
-
-    private val condition = lock.newCondition()
 
     private var whitePieces = 12
 
@@ -65,17 +60,15 @@ class Board {
             }
         }
 
-    fun makeTurn(userColor: Color, from: String, to: String): Boolean =
-        lock.withLock {
-            val source = convertCell(from)
-            val destination = convertCell(to)
-            val piece = getUserPiece(source, userColor)
-            checkForPiece(destination)
-            val isCanEat = makeTurn(userColor, piece, source, destination)
-            condition.signalAll()
-            updateVersion()
-            return isCanEat
-        }
+    fun makeTurn(userColor: Color, from: String, to: String): Boolean {
+        val source = convertCell(from)
+        val destination = convertCell(to)
+        val piece = getUserPiece(source, userColor)
+        checkForPiece(destination)
+        val isCanEat = makeTurn(userColor, piece, source, destination)
+        updateVersion()
+        return isCanEat
+    }
 
     private fun convertCell(cell: String): Pair<Int, Int> {
         if (cell.length != 2) {
@@ -170,13 +163,6 @@ class Board {
             blackPieces--
         }
     }
-
-    fun waitNewVersion(version: Int) =
-        lock.withLock {
-            while (version == this.version) {
-                condition.await()
-            }
-        }
 
     companion object {
         private const val SIZE_OF_BOARD = 8

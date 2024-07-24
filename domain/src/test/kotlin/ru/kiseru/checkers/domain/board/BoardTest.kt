@@ -2,7 +2,6 @@ package ru.kiseru.checkers.domain.board
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
-import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,8 +15,7 @@ import ru.kiseru.checkers.domain.exception.CellIsBusyException
 import ru.kiseru.checkers.domain.exception.ConvertCellException
 import ru.kiseru.checkers.domain.exception.PieceException
 import ru.kiseru.checkers.domain.utils.Color
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BoardTest {
@@ -28,7 +26,7 @@ class BoardTest {
 
     @BeforeEach
     fun setUp() {
-        underTest = Board()
+        underTest = Board(UUID.randomUUID())
     }
 
     @Test
@@ -207,22 +205,6 @@ class BoardTest {
 
         // then
         assertThat(actual).isEqualTo(false)
-    }
-
-    @Test
-    fun `waitNewVersion test`() {
-        // given
-        thread {
-            TimeUnit.SECONDS.sleep(1)
-            underTest.makeTurn(Color.WHITE, "c3", "d4")
-        }
-
-        // when
-        assertThatNoException()
-            .isThrownBy { underTest.waitNewVersion(1) }
-
-        // then
-        assertThat(underTest.version).isEqualTo(2)
     }
 
     @ParameterizedTest
