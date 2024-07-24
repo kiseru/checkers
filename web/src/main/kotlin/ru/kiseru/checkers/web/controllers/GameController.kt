@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.SessionAttribute
+import ru.kiseru.checkers.domain.service.BoardService
 import ru.kiseru.checkers.domain.room.Room
 import ru.kiseru.checkers.domain.user.User
 import ru.kiseru.checkers.domain.user.UserRepository
@@ -18,6 +19,7 @@ import ru.kiseru.checkers.operational.FindOrCreateRoomUseCase
 @Controller
 @RequestMapping("game")
 class GameController(
+    private val boardService: BoardService,
     private val userRepository: UserRepository,
     private val findOrCreateRoomUseCase: FindOrCreateRoomUseCase,
 ) {
@@ -73,7 +75,7 @@ class GameController(
             return "game"
         }
 
-        val isCanEat = currentRoom.board.makeTurn(currentUser.color, from, to)
+        val isCanEat = boardService.makeTurn(currentRoom.board, currentUser.color, from, to)
         if (!isCanEat) {
             currentRoom.turn = getEnemy(currentUser, currentRoom)
         }

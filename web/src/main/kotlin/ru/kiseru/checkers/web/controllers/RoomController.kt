@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
+import ru.kiseru.checkers.domain.service.BoardService
 import ru.kiseru.checkers.domain.utils.getCellCaption
 import ru.kiseru.checkers.operational.BoardSearchByRoomIdService
 import ru.kiseru.checkers.web.controllers.dto.BoardDto
@@ -17,6 +18,7 @@ import kotlin.concurrent.thread
 @RequestMapping("room")
 @RestController
 class RoomController(
+    private val boardService: BoardService,
     private val boardSearchByRoomIdService: BoardSearchByRoomIdService,
 ) {
 
@@ -27,7 +29,7 @@ class RoomController(
 
         val result = DeferredResult<BoardDto>(15000)
         thread {
-            board.waitNewVersion(version)
+            boardService.waitNewVersion(board, version)
             val pieces = board.piecesCoordinates()
                 .map {
                     val piece = board.getPiece(it)!!

@@ -5,6 +5,7 @@ import ru.kiseru.checkers.domain.board.Board
 import ru.kiseru.checkers.domain.room.Room
 import ru.kiseru.checkers.domain.room.RoomRepository
 import ru.kiseru.checkers.operational.FindOrCreateRoomUseCase
+import java.util.*
 
 @Component
 class FindOrCreateRoomUseCaseImpl(
@@ -23,7 +24,7 @@ class FindOrCreateRoomUseCaseImpl(
     }
 
     private fun createRoom(roomId: Int): Room {
-        val board = Board()
+        val board = Board(UUID.randomUUID())
         return Room(roomId, board)
     }
 }
