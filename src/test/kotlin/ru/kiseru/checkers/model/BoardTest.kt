@@ -1,4 +1,4 @@
-package checkers.model
+package ru.kiseru.checkers.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
@@ -13,9 +13,6 @@ import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.ConvertCellException
 import ru.kiseru.checkers.exception.PieceException
-import ru.kiseru.checkers.model.Board
-import ru.kiseru.checkers.model.Color
-import ru.kiseru.checkers.model.Man
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)

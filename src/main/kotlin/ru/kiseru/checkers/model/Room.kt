@@ -5,9 +5,9 @@ class Room(
     val board: Board,
 ) {
 
-    var firstPlayer: User? = null
+    var whitePlayer: User? = null
 
-    var secondPlayer: User? = null
+    var blackPlayer: User? = null
 
-    var turn: User? = null
+    var turn: Color = Color.WHITE
 }

@@ -1,0 +1,91 @@
+package ru.kiseru.checkers.service.impl
+
+import org.springframework.stereotype.Component
+import ru.kiseru.checkers.model.Board
+import ru.kiseru.checkers.model.Color
+import ru.kiseru.checkers.model.Room
+import ru.kiseru.checkers.model.User
+import ru.kiseru.checkers.repository.RoomRepository
+import ru.kiseru.checkers.service.BoardService
+import ru.kiseru.checkers.service.RoomService
+import java.util.UUID
+
+@Component
+class RoomServiceImpl(
+    private val roomRepository: RoomRepository,
+    private val boardService: BoardService,
+) : RoomService {
+
+    override fun findOrCreateRoomById(roomId: Int): Room {
+        val room = roomRepository.findRoom(roomId)
+        if (room != null) {
+            return room
+        }
+
+        val newRoom = createRoom(roomId)
+        roomRepository.save(newRoom)
+        return newRoom
+    }
+
+    private fun createRoom(roomId: Int): Room {
+        val board = Board(UUID.randomUUID())
+        return Room(roomId, board)
+    }
+
+    override fun makeTurn(room: Room, user: User, from: String?, to: String?) {
+        if (room.whitePlayer == null) {
+            addPlayer(room, user, Color.WHITE)
+            return
+        }
+
+        if (room.blackPlayer == null) {
+            if (room.whitePlayer?.id != user.id) {
+                addPlayer(room, user, Color.BLACK)
+            }
+
+            return
+        }
+
+        if (!isCurrentUserTurn(user, room)) {
+            return
+        }
+
+        if (from == null || to == null) {
+            return
+        }
+
+        val isCanEat = boardService.makeTurn(room.board, user.color, from, to)
+        if (!isCanEat) {
+            room.turn = getEnemy(user, room)
+        }
+    }
+
+
+    override fun addPlayer(room: Room, user: User, color: Color) {
+        when (color) {
+            Color.WHITE -> room.whitePlayer = user
+            Color.BLACK -> room.blackPlayer = user
+        }
+        user.color = color
+    }
+
+    private fun isCurrentUserTurn(user: User, room: Room): Boolean {
+        val turn = getTurnOwner(room)
+        return turn?.id == user.id
+    }
+
+    override fun getTurnOwner(room: Room): User? =
+        when (room.turn) {
+            Color.WHITE -> room.whitePlayer
+            Color.BLACK -> room.blackPlayer
+        }
+
+    private fun getEnemy(user: User, room: Room): Color =
+        if (room.whitePlayer!!.id == user.id) {
+            Color.BLACK
+        } else if (room.blackPlayer!!.id == user.id) {
+            Color.WHITE
+        } else {
+            throw IllegalStateException()
+        }
+}
