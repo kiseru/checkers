@@ -1,4 +1,4 @@
-package checkers.model
+package ru.kiseru.checkers.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
@@ -11,9 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import ru.kiseru.checkers.exception.CannotEatException
 import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
-import ru.kiseru.checkers.model.Board
-import ru.kiseru.checkers.model.Color
-import ru.kiseru.checkers.model.King
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
