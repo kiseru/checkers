@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.test.util.ReflectionTestUtils
 import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.ConvertCellException
@@ -91,39 +90,6 @@ class BoardTest {
     }
 
     @Test
-    fun `isGaming test while there are pieces on the board`() {
-        // when
-        val actual = underTest.isGaming()
-
-        // then
-        assertThat(actual).isTrue()
-    }
-
-    @Test
-    fun `isGaming test while there are only white pieces on the board`() {
-        // given
-        ReflectionTestUtils.setField(underTest, "blackPieces", 0)
-
-        // when
-        val actual = underTest.isGaming()
-
-        // then
-        assertThat(actual).isFalse()
-    }
-
-    @Test
-    fun `isGaming test while there are only black pieces on the board`() {
-        // given
-        ReflectionTestUtils.setField(underTest, "whitePieces", 0)
-
-        // when
-        val actual = underTest.isGaming()
-
-        // then
-        assertThat(actual).isFalse()
-    }
-
-    @Test
     fun `makeTurn test when user can eat`() {
         // given
         val board = underTest.board
@@ -164,40 +130,6 @@ class BoardTest {
         val board = underTest.board
         assertThat(board[2][2]).isNull()
         assertThat(board[3][3]).isNotNull
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "12, 11",
-        "0, 0",
-    )
-    fun `decrementWhitePieceCount test`(initialCount: Int, expectedCount: Int) {
-        // given
-        ReflectionTestUtils.setField(underTest, "whitePieces", initialCount)
-
-        // when
-        underTest.decrementWhitePieceCount()
-
-        // then
-        val actual = ReflectionTestUtils.getField(underTest, "whitePieces")
-        assertThat(actual).isEqualTo(expectedCount)
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "12, 11",
-        "0, 0",
-    )
-    fun `decrementBlackPieceCount test`(initialCount: Int, expectedCount: Int) {
-        // given
-        ReflectionTestUtils.setField(underTest, "blackPieces", initialCount)
-
-        // when
-        underTest.decrementBlackPieceCount()
-
-        // then
-        val actual = ReflectionTestUtils.getField(underTest, "blackPieces")
-        assertThat(actual).isEqualTo(expectedCount)
     }
 
     @Test

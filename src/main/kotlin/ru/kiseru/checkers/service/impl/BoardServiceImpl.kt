@@ -41,4 +41,11 @@ class BoardServiceImpl : BoardService {
             }
         }
     }
+
+    override fun isGameFinished(board: Board): Boolean =
+        countPiecesByColor(board, Color.WHITE) == 0 || countPiecesByColor(board, Color.BLACK) == 0
+
+    private fun countPiecesByColor(board: Board, color: Color): Int =
+        board.pieces()
+            .count { it.color == color }
 }

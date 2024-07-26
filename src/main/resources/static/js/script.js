@@ -40,17 +40,23 @@ function onCellUnchecked(cell) {
 }
 
 async function subscribe(roomId, version) {
-    const response = await fetch(`/room/${roomId}/board?version=${version}`);
-    if (response.status === 502) {
-        await subscribe(roomId, version);
-    } else if (response.status !== 200) {
-        console.log(response.statusText);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await subscribe(roomId, version);
-    } else {
-        const board = await response.json();
-        drawPieces(board.pieces);
-        await subscribe(roomId, board.version);
+    try {
+        const response = await fetch(`/room/${roomId}/board?version=${version}`);
+        if (response.status === 502) {
+            await subscribe(roomId, version);
+        } else if (response.status !== 200) {
+            console.log(response.statusText);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await subscribe(roomId, version);
+        } else {
+            const board = await response.json();
+            drawPieces(board.pieces);
+            await subscribe(roomId, board.version);
+        }
+    } catch (e) {
+        if (e.message = "Game finished") {
+            window.location = "/game"
+        }
     }
 }
 
@@ -59,11 +65,20 @@ function drawPieces(pieces) {
         return;
     }
 
+    checkEndgame(pieces);
     clearBoard();
     for (let piece of pieces) {
         const div = createPieceDiv(piece.type, piece.color);
         const cell = document.getElementById(piece.cell);
         cell.append(div);
+    }
+}
+
+function checkEndgame(pieces) {
+    const whitePiecesCount = pieces.filter(piece => piece.color === 'WHITE').length;
+    const blackPiecesCount = pieces.filter(piece => piece.color === 'BLACK').length;
+    if (whitePiecesCount == 0 || blackPiecesCount == 0) {
+        throw new Error("Game finished");
     }
 }
 
