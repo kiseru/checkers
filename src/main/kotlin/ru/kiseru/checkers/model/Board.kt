@@ -7,7 +7,7 @@ import ru.kiseru.checkers.exception.ConvertCellException
 import ru.kiseru.checkers.exception.PieceException
 import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
-import java.util.*
+import java.util.UUID
 
 class Board(val id: UUID) {
 
@@ -15,10 +15,6 @@ class Board(val id: UUID) {
 
     var version = 1
         private set
-
-    private var whitePieces = 12
-
-    private var blackPieces = 12
 
     init {
         initWhitePieces()
@@ -32,8 +28,8 @@ class Board(val id: UUID) {
                 (0..7).asSequence()
                     .map { column -> row to column }
             }
-            .filter { (it.first + it.second) % 2 == 0 }
-            .forEach { board[it.first][it.second] = Man(Color.WHITE) }
+            .filter { (row, column) -> (row + column) % 2 == 0 }
+            .forEach { (row, column) -> board[row][column] = Man(Color.WHITE) }
 
     private fun initBlackPieces() =
         (5..7).asSequence()
@@ -41,12 +37,12 @@ class Board(val id: UUID) {
                 (0..7).asSequence()
                     .map { column -> row to column }
             }
-            .filter { (it.first + it.second) % 2 == 0 }
-            .forEach { board[it.first][it.second] = Man(Color.BLACK) }
+            .filter { (row, column) -> (row + column) % 2 == 0 }
+            .forEach { (row, column) -> board[row][column] = Man(Color.BLACK) }
 
     fun pieces(): Sequence<Piece> =
         piecesCoordinates()
-            .mapNotNull { board[it.first - 1][it.second - 1] }
+            .mapNotNull { (row, column) -> board[row - 1][column - 1] }
 
     fun piecesCoordinates(): Sequence<Pair<Int, Int>> =
         sequence {
@@ -147,21 +143,6 @@ class Board(val id: UUID) {
                 piece.analyzeAbilityOfMove(this, it)
                 piece.analyzeAbilityOfEat(this, it)
             }
-
-    fun isGaming(): Boolean =
-        whitePieces != 0 && blackPieces != 0
-
-    fun decrementWhitePieceCount() {
-        if (whitePieces > 0) {
-            whitePieces--
-        }
-    }
-
-    fun decrementBlackPieceCount() {
-        if (blackPieces > 0) {
-            blackPieces--
-        }
-    }
 
     companion object {
         private const val SIZE_OF_BOARD = 8

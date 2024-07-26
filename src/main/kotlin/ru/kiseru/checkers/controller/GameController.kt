@@ -44,7 +44,7 @@ class GameController(
         }
 
         val currentRoom = findOrCreateRoomService.findOrCreateRoomById(roomId)
-        if (!currentRoom.board.isGaming()) {
+        if (boardService.isGameFinished(currentRoom.board)) {
             session.setAttribute("winner", currentRoom.turn)
             return "redirect:/finish"
         }
