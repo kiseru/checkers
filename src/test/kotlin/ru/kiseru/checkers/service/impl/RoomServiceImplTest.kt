@@ -12,6 +12,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
+import ru.kiseru.checkers.initializer.BoardInitializer
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.model.Room
 import ru.kiseru.checkers.model.User
@@ -33,6 +34,9 @@ class RoomServiceImplTest {
 
     @Mock
     private lateinit var cellNotationConverter: CellNotationConverter
+
+    @Mock
+    private lateinit var boardInitializer: BoardInitializer
 
     @ParameterizedTest
     @EnumSource(Color::class)

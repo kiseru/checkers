@@ -2,8 +2,12 @@ package ru.kiseru.checkers.service.impl
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import ru.kiseru.checkers.model.Board
 import ru.kiseru.checkers.model.Color
+import ru.kiseru.checkers.model.ManStrategy
+import ru.kiseru.checkers.model.Piece
 import java.util.UUID
 
 class BoardServiceImplTest {
@@ -12,44 +16,24 @@ class BoardServiceImplTest {
 
     @Test
     fun `isGameFinished test while there are pieces on the board`() {
-        // when
+        // given
         val board = Board(UUID.randomUUID())
+        board.board[0][0] = Piece(Color.WHITE, ManStrategy)
+        board.board[1][1] = Piece(Color.BLACK, ManStrategy)
+
+        // when
         val actual = underTest.isGameFinished(board)
 
         // then
         assertThat(actual).isFalse()
     }
 
-    @Test
-    fun `isGameFinished test while there are only white pieces on the board`() {
+    @ParameterizedTest
+    @EnumSource(Color::class)
+    fun `isGameFinished test when there are one colored pieces on the board`(color: Color) {
         // given
         val board = Board(UUID.randomUUID())
-        for (i in board.board.indices) {
-            for (j in board.board[i].indices) {
-                if (board.board[i][j]?.color == Color.BLACK) {
-                    board.board[i][j] = null
-                }
-            }
-        }
-
-        // when
-        val actual = underTest.isGameFinished(board)
-
-        // then
-        assertThat(actual).isTrue()
-    }
-
-    @Test
-    fun `isGameFinished test while there are only black pieces on the board`() {
-        // given
-        val board = Board(UUID.randomUUID())
-        for (i in board.board.indices) {
-            for (j in board.board[i].indices) {
-                if (board.board[i][j]?.color == Color.WHITE) {
-                    board.board[i][j] = null
-                }
-            }
-        }
+        board.board[0][0] = Piece(color, ManStrategy)
 
         // when
         val actual = underTest.isGameFinished(board)
