@@ -14,7 +14,7 @@ import ru.kiseru.checkers.exception.MustEatException
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
-class ManTest {
+class ManStrategyTest {
 
     private lateinit var board: Board
 
@@ -31,14 +31,14 @@ class ManTest {
     @Test
     fun `analyzeAbilityOfMove test`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
 
         // when
-        underTest.analyzeAbilityOfMove(board, 3 to 3)
+        val actual = ManStrategy.analyzeAbilityOfMove(board, piece, 3 to 3)
 
         // then
-        assertThat(underTest.isCanMove).isTrue()
+        assertThat(actual).isTrue()
     }
 
     @CsvSource(
@@ -54,14 +54,14 @@ class ManTest {
     @ParameterizedTest
     fun `analyzeAbilityOfMove on the last line test`(row: Int, column: Int, color: Color) {
         // given
-        val underTest = Man(color)
-        board.board[row - 1][column - 1] = underTest
+        val piece = Piece(color, ManStrategy)
+        board.board[row - 1][column - 1] = piece
 
         // when
-        underTest.analyzeAbilityOfMove(board, row to column)
+        val actual = ManStrategy.analyzeAbilityOfMove(board, piece, row to column)
 
         // then
-        assertThat(underTest.isCanMove).isFalse()
+        assertThat(actual).isFalse()
     }
 
     @ParameterizedTest
@@ -87,54 +87,54 @@ class ManTest {
         expected: Boolean,
     ) {
         // given
-        val underTest = Man(sourceColor)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
+        val piece = Piece(sourceColor, ManStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
 
-        board.board[targetRow - 1][targetColumn - 1] = Man(targetColor)
+        board.board[targetRow - 1][targetColumn - 1] = Piece(targetColor, ManStrategy)
 
         // when
-        underTest.analyzeAbilityOfEat(board, sourceRow to sourceColumn)
+        val actual = ManStrategy.analyzeAbilityOfEat(board, piece, sourceRow to sourceColumn)
 
         // then
-        assertThat(underTest.isCanEat).isEqualTo(expected)
+        assertThat(actual).isEqualTo(expected)
     }
 
     @Test
     fun `move test when man can eat`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
         // when & then
         assertThatExceptionOfType(MustEatException::class.java)
-            .isThrownBy { underTest.move(board, 3 to 3, 4 to 4) }
+            .isThrownBy { ManStrategy.move(board, piece, 3 to 3, 4 to 4) }
     }
 
     @Test
     fun `move test when man can't move`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = false
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = false
+        piece.isCanMove = false
 
         // then
         assertThatExceptionOfType(CannotMoveException::class.java)
-            .isThrownBy { underTest.move(board, 3 to 3, 4 to 4) }
+            .isThrownBy { ManStrategy.move(board, piece, 3 to 3, 4 to 4) }
     }
 
     @Test
     fun `move test when man can't move to`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = true
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = false
+        piece.isCanMove = true
 
         // when & then
         assertThatExceptionOfType(CannotMoveException::class.java)
-            .isThrownBy { underTest.move(board, 3 to 3, 5 to 3) }
+            .isThrownBy { ManStrategy.move(board, piece, 3 to 3, 5 to 3) }
     }
 
     @ParameterizedTest
@@ -158,24 +158,24 @@ class ManTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = Man(color)
-        underTest.isCanMove = true
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
+        val piece = Piece(color, ManStrategy)
+        piece.isCanMove = true
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
 
         val enemyColor = when(color) {
             Color.WHITE -> Color.BLACK
             Color.BLACK -> Color.WHITE
         }
-        val enemyPiece = Man(enemyColor)
+        val enemyPiece = Piece(enemyColor, ManStrategy)
         board.board[enemyRow - 1][enemyColumn - 1] = enemyPiece
 
         // when
-        underTest.move(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        ManStrategy.move(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isSameAs(enemyPiece)
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @ParameterizedTest
@@ -187,17 +187,17 @@ class ManTest {
     )
     fun `move test`(color: Color, sourceRow: Int, sourceColumn: Int, destinationRow: Int, destinationColumn: Int) {
         // given
-        val underTest = Man(color)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = true
+        val piece = Piece(color, ManStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = false
+        piece.isCanMove = true
 
         // when
-        underTest.move(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        ManStrategy.move(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @ParameterizedTest
@@ -226,43 +226,43 @@ class ManTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = Man(color)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = true
+        val piece = Piece(color, ManStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = false
+        piece.isCanMove = true
 
         // when
-        underTest.move(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        ManStrategy.move(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
-        val piece = board.board[destinationRow - 1][destinationColumn - 1]
-        assertThat(piece).isInstanceOf(King::class.java)
-        assertThat(piece?.color).isEqualTo(color)
+        val destinationPiece = board.board[destinationRow - 1][destinationColumn - 1]
+        assertThat(destinationPiece?.pieceStrategy).isInstanceOf(KingStrategy::class.java)
+        assertThat(destinationPiece?.color).isEqualTo(color)
     }
 
     @Test
     fun `eat test when piece can't eat`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = false
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = false
 
         // when & then
         assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { underTest.eat(board, 3 to 3, 4 to 4) }
+            .isThrownBy { ManStrategy.eat(board, piece, 3 to 3, 4 to 4) }
     }
 
     @Test
     fun `eat test when piece can't eat at some destination`() {
         // given
-        val underTest = Man(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, ManStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
         // then
         assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { underTest.eat(board, 3 to 3, 4 to 4) }
+            .isThrownBy { ManStrategy.eat(board, piece, 3 to 3, 4 to 4) }
     }
 
     @ParameterizedTest
@@ -286,23 +286,23 @@ class ManTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = Man(sourceColor)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(sourceColor, ManStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = true
 
         val enemyColor = when(sourceColor) {
             Color.WHITE -> Color.BLACK
             Color.BLACK -> Color.WHITE
         }
-        board.board[enemyRow - 1][enemyColumn - 1] = Man(enemyColor)
+        board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, ManStrategy)
 
         // when
-        underTest.eat(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @ParameterizedTest
@@ -320,54 +320,33 @@ class ManTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = Man(color)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(color, ManStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = true
 
         val enemyColor = when (color) {
             Color.WHITE -> Color.BLACK
             Color.BLACK -> Color.WHITE
         }
-        board.board[enemyRow - 1][enemyColumn - 1] = Man(enemyColor)
+        board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, ManStrategy)
 
         // when
-        underTest.eat(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
-        val piece = board.board[destinationRow - 1][destinationColumn - 1]
-        assertThat(piece).isInstanceOf(King::class.java)
-        assertThat(piece?.color).isEqualTo(color)
+        val destinationPiece = board.board[destinationRow - 1][destinationColumn - 1]
+        assertThat(destinationPiece?.pieceStrategy).isInstanceOf(KingStrategy::class.java)
+        assertThat(destinationPiece?.color).isEqualTo(color)
     }
 
     @Test
     fun `creating test`() {
         // when
-        val man = Man(Color.BLACK)
+        val man = Piece(Color.BLACK, ManStrategy)
 
         // then
         assertThat(man.color).isEqualTo(Color.BLACK)
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "4, 4, 5, 5, 1",
-        "5, 5, 4, 4, 1",
-        "1, 1, 8, 8, 7",
-        "8, 8, 1, 1, 7",
-        "1, 1, 3, 1, -1",
-        "3, 1, 1, 1, -1",
-    )
-    fun `diff test`(firstColumn: Int, firstRow: Int, secondColumn: Int, secondRow: Int, expected: Int) {
-        // given
-        val underTest = Man(Color.WHITE)
-        board.board[firstRow - 1][firstColumn - 1] = underTest
-
-        // when
-        val actual = underTest.diff(firstRow to firstColumn, secondRow to secondColumn)
-
-        // then
-        assertThat(actual).isEqualTo(expected)
     }
 }

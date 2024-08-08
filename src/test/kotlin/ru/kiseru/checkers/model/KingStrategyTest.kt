@@ -14,7 +14,7 @@ import ru.kiseru.checkers.exception.MustEatException
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
-class KingTest {
+class KingStrategyTest {
 
     private lateinit var board: Board
 
@@ -31,37 +31,43 @@ class KingTest {
     @Test
     fun `move test when can eat`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
         // when & then
-        assertThatExceptionOfType(MustEatException::class.java).isThrownBy { underTest.move(board, 3 to 3, 4 to 4) }
+        assertThatExceptionOfType(MustEatException::class.java).isThrownBy {
+            KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+        }
     }
 
     @Test
     fun `move test when can't move`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = false
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = false
+        piece.isCanMove = false
 
         // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy { underTest.move(board, 3 to 3, 4 to 4) }
+        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
+            KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+        }
     }
 
     @Test
     fun `move test when can't move to destination cell`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
 
-        underTest.isCanEat = false
-        underTest.isCanMove = true
+        piece.isCanEat = false
+        piece.isCanMove = true
 
         // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy { underTest.move(board, 3 to 3, 5 to 3) }
+        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
+            KingStrategy.move(board, piece, 3 to 3, 5 to 3)
+        }
     }
 
     @ParameterizedTest
@@ -85,24 +91,24 @@ class KingTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = King(color)
-        underTest.isCanMove = true
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
+        val piece = Piece(color, KingStrategy)
+        piece.isCanMove = true
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
 
         val enemyColor = when (color) {
             Color.WHITE -> Color.BLACK
             Color.BLACK -> Color.WHITE
         }
-        val enemyPiece = King(enemyColor)
+        val enemyPiece = Piece(enemyColor, KingStrategy)
         board.board[enemyRow - 1][enemyColumn - 1] = enemyPiece
 
         // when
-        underTest.move(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        KingStrategy.move(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isSameAs(enemyPiece)
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @ParameterizedTest
@@ -124,65 +130,73 @@ class KingTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = King(sourceColor)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = false
-        underTest.isCanMove = true
+        val piece = Piece(sourceColor, KingStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = false
+        piece.isCanMove = true
 
         // when
-        underTest.move(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        KingStrategy.move(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @Test
     fun `eat test when can't eat`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = false
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = false
 
         // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy { underTest.eat(board, 3 to 3, 8 to 8) }
+        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
+            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        }
     }
 
     @Test
     fun `eat test when can't eat to destination cell`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
-        board.board[7][7] = King(Color.WHITE)
+        board.board[7][7] = Piece(Color.WHITE, KingStrategy)
 
         // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy { underTest.eat(board, 3 to 3, 8 to 8) }
+        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
+            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        }
     }
 
     @Test
     fun `eat test when there is no sacrificed piece source cell and destination cell`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
         // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy { underTest.eat(board, 3 to 3, 8 to 8) }
+        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
+            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        }
     }
 
     @Test
     fun `eat test when there is a player piece between source cell and destination cell`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
+        piece.isCanEat = true
 
-        board.board[3][3] = King(Color.WHITE)
+        board.board[3][3] = Piece(Color.WHITE, KingStrategy)
 
         // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy { underTest.eat(board, 3 to 3, 8 to 8) }
+        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
+            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        }
     }
 
     @ParameterizedTest
@@ -206,94 +220,78 @@ class KingTest {
         destinationColumn: Int,
     ) {
         // given
-        val underTest = King(sourceColor)
-        board.board[sourceRow - 1][sourceColumn - 1] = underTest
-        underTest.isCanEat = true
+        val piece = Piece(sourceColor, KingStrategy)
+        board.board[sourceRow - 1][sourceColumn - 1] = piece
+        piece.isCanEat = true
 
         val enemyColor = when (sourceColor) {
             Color.WHITE -> Color.BLACK
             Color.BLACK -> Color.WHITE
         }
-        board.board[enemyRow - 1][enemyColumn - 1] = King(enemyColor)
+        board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, KingStrategy)
 
         // when
-        underTest.eat(board, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        KingStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
-        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(underTest)
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "WHITE, #",
-        "BLACK, &",
-    )
-    fun `toString test`(color: Color, expected: String) {
-        // given
-        val underTest = King(color)
-
-        // when
-        val actual = underTest.toString()
-
-        // then
-        assertThat(actual).isEqualTo(expected)
+        assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
     }
 
     @Test
     fun `analyzeAbilityOfMove test when there are no moves`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[0][0] = underTest
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[0][0] = piece
 
-        board.board[1][1] = King(Color.WHITE)
+        board.board[1][1] = Piece(Color.WHITE, KingStrategy)
 
         // when
-        underTest.analyzeAbilityOfMove(board, 1 to 1)
+        val actual = KingStrategy.analyzeAbilityOfMove(board, piece, 1 to 1)
 
         // then
-        assertThat(underTest.isCanMove).isFalse()
+        assertThat(actual).isFalse()
     }
 
     @Test
     fun `analyzeAbilityOfMove test when there's an available move`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
 
         // when
-        underTest.analyzeAbilityOfMove(board, 3 to 3)
+        val actual = KingStrategy.analyzeAbilityOfMove(board, piece, 3 to 3)
 
         // then
-        assertThat(underTest.isCanMove).isTrue()
+        assertThat(actual).isTrue()
     }
 
     @Test
     fun `analyzeAbilityOfEat test when there are no moves`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
 
         // when
-        underTest.analyzeAbilityOfEat(board, 3 to 3)
+        val actual = KingStrategy.analyzeAbilityOfEat(board, piece, 3 to 3)
 
         // then
-        assertThat(underTest.isCanEat).isFalse()
+        assertThat(actual).isFalse()
     }
 
     @Test
     fun `analyzeAbilityOfEat test when there's an available move`() {
         // given
-        val underTest = King(Color.WHITE)
-        board.board[2][2] = underTest
+        val piece = Piece(Color.WHITE, KingStrategy)
+        board.board[2][2] = piece
 
-        board.board[3][3] = King(Color.BLACK)
+        board.board[3][3] = Piece(Color.BLACK, KingStrategy)
 
         // when
-        underTest.analyzeAbilityOfEat(board, 3 to 3)
+        val actual = KingStrategy.analyzeAbilityOfEat(board, piece, 3 to 3)
 
         // then
-        assertThat(underTest.isCanEat).isTrue()
+        assertThat(actual).isTrue()
     }
 }

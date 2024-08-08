@@ -33,7 +33,7 @@ class RoomController(
             val pieces = board.piecesCoordinates()
                 .map {
                     val piece = board.getPiece(it)!!
-                    PieceDto(getCellCaption(it.first, it.second), piece.color, piece.type)
+                    PieceDto(getCellCaption(it.first, it.second), piece.color, piece.pieceStrategy.type)
                 }
             val boardDto = BoardDto(board.version, pieces)
             result.setResult(boardDto)
