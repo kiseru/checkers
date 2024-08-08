@@ -3,6 +3,7 @@ package ru.kiseru.checkers.service.impl
 import org.springframework.stereotype.Component
 import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
+import ru.kiseru.checkers.initializer.BoardInitializer
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.model.Room
 import ru.kiseru.checkers.model.User
@@ -16,6 +17,7 @@ class RoomServiceImpl(
     private val roomRepository: RoomRepository,
     private val boardService: BoardService,
     private val cellNotationConverter: CellNotationConverter,
+    private val boardInitializer: BoardInitializer,
 ) : RoomService {
 
     override fun findOrCreateRoomById(roomId: Int): Room {
@@ -31,6 +33,7 @@ class RoomServiceImpl(
 
     private fun createRoom(roomId: Int): Room {
         val board = Board(UUID.randomUUID())
+        boardInitializer.initialize(board)
         return Room(roomId, board)
     }
 

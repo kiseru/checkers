@@ -15,30 +15,6 @@ class Board(val id: UUID) {
     var version = 1
         private set
 
-    init {
-        initWhitePieces()
-        initBlackPieces()
-        analyzeAbilities()
-    }
-
-    private fun initWhitePieces() =
-        (0..2).asSequence()
-            .flatMap { row ->
-                (0..7).asSequence()
-                    .map { column -> row to column }
-            }
-            .filter { (row, column) -> (row + column) % 2 == 0 }
-            .forEach { (row, column) -> board[row][column] = Piece(Color.WHITE, ManStrategy) }
-
-    private fun initBlackPieces() =
-        (5..7).asSequence()
-            .flatMap { row ->
-                (0..7).asSequence()
-                    .map { column -> row to column }
-            }
-            .filter { (row, column) -> (row + column) % 2 == 0 }
-            .forEach { (row, column) -> board[row][column] = Piece(Color.BLACK, ManStrategy) }
-
     fun pieces(): Sequence<Piece> =
         piecesCoordinates()
             .mapNotNull { (row, column) -> board[row - 1][column - 1] }
@@ -109,7 +85,7 @@ class Board(val id: UUID) {
             .any { it.color == userColor && it.isCanEat }
     }
 
-    private fun analyzeAbilities() =
+    fun analyzeAbilities() =
         piecesCoordinates()
             .forEach {
                 val piece = board[it.first - 1][it.second - 1]!!

@@ -21,11 +21,6 @@ class ManStrategyTest {
     @BeforeEach
     fun setUp() {
         board = Board(UUID.randomUUID())
-        for (cells in board.board) {
-            for (i in cells.indices) {
-                cells[i] = null
-            }
-        }
     }
 
     @Test
