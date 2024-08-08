@@ -29,7 +29,7 @@ class Board(val id: UUID) {
                     .map { column -> row to column }
             }
             .filter { (row, column) -> (row + column) % 2 == 0 }
-            .forEach { (row, column) -> board[row][column] = Man(Color.WHITE) }
+            .forEach { (row, column) -> board[row][column] = Piece(Color.WHITE, ManStrategy) }
 
     private fun initBlackPieces() =
         (5..7).asSequence()
@@ -38,7 +38,7 @@ class Board(val id: UUID) {
                     .map { column -> row to column }
             }
             .filter { (row, column) -> (row + column) % 2 == 0 }
-            .forEach { (row, column) -> board[row][column] = Man(Color.BLACK) }
+            .forEach { (row, column) -> board[row][column] = Piece(Color.BLACK, ManStrategy) }
 
     fun pieces(): Sequence<Piece> =
         piecesCoordinates()
@@ -110,10 +110,10 @@ class Board(val id: UUID) {
     private fun makeTurn(userColor: Color, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
         val isCanEat = analyze(userColor)
         return if (isCanEat) {
-            piece.eat(this, source, destination)
+            piece.pieceStrategy.eat(this, piece, source, destination)
             analyze(userColor)
         } else {
-            piece.move(this, source, destination)
+            piece.pieceStrategy.move(this, piece, source, destination)
             false
         }
     }
@@ -140,8 +140,8 @@ class Board(val id: UUID) {
         piecesCoordinates()
             .forEach {
                 val piece = board[it.first - 1][it.second - 1]!!
-                piece.analyzeAbilityOfMove(this, it)
-                piece.analyzeAbilityOfEat(this, it)
+                piece.isCanMove = piece.pieceStrategy.analyzeAbilityOfMove(this, piece, it)
+                piece.isCanEat = piece.pieceStrategy.analyzeAbilityOfEat(this, piece, it)
             }
 
     companion object {
