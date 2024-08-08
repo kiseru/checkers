@@ -5,7 +5,7 @@ import ru.kiseru.checkers.model.Color
 
 interface BoardService {
 
-    fun makeTurn(board: Board, userColor: Color, from: String, to: String): Boolean
+    fun makeTurn(board: Board, userColor: Color, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean
 
     fun waitNewVersion(board: Board, version: Int)
 

@@ -3,7 +3,6 @@ package ru.kiseru.checkers.model
 import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.CellNotFoundException
-import ru.kiseru.checkers.exception.ConvertCellException
 import ru.kiseru.checkers.exception.PieceException
 import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
@@ -55,39 +54,13 @@ class Board(val id: UUID) {
             }
         }
 
-    fun makeTurn(userColor: Color, from: String, to: String): Boolean {
-        val source = convertCell(from)
-        val destination = convertCell(to)
+    fun makeTurn(userColor: Color, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
         val piece = getUserPiece(source, userColor)
         checkForPiece(destination)
         val isCanEat = makeTurn(userColor, piece, source, destination)
         updateVersion()
         return isCanEat
     }
-
-    private fun convertCell(cell: String): Pair<Int, Int> {
-        if (cell.length != 2) {
-            throw ConvertCellException("Can't convert '$cell' to cell")
-        }
-
-        val column = convertColumn(cell[0])
-        val row = convertRow(cell[1])
-        return row to column
-    }
-
-    private fun convertColumn(columnName: Char): Int =
-        if (columnName < 'a' || columnName > 'h') {
-            throw ConvertCellException("Column '$columnName' doesn't exists")
-        } else {
-            columnName.code - 'a'.code + 1
-        }
-
-    private fun convertRow(rowName: Char): Int =
-        if (rowName < '1' || rowName > '8') {
-            throw ConvertCellException("Row '$rowName' doesn't exists")
-        } else {
-            rowName.code - '1'.code + 1
-        }
 
     private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Piece {
         val piece = getPiece(source) ?: throw CellException("Cell '${getCellCaption(source)}' is empty")

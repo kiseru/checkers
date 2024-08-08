@@ -10,6 +10,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
+import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.model.Room
@@ -29,6 +30,9 @@ class RoomServiceImplTest {
 
     @Mock
     private lateinit var boardService: BoardService
+
+    @Mock
+    private lateinit var cellNotationConverter: CellNotationConverter
 
     @ParameterizedTest
     @EnumSource(Color::class)
@@ -232,7 +236,13 @@ class RoomServiceImplTest {
 
         val sourceCell = "a1"
         val destinationCell = "b2"
-        given(boardService.makeTurn(eq(board), eq(color), eq(sourceCell), eq(destinationCell)))
+        val source = 1 to 1
+        val destination = 2 to 2
+        given(cellNotationConverter.convert(eq(sourceCell)))
+            .willReturn(source)
+        given(cellNotationConverter.convert(eq(destinationCell)))
+            .willReturn(destination)
+        given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
             .willReturn(false)
 
         // when
@@ -273,7 +283,13 @@ class RoomServiceImplTest {
 
         val sourceCell = "a1"
         val destinationCell = "b2"
-        given(boardService.makeTurn(eq(board), eq(color), eq(sourceCell), eq(destinationCell)))
+        val source = 1 to 1
+        val destination = 2 to 2
+        given(cellNotationConverter.convert(eq(sourceCell)))
+            .willReturn(source)
+        given(cellNotationConverter.convert(eq(destinationCell)))
+            .willReturn(destination)
+        given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
             .willReturn(true)
 
         // when

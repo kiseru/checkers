@@ -1,6 +1,7 @@
 package ru.kiseru.checkers.service.impl
 
 import org.springframework.stereotype.Component
+import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.model.Room
@@ -14,6 +15,7 @@ import java.util.UUID
 class RoomServiceImpl(
     private val roomRepository: RoomRepository,
     private val boardService: BoardService,
+    private val cellNotationConverter: CellNotationConverter,
 ) : RoomService {
 
     override fun findOrCreateRoomById(roomId: Int): Room {
@@ -54,12 +56,13 @@ class RoomServiceImpl(
             return
         }
 
-        val isCanEat = boardService.makeTurn(room.board, user.color, from, to)
+        val source = cellNotationConverter.convert(from)
+        val destination = cellNotationConverter.convert(to)
+        val isCanEat = boardService.makeTurn(room.board, user.color, source, destination)
         if (!isCanEat) {
             room.turn = getEnemy(user, room)
         }
     }
-
 
     override fun addPlayer(room: Room, user: User, color: Color) {
         when (color) {

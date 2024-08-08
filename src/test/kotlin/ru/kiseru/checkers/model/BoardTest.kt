@@ -7,11 +7,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
-import ru.kiseru.checkers.exception.ConvertCellException
 import ru.kiseru.checkers.exception.PieceException
 import java.util.UUID
 
@@ -96,7 +94,7 @@ class BoardTest {
         val sourcePiece = board[2][2]
 
         // when
-        underTest.makeTurn(Color.WHITE, "c3", "e5")
+        underTest.makeTurn(Color.WHITE, 3 to 3, 5 to 5)
 
         // then
         assertThat(board[2][2]).isNull()
@@ -108,20 +106,20 @@ class BoardTest {
     fun `makeTurn test when source cell is empty`() {
         // when & then
         assertThatExceptionOfType(CellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, "d4", "e5") }
+            .isThrownBy { underTest.makeTurn(Color.WHITE, 4 to 4, 5 to 5) }
     }
 
     @Test
     fun `makeTurn test when destination cell is busy`() {
         // when & then
         assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
+            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
     }
 
     @Test
     fun `makeTurn test when user cannot move`() {
         // when
-        underTest.makeTurn(Color.WHITE, "c3", "d4")
+        underTest.makeTurn(Color.WHITE, 3 to 3, 4 to 4)
 
         // then
         val board = underTest.board
@@ -138,16 +136,7 @@ class BoardTest {
         assertThat(actual).isEqualTo(false)
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = ["a", "aaa", "`2", "i8", "a0", "a9"])
-    fun `makeTurn test when source cell isn't valid`(from: String) {
-        // given
-        clearBoard(underTest)
 
-        // when & then
-        assertThatExceptionOfType(ConvertCellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, from, "a2") }
-    }
 
     @Test
     fun `makeTurn test when source cell hasn't piece`() {
@@ -156,7 +145,7 @@ class BoardTest {
 
         // when & then
         assertThatExceptionOfType(CellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
+            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
     }
 
     @Test
@@ -168,20 +157,7 @@ class BoardTest {
 
         // when & then
         assertThatExceptionOfType(PieceException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", "c3") }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = ["a", "aaa", "`2", "i8", "a0", "a9"])
-    fun `makeTurn test when destination cell name isn't valid`(to: String) {
-        // given
-        clearBoard(underTest)
-
-        underTest.board[1][1] = Piece(Color.WHITE, ManStrategy)
-
-        // when & then
-        assertThatExceptionOfType(ConvertCellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, "b2", to) }
+            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
     }
 
     @Test
@@ -193,7 +169,7 @@ class BoardTest {
         underTest.board[3][3] = piece
 
         // when
-        val actual = underTest.makeTurn(Color.WHITE, "d4", "e5")
+        val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 5 to 5)
 
         // then
         assertThat(actual).isFalse()
@@ -212,7 +188,7 @@ class BoardTest {
         underTest.board[4][4] = Piece(Color.BLACK, ManStrategy)
 
         // when
-        val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")
+        val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 6 to 6)
 
         // then
         assertThat(actual).isFalse()
@@ -233,7 +209,7 @@ class BoardTest {
         underTest.board[6][6] = Piece(Color.BLACK, ManStrategy)
 
         // when
-        val actual = underTest.makeTurn(Color.WHITE, "d4", "f6")
+        val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 6 to 6)
 
         // then
         assertThat(actual).isTrue()
