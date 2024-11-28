@@ -2,13 +2,15 @@ package ru.kiseru.checkers.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.assertj.core.error.ShouldBeExactlyInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.MustEatException
+import ru.kiseru.checkers.error.ChessError
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
@@ -99,9 +101,20 @@ class ManStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = true
 
-        // when & then
-        assertThatExceptionOfType(MustEatException::class.java)
-            .isThrownBy { ManStrategy.move(board, piece, 3 to 3, 4 to 4) }
+        // when
+        val actual = ManStrategy.move(board, piece, 3 to 3, 4 to 4)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.MustEat::class.java)
+            if (it !is ChessError.MustEat) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.MustEat::class.java)
+                        .create()
+                }
+            }
+        }
     }
 
     @Test
@@ -117,9 +130,16 @@ class ManStrategyTest {
 
         // then
         assertThat(actual.isLeft()).isTrue()
-        actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo(3 to 3)
-            assertThat(destination).isEqualTo(4 to 4)
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.CannotMove::class.java)
+            if (it !is ChessError.CannotMove) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.CannotMove::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.source).isEqualTo(3 to 3)
+            assertThat(it.destination).isEqualTo(4 to 4)
         }
     }
 
@@ -136,9 +156,16 @@ class ManStrategyTest {
 
         // then
         assertThat(actual.isLeft()).isTrue()
-        actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo(3 to 3)
-            assertThat(destination).isEqualTo(5 to 3)
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.CannotMove::class.java)
+            if (it !is ChessError.CannotMove) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.CannotMove::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.source).isEqualTo(3 to 3)
+            assertThat(it.destination).isEqualTo(5 to 3)
         }
     }
 

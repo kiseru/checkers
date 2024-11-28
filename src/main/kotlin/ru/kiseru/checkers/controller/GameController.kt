@@ -72,6 +72,8 @@ class GameController(
                 "Cell '${getCellCaption(error.cell)}' is empty"
             is ChessError.BusyCell ->
                 "Cell ${getCellCaption(error.cell)} already has the piece"
+            is ChessError.MustEat ->
+                "You must eat enemy piece"
         }
 
     private fun initModel(model: Model, user: User, room: Room) {

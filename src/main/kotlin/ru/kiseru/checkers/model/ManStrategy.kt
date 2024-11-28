@@ -5,7 +5,6 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CellNotFoundException
-import ru.kiseru.checkers.exception.MustEatException
 import ru.kiseru.checkers.utils.isCoordinateExists
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
@@ -111,10 +110,10 @@ object ManStrategy : PieceStrategy {
         piece: Piece,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotMove, Unit> =
+    ): Either<ChessError, Unit> =
         either {
-            if (piece.isCanEat) {
-                throw MustEatException()
+            ensure(!piece.isCanEat) {
+                ChessError.MustEat
             }
 
             ensure(piece.isCanMove && isAbleToMoveTo(board, piece, source, destination)) {

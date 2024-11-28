@@ -16,7 +16,7 @@ interface PieceStrategy {
         piece: Piece,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotMove, Unit>
+    ): Either<ChessError, Unit>
 
     fun eat(
         board: Board,
