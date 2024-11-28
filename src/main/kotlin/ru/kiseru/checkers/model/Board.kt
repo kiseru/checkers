@@ -39,7 +39,7 @@ class Board(val id: UUID) {
         userColor: Color,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotEat, Boolean> {
+    ): Either<ChessError, Boolean> {
         val piece = getUserPiece(source, userColor)
         checkForPiece(destination)
         return makeTurn(userColor, piece, source, destination)
@@ -69,14 +69,14 @@ class Board(val id: UUID) {
         piece: Piece,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotEat, Boolean> =
+    ): Either<ChessError, Boolean> =
         either {
             val isCanEat = analyze(userColor)
             if (isCanEat) {
                 piece.pieceStrategy.eat(this@Board, piece, source, destination).bind()
                 analyze(userColor)
             } else {
-                piece.pieceStrategy.move(this@Board, piece, source, destination)
+                piece.pieceStrategy.move(this@Board, piece, source, destination).bind()
                 false
             }
         }

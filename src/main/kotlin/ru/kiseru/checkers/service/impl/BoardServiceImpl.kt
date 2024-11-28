@@ -24,7 +24,7 @@ class BoardServiceImpl : BoardService {
         userColor: Color,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotEat, Boolean> {
+    ): Either<ChessError, Boolean> {
         val (lock, condition) = locks.computeIfAbsent(board.id) {
             val lock = ReentrantLock()
             lock to lock.newCondition()

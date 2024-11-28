@@ -1,13 +1,10 @@
 package ru.kiseru.checkers.model
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ru.kiseru.checkers.error.ChessError
-import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
-import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
 import kotlin.math.sign
@@ -23,18 +20,24 @@ object KingStrategy : PieceStrategy {
             .filter { isCoordinatesExists(source.first + it.first, source.second + it.second) }
             .any { isAbleToMoveTo(board, source, source.first + it.first to source.second + it.second) }
 
-    override fun move(board: Board, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>) {
-        if (piece.isCanEat) {
-            throw MustEatException()
-        }
+    override fun move(
+        board: Board,
+        piece: Piece,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotMove, Unit> =
+        either {
+            if (piece.isCanEat) {
+                throw MustEatException()
+            }
 
-        if (!piece.isCanMove || !isAbleToMoveTo(board, source, destination)) {
-            throw CannotMoveException(source, destination)
-        }
+            ensure(piece.isCanMove && isAbleToMoveTo(board, source, destination)) {
+                ChessError.CannotMove(source, destination)
+            }
 
-        board.board[source.first - 1][source.second - 1] = null
-        board.board[destination.first - 1][destination.second - 1] = piece
-    }
+            board.board[source.first - 1][source.second - 1] = null
+            board.board[destination.first - 1][destination.second - 1] = piece
+        }
 
     private fun isAbleToMoveTo(board: Board, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
         if (diff(source, destination) == -1) {
@@ -75,7 +78,7 @@ object KingStrategy : PieceStrategy {
     override fun analyzeAbilityOfEat(
         board: Board,
         piece: Piece,
-        source: Pair<Int, Int>
+        source: Pair<Int, Int>,
     ): Boolean {
         return generateSequence(2) { it + 1 }
             .take(6)
@@ -88,11 +91,11 @@ object KingStrategy : PieceStrategy {
         board: Board,
         piece: Piece,
         source: Pair<Int, Int>,
-        destination: Pair<Int, Int>
+        destination: Pair<Int, Int>,
     ): Either<ChessError.CannotEat, Unit> =
         either {
             ensure(piece.isCanEat && isAbleToEatTo(board, piece, source, destination)) {
-                ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+                ChessError.CannotEat(source, destination)
             }
 
             val sacrificedPieceLocation = getSacrificedPieceLocation(board, piece, source, destination).bind()
@@ -106,7 +109,7 @@ object KingStrategy : PieceStrategy {
         board: Board,
         piece: Piece,
         source: Pair<Int, Int>,
-        destination: Pair<Int, Int>
+        destination: Pair<Int, Int>,
     ): Boolean {
         if (board.getPiece(destination) != null) {
             return false
@@ -183,12 +186,12 @@ object KingStrategy : PieceStrategy {
             }
                 .mapNotNull { (currentRow, currentColumn) ->
                     ensure(currentRow != destination.first || currentColumn != destination.second) {
-                        ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+                        ChessError.CannotEat(source, destination)
                     }
 
                     val anotherPiece = board.getPiece(currentRow to currentColumn) ?: return@mapNotNull null
                     ensure(anotherPiece.color != piece.color) {
-                        ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+                        ChessError.CannotEat(source, destination)
                     }
 
                     (currentRow to currentColumn)

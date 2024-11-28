@@ -12,7 +12,7 @@ interface BoardService {
         userColor: Color,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError.CannotEat, Boolean>
+    ): Either<ChessError, Boolean>
 
     fun waitNewVersion(board: Board, version: Int)
 

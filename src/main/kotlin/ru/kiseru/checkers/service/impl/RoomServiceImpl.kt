@@ -41,7 +41,7 @@ class RoomServiceImpl(
         return Room(roomId, board)
     }
 
-    override fun makeTurn(room: Room, user: User, from: String?, to: String?): Either<ChessError.CannotEat, Unit> {
+    override fun makeTurn(room: Room, user: User, from: String?, to: String?): Either<ChessError, Unit> {
         if (room.whitePlayer == null) {
             addPlayer(room, user, Color.WHITE)
             return Unit.right()

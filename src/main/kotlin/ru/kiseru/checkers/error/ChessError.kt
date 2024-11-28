@@ -1,6 +1,6 @@
 package ru.kiseru.checkers.error
 
 sealed interface ChessError {
-    data class CellCaptionIsNotExisted(val row: Int, val column: Int) : ChessError
-    data class CannotEat(val sourceCell: String, val destinationCell: String) : ChessError
+    data class CannotEat(val source: Pair<Int, Int>, val destination: Pair<Int, Int>) : ChessError
+    data class CannotMove(val source: Pair<Int, Int>, val destination: Pair<Int, Int>): ChessError
 }

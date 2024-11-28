@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
 import java.util.UUID
 
@@ -43,9 +42,14 @@ class KingStrategyTest {
         piece.isCanEat = false
         piece.isCanMove = false
 
-        // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
-            KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+        // when
+        val actual = KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(4 to 4)
         }
     }
 
@@ -58,9 +62,14 @@ class KingStrategyTest {
         piece.isCanEat = false
         piece.isCanMove = true
 
-        // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
-            KingStrategy.move(board, piece, 3 to 3, 5 to 3)
+        // when
+        val actual = KingStrategy.move(board, piece, 3 to 3, 5 to 3)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(5 to 3)
         }
     }
 
@@ -150,8 +159,8 @@ class KingStrategyTest {
         // then
         assertThat(actual.isLeft()).isTrue()
         actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo("c3")
-            assertThat(destination).isEqualTo("h8")
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -170,8 +179,8 @@ class KingStrategyTest {
         // then
         assertThat(actual.isLeft()).isTrue()
         actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo("c3")
-            assertThat(destination).isEqualTo("h8")
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -188,8 +197,8 @@ class KingStrategyTest {
         // then
         assertThat(actual.isLeft()).isTrue()
         actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo("c3")
-            assertThat(destination).isEqualTo("h8")
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -208,8 +217,8 @@ class KingStrategyTest {
         // then
         assertThat(actual.isLeft()).isTrue()
         actual.onLeft { (source, destination) ->
-            assertThat(source).isEqualTo("c3")
-            assertThat(destination).isEqualTo("h8")
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 

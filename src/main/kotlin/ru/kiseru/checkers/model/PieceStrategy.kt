@@ -11,7 +11,12 @@ interface PieceStrategy {
 
     fun analyzeAbilityOfEat(board: Board, piece: Piece, source: Pair<Int, Int>): Boolean
 
-    fun move(board: Board, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>)
+    fun move(
+        board: Board,
+        piece: Piece,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotMove, Unit>
 
     fun eat(
         board: Board,
