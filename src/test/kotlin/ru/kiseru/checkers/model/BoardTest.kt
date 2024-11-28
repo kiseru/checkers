@@ -30,9 +30,10 @@ class BoardTest {
         val sourcePiece = underTest.board[2][2]
 
         // when
-        underTest.makeTurn(Color.WHITE, 3 to 3, 5 to 5)
+        val actual = underTest.makeTurn(Color.WHITE, 3 to 3, 5 to 5)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(underTest.board[2][2]).isNull()
         assertThat(underTest.board[3][3]).isNull()
         assertThat(underTest.board[4][4]).isSameAs(sourcePiece)
@@ -40,7 +41,6 @@ class BoardTest {
 
     @Test
     fun `makeTurn test when source cell is empty`() {
-        // when & then
         assertThatExceptionOfType(CellException::class.java)
             .isThrownBy { underTest.makeTurn(Color.WHITE, 4 to 4, 5 to 5) }
     }
@@ -105,7 +105,10 @@ class BoardTest {
         val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 5 to 5)
 
         // then
-        assertThat(actual).isFalse()
+        assertThat(actual.isRight()).isTrue()
+        actual.onRight {
+            assertThat(it).isFalse()
+        }
         assertThat(underTest.board[3][3]).isNull()
         assertThat(underTest.board[4][4]).isSameAs(piece)
     }
@@ -121,7 +124,10 @@ class BoardTest {
         val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 6 to 6)
 
         // then
-        assertThat(actual).isFalse()
+        assertThat(actual.isRight()).isTrue()
+        actual.onRight {
+            assertThat(it).isFalse()
+        }
         assertThat(underTest.board[3][3]).isNull()
         assertThat(underTest.board[4][4]).isNull()
         assertThat(underTest.board[5][5]).isSameAs(piece)
@@ -139,7 +145,10 @@ class BoardTest {
         val actual = underTest.makeTurn(Color.WHITE, 4 to 4, 6 to 6)
 
         // then
-        assertThat(actual).isTrue()
+        assertThat(actual.isRight()).isTrue()
+        actual.onRight {
+            assertThat(it).isTrue()
+        }
         assertThat(underTest.board[3][3]).isNull()
         assertThat(underTest.board[4][4]).isNull()
         assertThat(underTest.board[5][5]).isSameAs(piece)

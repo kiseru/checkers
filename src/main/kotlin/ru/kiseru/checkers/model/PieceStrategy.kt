@@ -1,5 +1,8 @@
 package ru.kiseru.checkers.model
 
+import arrow.core.Either
+import ru.kiseru.checkers.error.ChessError
+
 interface PieceStrategy {
 
     val type: PieceType
@@ -10,5 +13,10 @@ interface PieceStrategy {
 
     fun move(board: Board, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>)
 
-    fun eat(board: Board, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>)
+    fun eat(
+        board: Board,
+        piece: Piece,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotEat, Unit>
 }

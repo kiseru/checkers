@@ -1,5 +1,6 @@
 package ru.kiseru.checkers.service.impl
 
+import arrow.core.right
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -97,9 +98,10 @@ class RoomServiceImplTest {
         user.id = UUID.randomUUID()
 
         // when
-        underTest.makeTurn(room, user, "a1", "b1")
+        val actual = underTest.makeTurn(room, user, "a1", "b1")
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(user)
         assertThat(room.blackPlayer).isNull()
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -116,9 +118,10 @@ class RoomServiceImplTest {
         room.whitePlayer = user
 
         // when
-        underTest.makeTurn(room, user, "a1", "b1")
+        val actual = underTest.makeTurn(room, user, "a1", "b1")
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(user)
         assertThat(room.blackPlayer).isNull()
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -139,9 +142,10 @@ class RoomServiceImplTest {
         room.whitePlayer = whitePlayer
 
         // when
-        underTest.makeTurn(room, blackPlayer, "a1", "b1")
+        val actual = underTest.makeTurn(room, blackPlayer, "a1", "b1")
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -163,9 +167,10 @@ class RoomServiceImplTest {
         room.blackPlayer = blackPlayer
 
         // when
-        underTest.makeTurn(room, blackPlayer, "a1", "b1")
+        val actual = underTest.makeTurn(room, blackPlayer, "a1", "b1")
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -187,9 +192,10 @@ class RoomServiceImplTest {
         room.blackPlayer = blackPlayer
 
         // when
-        underTest.makeTurn(room, whitePlayer, null, "b1")
+        val actual = underTest.makeTurn(room, whitePlayer, null, "b1")
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -211,9 +217,10 @@ class RoomServiceImplTest {
         room.blackPlayer = blackPlayer
 
         // when
-        underTest.makeTurn(room, whitePlayer, "a1", null)
+        val actual = underTest.makeTurn(room, whitePlayer, "a1", null)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         assertThat(room.turn).isEqualTo(Color.WHITE)
@@ -247,16 +254,17 @@ class RoomServiceImplTest {
         given(cellNotationConverter.convert(eq(destinationCell)))
             .willReturn(destination)
         given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
-            .willReturn(false)
+            .willReturn(false.right())
 
         // when
         val player = when (color) {
             Color.WHITE -> whitePlayer
             Color.BLACK -> blackPlayer
         }
-        underTest.makeTurn(room, player, sourceCell, destinationCell)
+        val actual = underTest.makeTurn(room, player, sourceCell, destinationCell)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         val expectedTurn = when (color) {
@@ -294,16 +302,17 @@ class RoomServiceImplTest {
         given(cellNotationConverter.convert(eq(destinationCell)))
             .willReturn(destination)
         given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
-            .willReturn(true)
-
-        // when
+            .willReturn(true.right())
         val player = when (color) {
             Color.WHITE -> whitePlayer
             Color.BLACK -> blackPlayer
         }
-        underTest.makeTurn(room, player, sourceCell, destinationCell)
+
+        // when
+        val actual = underTest.makeTurn(room, player, sourceCell, destinationCell)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(room.whitePlayer).isSameAs(whitePlayer)
         assertThat(room.blackPlayer).isSameAs(blackPlayer)
         assertThat(room.turn).isEqualTo(color)

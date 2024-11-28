@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.CannotEatException
 import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
 import java.util.UUID
@@ -145,9 +144,14 @@ class KingStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = false
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("h8")
         }
     }
 
@@ -160,9 +164,14 @@ class KingStrategyTest {
 
         board.board[7][7] = Piece(Color.WHITE, KingStrategy)
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("h8")
         }
     }
 
@@ -173,9 +182,14 @@ class KingStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = true
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("h8")
         }
     }
 
@@ -188,9 +202,14 @@ class KingStrategyTest {
 
         board.board[3][3] = Piece(Color.WHITE, KingStrategy)
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("h8")
         }
     }
 
@@ -226,9 +245,10 @@ class KingStrategyTest {
         board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, KingStrategy)
 
         // when
-        KingStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        val actual = KingStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
         assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)

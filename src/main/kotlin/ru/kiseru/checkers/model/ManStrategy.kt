@@ -1,9 +1,16 @@
 package ru.kiseru.checkers.model
 
-import ru.kiseru.checkers.exception.CannotEatException
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.right
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.CellNotFoundException
 import ru.kiseru.checkers.exception.MustEatException
+import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinateExists
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
@@ -48,7 +55,8 @@ object ManStrategy : PieceStrategy {
     ): Boolean {
         if (board.getPiece(destination) != null
             || isEnemyNear(board, piece, source) ||
-            diff(source, destination) != 1) {
+            diff(source, destination) != 1
+        ) {
             return false
         }
 
@@ -125,20 +133,22 @@ object ManStrategy : PieceStrategy {
         piece: Piece,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>
-    ) {
-        if (!isAbleToEatTo(board, piece, source, destination)) {
-            throw CannotEatException(source, destination)
+    ): Either<ChessError.CannotEat, Unit> =
+        either {
+            ensure(isAbleToEatTo(board, piece, source, destination)) {
+                ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+            }
+
+            ensure(piece.isCanEat && isAbleToEatTo(board, piece, source, destination)) {
+                ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+            }
+
+            board.board[source.first - 1][source.second - 1] = null
+            val (rowToFind, columnToFind) = between(source, destination)
+            board.board[rowToFind - 1][columnToFind - 1] = null
+            updatePiece(board, piece, destination)
         }
 
-        if (!piece.isCanEat || !isAbleToEatTo(board, piece, source, destination)) {
-            throw CannotEatException(source, destination)
-        }
-
-        board.board[source.first - 1][source.second - 1] = null
-        val (rowToFind, columnToFind) = between(source, destination)
-        board.board[rowToFind - 1][columnToFind - 1] = null
-        updatePiece(board, piece, destination)
-    }
 
     private fun between(source: Pair<Int, Int>, destination: Pair<Int, Int>): Pair<Int, Int> =
         if (isCoordinatesExists(destination)) {

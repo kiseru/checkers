@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.CannotEatException
 import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
 import java.util.UUID
@@ -243,9 +242,15 @@ class ManStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = false
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { ManStrategy.eat(board, piece, 3 to 3, 4 to 4) }
+        // when
+        val actual = ManStrategy.eat(board, piece, 3 to 3, 4 to 4)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("d4")
+        }
     }
 
     @Test
@@ -255,9 +260,15 @@ class ManStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = true
 
+        // when
+        val actual = ManStrategy.eat(board, piece, 3 to 3, 4 to 4)
+
         // then
-        assertThatExceptionOfType(CannotEatException::class.java)
-            .isThrownBy { ManStrategy.eat(board, piece, 3 to 3, 4 to 4) }
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo("c3")
+            assertThat(destination).isEqualTo("d4")
+        }
     }
 
     @ParameterizedTest
@@ -292,9 +303,10 @@ class ManStrategyTest {
         board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, ManStrategy)
 
         // when
-        ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        val actual = ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
         assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)
@@ -326,9 +338,10 @@ class ManStrategyTest {
         board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, ManStrategy)
 
         // when
-        ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        val actual = ManStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
         val destinationPiece = board.board[destinationRow - 1][destinationColumn - 1]

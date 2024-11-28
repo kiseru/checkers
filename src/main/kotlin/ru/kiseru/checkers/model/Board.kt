@@ -1,5 +1,10 @@
 package ru.kiseru.checkers.model
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.raise.either
+import arrow.core.right
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.CellNotFoundException
@@ -30,12 +35,15 @@ class Board(val id: UUID) {
             }
         }
 
-    fun makeTurn(userColor: Color, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
+    fun makeTurn(
+        userColor: Color,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotEat, Boolean> {
         val piece = getUserPiece(source, userColor)
         checkForPiece(destination)
-        val isCanEat = makeTurn(userColor, piece, source, destination)
-        updateVersion()
-        return isCanEat
+        return makeTurn(userColor, piece, source, destination)
+            .onRight { updateVersion() }
     }
 
     private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Piece {
@@ -56,16 +64,22 @@ class Board(val id: UUID) {
         }
     }
 
-    private fun makeTurn(userColor: Color, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
-        val isCanEat = analyze(userColor)
-        return if (isCanEat) {
-            piece.pieceStrategy.eat(this, piece, source, destination)
-            analyze(userColor)
-        } else {
-            piece.pieceStrategy.move(this, piece, source, destination)
-            false
+    private fun makeTurn(
+        userColor: Color,
+        piece: Piece,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotEat, Boolean> =
+        either {
+            val isCanEat = analyze(userColor)
+            if (isCanEat) {
+                piece.pieceStrategy.eat(this@Board, piece, source, destination).bind()
+                analyze(userColor)
+            } else {
+                piece.pieceStrategy.move(this@Board, piece, source, destination)
+                false
+            }
         }
-    }
 
     fun getPiece(coordinates: Pair<Int, Int>): Piece? =
         if (isCoordinatesExists(coordinates)) {

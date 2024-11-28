@@ -1,8 +1,13 @@
 package ru.kiseru.checkers.model
 
-import ru.kiseru.checkers.exception.CannotEatException
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CannotMoveException
 import ru.kiseru.checkers.exception.MustEatException
+import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import kotlin.math.abs
 import kotlin.math.sign
@@ -84,16 +89,18 @@ object KingStrategy : PieceStrategy {
         piece: Piece,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>
-    ) {
-        if (!piece.isCanEat || !isAbleToEatTo(board, piece, source, destination)) {
-            throw CannotEatException(source, destination)
+    ): Either<ChessError.CannotEat, Unit> =
+        either {
+            ensure(piece.isCanEat && isAbleToEatTo(board, piece, source, destination)) {
+                ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+            }
+
+            val sacrificedPieceLocation = getSacrificedPieceLocation(board, piece, source, destination).bind()
+            board.board[sacrificedPieceLocation.first - 1][sacrificedPieceLocation.second - 1] = null
+            board.board[source.first - 1][source.second - 1] = null
+            board.board[destination.first - 1][destination.second - 1] = piece
         }
 
-        val sacrificedPieceLocation = getSacrificedPieceLocation(board, piece, source, destination)
-        board.board[sacrificedPieceLocation.first - 1][sacrificedPieceLocation.second - 1] = null
-        board.board[source.first - 1][source.second - 1] = null
-        board.board[destination.first - 1][destination.second - 1] = piece
-    }
 
     private fun isAbleToEatTo(
         board: Board,
@@ -162,30 +169,30 @@ object KingStrategy : PieceStrategy {
         board: Board,
         piece: Piece,
         source: Pair<Int, Int>,
-        destination: Pair<Int, Int>
-    ): Pair<Int, Int> {
-        val signRow = sign((destination.first - source.first).toFloat()).toInt()
-        val signCol = sign((destination.second - source.second).toFloat()).toInt()
-
-        var i = 1
-        while (true) {
-            val currentRow = source.first + signRow * i
-            val currentColumn = source.second + signCol * i
-            if (currentRow == destination.first && currentColumn == destination.second) {
-                throw CannotEatException(source, destination)
+        destination: Pair<Int, Int>,
+    ): Either<ChessError.CannotEat, Pair<Int, Int>> =
+        either {
+            sequence {
+                val signRow = sign((destination.first - source.first).toFloat()).toInt()
+                val signCol = sign((destination.second - source.second).toFloat()).toInt()
+                var i = 1
+                while (true) {
+                    yield(source.first + signRow * i to source.second + signCol * i)
+                    i++
+                }
             }
+                .mapNotNull { (currentRow, currentColumn) ->
+                    ensure(currentRow != destination.first || currentColumn != destination.second) {
+                        ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+                    }
 
-            val anotherPiece = board.getPiece(currentRow to currentColumn)
-            if (anotherPiece == null) {
-                i++
-                continue
-            }
+                    val anotherPiece = board.getPiece(currentRow to currentColumn) ?: return@mapNotNull null
+                    ensure(anotherPiece.color != piece.color) {
+                        ChessError.CannotEat(getCellCaption(source), getCellCaption(destination))
+                    }
 
-            return if (anotherPiece.color == piece.color) {
-                throw CannotEatException(source, destination)
-            } else {
-                currentRow to currentColumn
-            }
+                    (currentRow to currentColumn)
+                }
+                .first()
         }
-    }
 }

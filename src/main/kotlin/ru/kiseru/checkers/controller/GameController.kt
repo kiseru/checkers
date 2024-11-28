@@ -1,5 +1,6 @@
 package ru.kiseru.checkers.controller
 
+import arrow.core.getOrElse
 import jakarta.servlet.http.HttpSession
 import java.util.UUID
 import org.springframework.stereotype.Controller
@@ -49,6 +50,7 @@ class GameController(
         }
 
         roomService.makeTurn(currentRoom, currentUser, from, to)
+            .getOrElse { (source, destination) -> throw RuntimeException("Can't eat from $source to $destination") }
         initModel(model, currentUser, currentRoom)
         return "game"
     }
