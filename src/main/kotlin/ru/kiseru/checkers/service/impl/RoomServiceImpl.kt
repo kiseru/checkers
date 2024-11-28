@@ -1,7 +1,6 @@
 package ru.kiseru.checkers.service.impl
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.right
 import org.springframework.stereotype.Component
 import ru.kiseru.checkers.converter.CellNotationConverter

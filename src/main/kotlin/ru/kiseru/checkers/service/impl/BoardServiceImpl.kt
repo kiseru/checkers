@@ -1,7 +1,6 @@
 package ru.kiseru.checkers.service.impl
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import org.springframework.stereotype.Service
 import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.model.Board
