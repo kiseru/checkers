@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.fail
 import org.mockito.junit.jupiter.MockitoExtension
 import ru.kiseru.checkers.error.ChessError
-import ru.kiseru.checkers.exception.PieceException
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
@@ -110,9 +109,21 @@ class BoardTest {
     fun `makeTurn test when source cell hasn't player piece`() {
         underTest.board[1][1] = Piece(Color.BLACK, ManStrategy)
 
-        // when & then
-        assertThatExceptionOfType(PieceException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.PieceOwner::class.java)
+            if (it !is ChessError.PieceOwner) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.PieceOwner::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.userColor).isEqualTo(Color.WHITE)
+        }
     }
 
     @Test

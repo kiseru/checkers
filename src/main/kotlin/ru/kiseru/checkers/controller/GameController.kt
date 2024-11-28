@@ -74,6 +74,8 @@ class GameController(
                 "Cell ${getCellCaption(error.cell)} already has the piece"
             is ChessError.MustEat ->
                 "You must eat enemy piece"
+            is ChessError.PieceOwner ->
+                "The piece does not belong to the ${error.userColor} user"
         }
 
     private fun initModel(model: Model, user: User, room: Room) {

@@ -9,7 +9,6 @@ import arrow.core.raise.ensureNotNull
 import arrow.core.right
 import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CellNotFoundException
-import ru.kiseru.checkers.exception.PieceException
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import java.util.UUID
 
@@ -48,21 +47,22 @@ class Board(val id: UUID) {
                 .bind()
         }
 
-    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Either<ChessError.EmptyCell, Piece> =
+    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Either<ChessError, Piece> =
         either {
             val piece = getPiece(source)
             ensureNotNull(piece) {
                 ChessError.EmptyCell(source)
             }
-            checkPieceOwner(userColor, piece)
+            checkPieceOwner(userColor, piece).bind()
             piece
         }
 
-    private fun checkPieceOwner(userColor: Color, piece: Piece) {
-        if (piece.color != userColor) {
-            throw PieceException("The piece does not belong to the $userColor user")
+    private fun checkPieceOwner(userColor: Color, piece: Piece) =
+        either {
+            ensure(piece.color == userColor) {
+                ChessError.PieceOwner(userColor)
+            }
         }
-    }
 
     private fun checkForPiece(destination: Pair<Int, Int>): Either<ChessError.BusyCell, Unit> =
         either {
