@@ -2,15 +2,15 @@ package ru.kiseru.checkers.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.assertj.core.error.ShouldBeExactlyInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.CannotEatException
-import ru.kiseru.checkers.exception.CannotMoveException
-import ru.kiseru.checkers.exception.MustEatException
+import ru.kiseru.checkers.error.ChessError
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
@@ -30,9 +30,19 @@ class KingStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = true
 
-        // when & then
-        assertThatExceptionOfType(MustEatException::class.java).isThrownBy {
-            KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+        // when
+        val actual = KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.MustEat::class.java)
+            if (it !is ChessError.MustEat) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.MustEat::class.java)
+                        .create()
+                }
+            }
         }
     }
 
@@ -44,9 +54,21 @@ class KingStrategyTest {
         piece.isCanEat = false
         piece.isCanMove = false
 
-        // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
-            KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+        // when
+        val actual = KingStrategy.move(board, piece, 3 to 3, 4 to 4)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.CannotMove::class.java)
+            if (it !is ChessError.CannotMove) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.CannotMove::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.source).isEqualTo(3 to 3)
+            assertThat(it.destination).isEqualTo(4 to 4)
         }
     }
 
@@ -59,9 +81,21 @@ class KingStrategyTest {
         piece.isCanEat = false
         piece.isCanMove = true
 
-        // when & then
-        assertThatExceptionOfType(CannotMoveException::class.java).isThrownBy {
-            KingStrategy.move(board, piece, 3 to 3, 5 to 3)
+        // when
+        val actual = KingStrategy.move(board, piece, 3 to 3, 5 to 3)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.CannotMove::class.java)
+            if (it !is ChessError.CannotMove) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.CannotMove::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.source).isEqualTo(3 to 3)
+            assertThat(it.destination).isEqualTo(5 to 3)
         }
     }
 
@@ -145,9 +179,14 @@ class KingStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = false
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -160,9 +199,14 @@ class KingStrategyTest {
 
         board.board[7][7] = Piece(Color.WHITE, KingStrategy)
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -173,9 +217,14 @@ class KingStrategyTest {
         board.board[2][2] = piece
         piece.isCanEat = true
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -188,9 +237,14 @@ class KingStrategyTest {
 
         board.board[3][3] = Piece(Color.WHITE, KingStrategy)
 
-        // when & then
-        assertThatExceptionOfType(CannotEatException::class.java).isThrownBy {
-            KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+        // when
+        val actual = KingStrategy.eat(board, piece, 3 to 3, 8 to 8)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft { (source, destination) ->
+            assertThat(source).isEqualTo(3 to 3)
+            assertThat(destination).isEqualTo(8 to 8)
         }
     }
 
@@ -226,9 +280,10 @@ class KingStrategyTest {
         board.board[enemyRow - 1][enemyColumn - 1] = Piece(enemyColor, KingStrategy)
 
         // when
-        KingStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
+        val actual = KingStrategy.eat(board, piece, sourceRow to sourceColumn, destinationRow to destinationColumn)
 
         // then
+        assertThat(actual.isRight()).isTrue()
         assertThat(board.board[sourceRow - 1][sourceColumn - 1]).isNull()
         assertThat(board.board[enemyRow - 1][enemyColumn - 1]).isNull()
         assertThat(board.board[destinationRow - 1][destinationColumn - 1]).isSameAs(piece)

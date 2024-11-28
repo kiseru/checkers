@@ -1,10 +1,14 @@
 package ru.kiseru.checkers.model
 
-import ru.kiseru.checkers.exception.CellException
-import ru.kiseru.checkers.exception.CellIsBusyException
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.raise.ensureNotNull
+import arrow.core.right
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CellNotFoundException
-import ru.kiseru.checkers.exception.PieceException
-import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import java.util.UUID
 
@@ -30,42 +34,60 @@ class Board(val id: UUID) {
             }
         }
 
-    fun makeTurn(userColor: Color, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
-        val piece = getUserPiece(source, userColor)
-        checkForPiece(destination)
-        val isCanEat = makeTurn(userColor, piece, source, destination)
-        updateVersion()
-        return isCanEat
-    }
-
-    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Piece {
-        val piece = getPiece(source) ?: throw CellException("Cell '${getCellCaption(source)}' is empty")
-        checkPieceOwner(userColor, piece)
-        return piece
-    }
-
-    private fun checkPieceOwner(userColor: Color, piece: Piece) {
-        if (piece.color != userColor) {
-            throw PieceException("The piece does not belong to the $userColor user")
+    fun makeTurn(
+        userColor: Color,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError, Boolean> =
+        either {
+            val piece = getUserPiece(source, userColor).bind()
+            checkForPiece(destination).bind()
+            makeTurn(userColor, piece, source, destination)
+                .onRight { updateVersion() }
+                .bind()
         }
-    }
 
-    private fun checkForPiece(destination: Pair<Int, Int>) {
-        if (getPiece(destination) != null) {
-            throw CellIsBusyException(destination.first, destination.second)
+    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Either<ChessError, Piece> =
+        either {
+            val piece = getPiece(source)
+            ensureNotNull(piece) {
+                ChessError.EmptyCell(source)
+            }
+            checkPieceOwner(userColor, piece).bind()
+            piece
         }
-    }
 
-    private fun makeTurn(userColor: Color, piece: Piece, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
-        val isCanEat = analyze(userColor)
-        return if (isCanEat) {
-            piece.pieceStrategy.eat(this, piece, source, destination)
-            analyze(userColor)
-        } else {
-            piece.pieceStrategy.move(this, piece, source, destination)
-            false
+    private fun checkPieceOwner(userColor: Color, piece: Piece) =
+        either {
+            ensure(piece.color == userColor) {
+                ChessError.PieceOwner(userColor)
+            }
         }
-    }
+
+    private fun checkForPiece(destination: Pair<Int, Int>): Either<ChessError.BusyCell, Unit> =
+        either {
+            ensure(getPiece(destination) == null) {
+                ChessError.BusyCell(destination)
+            }
+        }
+
+
+    private fun makeTurn(
+        userColor: Color,
+        piece: Piece,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError, Boolean> =
+        either {
+            val isCanEat = analyze(userColor)
+            if (isCanEat) {
+                piece.pieceStrategy.eat(this@Board, piece, source, destination).bind()
+                analyze(userColor)
+            } else {
+                piece.pieceStrategy.move(this@Board, piece, source, destination).bind()
+                false
+            }
+        }
 
     fun getPiece(coordinates: Pair<Int, Int>): Piece? =
         if (isCoordinatesExists(coordinates)) {

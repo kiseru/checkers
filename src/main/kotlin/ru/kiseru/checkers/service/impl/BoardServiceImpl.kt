@@ -1,6 +1,8 @@
 package ru.kiseru.checkers.service.impl
 
+import arrow.core.Either
 import org.springframework.stereotype.Service
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.model.Board
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.service.BoardService
@@ -16,16 +18,20 @@ class BoardServiceImpl : BoardService {
 
     private val locks = ConcurrentHashMap<UUID, Pair<Lock, Condition>>()
 
-    override fun makeTurn(board: Board, userColor: Color, source: Pair<Int, Int>, destination: Pair<Int, Int>): Boolean {
+    override fun makeTurn(
+        board: Board,
+        userColor: Color,
+        source: Pair<Int, Int>,
+        destination: Pair<Int, Int>,
+    ): Either<ChessError, Boolean> {
         val (lock, condition) = locks.computeIfAbsent(board.id) {
             val lock = ReentrantLock()
             lock to lock.newCondition()
         }
 
         return lock.withLock {
-            val result = board.makeTurn(userColor, source, destination)
-            condition.signalAll()
-            result
+            board.makeTurn(userColor, source, destination)
+                .onRight { condition.signalAll() }
         }
     }
 
