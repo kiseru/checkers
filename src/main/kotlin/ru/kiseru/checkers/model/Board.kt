@@ -1,10 +1,13 @@
 package ru.kiseru.checkers.model
 
 import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
 import arrow.core.raise.either
+import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
+import arrow.core.right
 import ru.kiseru.checkers.error.ChessError
-import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.CellNotFoundException
 import ru.kiseru.checkers.exception.PieceException
 import ru.kiseru.checkers.utils.isCoordinatesExists
@@ -39,7 +42,7 @@ class Board(val id: UUID) {
     ): Either<ChessError, Boolean> =
         either {
             val piece = getUserPiece(source, userColor).bind()
-            checkForPiece(destination)
+            checkForPiece(destination).bind()
             makeTurn(userColor, piece, source, destination)
                 .onRight { updateVersion() }
                 .bind()
@@ -61,11 +64,13 @@ class Board(val id: UUID) {
         }
     }
 
-    private fun checkForPiece(destination: Pair<Int, Int>) {
-        if (getPiece(destination) != null) {
-            throw CellIsBusyException(destination.first, destination.second)
+    private fun checkForPiece(destination: Pair<Int, Int>): Either<ChessError.BusyCell, Unit> =
+        either {
+            ensure(getPiece(destination) == null) {
+                ChessError.BusyCell(destination)
+            }
         }
-    }
+
 
     private fun makeTurn(
         userColor: Color,

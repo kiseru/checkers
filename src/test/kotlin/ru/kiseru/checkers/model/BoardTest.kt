@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.fail
 import org.mockito.junit.jupiter.MockitoExtension
 import ru.kiseru.checkers.error.ChessError
-import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.PieceException
 import java.util.UUID
 
@@ -47,9 +46,21 @@ class BoardTest {
         underTest.board[1][1] = Piece(Color.WHITE, ManStrategy)
         underTest.board[2][2] = Piece(Color.WHITE, ManStrategy)
 
-        // when & then
-        assertThatExceptionOfType(CellIsBusyException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            if (it !is ChessError.BusyCell) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.EmptyCell::class.java)
+                        .create()
+                }
+            }
+
+            assertThat(it.cell).isEqualTo(3 to 3)
+        }
     }
 
     @Test

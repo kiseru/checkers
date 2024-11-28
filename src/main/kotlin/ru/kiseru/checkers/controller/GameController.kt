@@ -70,6 +70,8 @@ class GameController(
                 "Can't eat from ${getCellCaption(error.source)} to ${getCellCaption(error.destination)}"
             is ChessError.EmptyCell ->
                 "Cell '${getCellCaption(error.cell)}' is empty"
+            is ChessError.BusyCell ->
+                "Cell ${getCellCaption(error.cell)} already has the piece"
         }
 
     private fun initModel(model: Model, user: User, room: Room) {
