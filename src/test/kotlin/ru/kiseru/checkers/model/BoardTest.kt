@@ -2,11 +2,13 @@ package ru.kiseru.checkers.model
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.assertj.core.error.ShouldBeExactlyInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.fail
 import org.mockito.junit.jupiter.MockitoExtension
-import ru.kiseru.checkers.exception.CellException
+import ru.kiseru.checkers.error.ChessError
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.PieceException
 import java.util.UUID
@@ -37,12 +39,6 @@ class BoardTest {
         assertThat(underTest.board[2][2]).isNull()
         assertThat(underTest.board[3][3]).isNull()
         assertThat(underTest.board[4][4]).isSameAs(sourcePiece)
-    }
-
-    @Test
-    fun `makeTurn test when source cell is empty`() {
-        assertThatExceptionOfType(CellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, 4 to 4, 5 to 5) }
     }
 
     @Test
@@ -82,9 +78,21 @@ class BoardTest {
 
     @Test
     fun `makeTurn test when source cell hasn't piece`() {
-        // when & then
-        assertThatExceptionOfType(CellException::class.java)
-            .isThrownBy { underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3) }
+        // when
+        val actual = underTest.makeTurn(Color.WHITE, 2 to 2, 3 to 3)
+
+        // then
+        assertThat(actual.isLeft()).isTrue()
+        actual.onLeft {
+            assertThat(it).isExactlyInstanceOf(ChessError.EmptyCell::class.java)
+            if (it !is ChessError.EmptyCell) {
+                fail {
+                    ShouldBeExactlyInstanceOf.shouldBeExactlyInstance(it, ChessError.EmptyCell::class.java)
+                        .create()
+                }
+            }
+            assertThat(it.cell).isEqualTo(2 to 2)
+        }
     }
 
     @Test

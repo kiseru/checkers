@@ -68,6 +68,8 @@ class GameController(
                 "Can't move from ${getCellCaption(error.source)} to ${getCellCaption(error.destination)}"
             is ChessError.CannotEat ->
                 "Can't eat from ${getCellCaption(error.source)} to ${getCellCaption(error.destination)}"
+            is ChessError.EmptyCell ->
+                "Cell '${getCellCaption(error.cell)}' is empty"
         }
 
     private fun initModel(model: Model, user: User, room: Room) {

@@ -3,13 +3,11 @@ package ru.kiseru.checkers.model
 import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.raise.either
-import arrow.core.right
+import arrow.core.raise.ensureNotNull
 import ru.kiseru.checkers.error.ChessError
-import ru.kiseru.checkers.exception.CellException
 import ru.kiseru.checkers.exception.CellIsBusyException
 import ru.kiseru.checkers.exception.CellNotFoundException
 import ru.kiseru.checkers.exception.PieceException
-import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.utils.isCoordinatesExists
 import java.util.UUID
 
@@ -39,18 +37,24 @@ class Board(val id: UUID) {
         userColor: Color,
         source: Pair<Int, Int>,
         destination: Pair<Int, Int>,
-    ): Either<ChessError, Boolean> {
-        val piece = getUserPiece(source, userColor)
-        checkForPiece(destination)
-        return makeTurn(userColor, piece, source, destination)
-            .onRight { updateVersion() }
-    }
+    ): Either<ChessError, Boolean> =
+        either {
+            val piece = getUserPiece(source, userColor).bind()
+            checkForPiece(destination)
+            makeTurn(userColor, piece, source, destination)
+                .onRight { updateVersion() }
+                .bind()
+        }
 
-    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Piece {
-        val piece = getPiece(source) ?: throw CellException("Cell '${getCellCaption(source)}' is empty")
-        checkPieceOwner(userColor, piece)
-        return piece
-    }
+    private fun getUserPiece(source: Pair<Int, Int>, userColor: Color): Either<ChessError.EmptyCell, Piece> =
+        either {
+            val piece = getPiece(source)
+            ensureNotNull(piece) {
+                ChessError.EmptyCell(source)
+            }
+            checkPieceOwner(userColor, piece)
+            piece
+        }
 
     private fun checkPieceOwner(userColor: Color, piece: Piece) {
         if (piece.color != userColor) {
