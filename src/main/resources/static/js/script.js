@@ -5,6 +5,8 @@ for (let cell of cells) {
     cell.onclick = createMoveHandler(cell.id);
 }
 
+const checkedCells = [];
+
 const roomId = +id.textContent;
 subscribe(roomId, 0);
 
@@ -32,7 +34,19 @@ function createMoveHandler(cell) {
 function onCellChecked(cell) {
     const cellElement = document.getElementById(cell);
     if (cellElement.children.length > 0) {
+        resetCellHighlighting();
         cellElement.classList.add("cell_checked");
+        checkedCells.push(cellElement);
+    }
+}
+
+function resetCellHighlighting() {
+    if (checkedCells.length == 0) {
+        return;
+    }
+
+    for (var cell of checkedCells) {
+        cell.classList.remove("cell_checked");
     }
 }
 
