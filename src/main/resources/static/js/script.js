@@ -15,19 +15,31 @@ function createMoveHandler(cell) {
         if (from === "") {
             from = cell;
             onCellChecked(cell);
-        } else if (from === cell) {
+            return;
+        }
+        
+        if (from === cell) {
             from = "";
             onCellUnchecked(cell);
-        } else {
-            const queryParams = new URLSearchParams({
-                from,
-                to: cell,
-                login: login.textContent,
-                id: id.textContent,
-            });
-            await fetch("/game?" + queryParams);
-            from = "";
+            return;
+        } 
+        
+        const cellElement = document.getElementById(cell);
+        if (cellElement.children.length > 0) {
+            onCellUnchecked(from);
+            from = cell;
+            onCellChecked(from);
+            return;
         }
+
+        const queryParams = new URLSearchParams({
+            from,
+            to: cell,
+            login: login.textContent,
+            id: id.textContent,
+        });
+        await fetch("/game?" + queryParams);
+        from = "";
     }
 }
 
