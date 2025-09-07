@@ -31,7 +31,9 @@ function createMoveHandler(cell) {
 
 function onCellChecked(cell) {
     const cellElement = document.getElementById(cell);
-    cellElement.classList.add("cell_checked");
+    if (cellElement.children.length > 0) {
+        cellElement.classList.add("cell_checked");
+    }
 }
 
 function onCellUnchecked(cell) {
