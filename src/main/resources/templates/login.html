@@ -60,6 +60,7 @@
                 },
             })
             const { authToken } = await response.json();
+            document.cookie = `authToken=${authToken}`;
             window.location.href = "/find-room";
         } else {
             const errorMessageElement = document.getElementById("error-message");
