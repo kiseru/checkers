@@ -60,6 +60,7 @@
                 },
             })
             const { authToken } = await response.json();
+            window.location.href = "/find-room";
         } else {
             const errorMessageElement = document.getElementById("error-message");
             errorMessageElement.innerHTML = "Username is required";
