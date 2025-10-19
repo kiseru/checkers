@@ -14,9 +14,10 @@ class UserRepositoryImpl : UserRepository {
     override fun findUser(userId: UUID): User? =
         userStorage[userId]
 
-    override fun save(user: User) {
+    override fun createUserWithName(name: String): User {
         val userId = UUID.randomUUID()
+        val user = User(id = userId, name = name)
         userStorage[userId] = user
-        user.id = userId
+        return user
     }
 }
