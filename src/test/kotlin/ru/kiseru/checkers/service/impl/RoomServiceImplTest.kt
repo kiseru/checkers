@@ -1,5 +1,7 @@
 package ru.kiseru.checkers.service.impl
 
+import arrow.core.Either
+import arrow.core.Either.Right
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -231,9 +233,9 @@ class RoomServiceImplTest {
         val source = 1 to 1
         val destination = 2 to 2
         given(cellNotationConverter.convert(eq(sourceCell)))
-            .willReturn(source)
+            .willReturn(Right(source))
         given(cellNotationConverter.convert(eq(destinationCell)))
-            .willReturn(destination)
+            .willReturn(Right(destination))
         given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
             .willReturn(false)
 
@@ -276,9 +278,9 @@ class RoomServiceImplTest {
         val source = 1 to 1
         val destination = 2 to 2
         given(cellNotationConverter.convert(eq(sourceCell)))
-            .willReturn(source)
+            .willReturn(Right(source))
         given(cellNotationConverter.convert(eq(destinationCell)))
-            .willReturn(destination)
+            .willReturn(Right(destination))
         given(boardService.makeTurn(eq(board), eq(color), eq(source), eq(destination)))
             .willReturn(true)
 
@@ -287,12 +289,15 @@ class RoomServiceImplTest {
             Color.WHITE -> whitePlayer
             Color.BLACK -> blackPlayer
         }
-        underTest.makeTurn(room, player, sourceCell, destinationCell)
+        val actual = underTest.makeTurn(room, player, sourceCell, destinationCell)
 
         // then
-        assertThat(room.whitePlayer).isSameAs(whitePlayer)
-        assertThat(room.blackPlayer).isSameAs(blackPlayer)
-        assertThat(room.turn).isEqualTo(color)
+        assertThat(actual.isRight()).isTrue
+        actual.onRight {
+            assertThat(room.whitePlayer).isSameAs(whitePlayer)
+            assertThat(room.blackPlayer).isSameAs(blackPlayer)
+            assertThat(room.turn).isEqualTo(color)
+        }
     }
 
     @Test
