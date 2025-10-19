@@ -7,5 +7,11 @@ interface UserRepository {
 
     fun findUser(userId: UUID): User?
 
-    fun save(user: User)
+    /**
+     * Создает пользователя с именем [name]
+     *
+     * @param name имя пользователя
+     * @return новый пользователь
+     */
+    fun createUserWithName(name: String): User
 }

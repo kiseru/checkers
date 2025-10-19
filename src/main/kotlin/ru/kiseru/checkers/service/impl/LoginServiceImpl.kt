@@ -10,9 +10,6 @@ class LoginServiceImpl(
     private val userRepository: UserRepository,
 ) : LoginService {
 
-    override fun login(name: String): User {
-        val user = User(name)
-        userRepository.save(user)
-        return user
-    }
+    override fun login(name: String): User =
+        userRepository.createUserWithName(name)
 }
