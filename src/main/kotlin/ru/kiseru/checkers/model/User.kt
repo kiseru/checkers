@@ -2,11 +2,10 @@ package ru.kiseru.checkers.model
 
 import java.util.UUID
 
-class User(
+data class User(
+    val id: UUID,
     val name: String,
 ) {
-
-    lateinit var id: UUID
 
     lateinit var color: Color
 
