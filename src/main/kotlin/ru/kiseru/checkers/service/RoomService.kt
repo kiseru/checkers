@@ -1,5 +1,6 @@
 package ru.kiseru.checkers.service
 
+import arrow.core.Either
 import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.model.Room
 import ru.kiseru.checkers.model.User
@@ -39,5 +40,5 @@ interface RoomService {
      * @param from местоположение пешки, которую необходимо передвинуть
      * @param to местополжение, куда необходимо передвинуть пешку
      */
-    fun makeTurn(room: Room, user: User, from: String?, to: String?)
+    fun makeTurn(room: Room, user: User, from: String?, to: String?): Either<String, Unit>
 }
