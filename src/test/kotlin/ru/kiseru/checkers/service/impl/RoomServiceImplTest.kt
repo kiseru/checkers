@@ -44,7 +44,7 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
         val room = Room(1, board)
-        val user = User("name")
+        val user = User(UUID.randomUUID(), "name")
 
         // when
         underTest.addPlayer(room, user, color)
@@ -69,8 +69,8 @@ class RoomServiceImplTest {
     fun `getTurnOwner test`(color: Color) {
         // given
         val board = Board(UUID.randomUUID())
-        val whitePlayer = User("white player")
-        val blackPlayer = User("black player")
+        val whitePlayer = User(UUID.randomUUID(), "white player")
+        val blackPlayer = User(UUID.randomUUID(), "black player")
 
         val room = Room(1, board)
         room.whitePlayer = whitePlayer
@@ -93,8 +93,7 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
         val room = Room(1, board)
-        val user = User("name")
-        user.id = UUID.randomUUID()
+        val user = User(UUID.randomUUID(), "name")
 
         // when
         underTest.makeTurn(room, user, "a1", "b1")
@@ -109,8 +108,7 @@ class RoomServiceImplTest {
     fun `makeTurn test when black player is not assigned for assigned user`() {
         // given
         val board = Board(UUID.randomUUID())
-        val user = User("name")
-        user.id = UUID.randomUUID()
+        val user = User(UUID.randomUUID(), "name")
 
         val room = Room(1, board)
         room.whitePlayer = user
@@ -129,11 +127,9 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("name")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "name")
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
 
         val room = Room(1, board)
         room.whitePlayer = whitePlayer
@@ -152,11 +148,9 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("name")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "name")
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
 
         val room = Room(1, board)
         room.whitePlayer = whitePlayer
@@ -176,11 +170,9 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("name")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "name")
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
 
         val room = Room(1, board)
         room.whitePlayer = whitePlayer
@@ -200,11 +192,9 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("name")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "name")
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
 
         val room = Room(1, board)
         room.whitePlayer = whitePlayer
@@ -225,12 +215,10 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("white player")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "white player")
         whitePlayer.color = Color.WHITE
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
         blackPlayer.color = Color.BLACK
 
         val room = Room(1, board)
@@ -272,12 +260,10 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
 
-        val whitePlayer = User("white player")
-        whitePlayer.id = UUID.randomUUID()
+        val whitePlayer = User(UUID.randomUUID(), "white player")
         whitePlayer.color = Color.WHITE
 
-        val blackPlayer = User("black player")
-        blackPlayer.id = UUID.randomUUID()
+        val blackPlayer = User(UUID.randomUUID(), "black player")
         blackPlayer.color = Color.BLACK
 
         val room = Room(1, board)
