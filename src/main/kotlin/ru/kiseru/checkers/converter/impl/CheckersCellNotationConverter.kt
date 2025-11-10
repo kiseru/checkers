@@ -1,34 +1,25 @@
 package ru.kiseru.checkers.converter.impl
 
-import arrow.core.Either
-import arrow.core.Either.*
-import arrow.core.raise.either
 import org.springframework.stereotype.Component
 import ru.kiseru.checkers.converter.CellNotationConverter
 
 @Component
 class CheckersCellNotationConverter : CellNotationConverter {
 
-    override fun convert(turnNotation: String): Either<String, Pair<Int, Int>> =
-        if (turnNotation.length == 2) {
-            val column = convertColumn(turnNotation[0])
-            val row = convertRow(turnNotation[1])
-            either { row.bind() to column.bind() }
-        } else {
-            Left("Can't convert '$turnNotation' to cell")
-        }
+    override fun convert(turnNotation: String): Pair<Int, Int> {
+        require(turnNotation.length == 2) { "Can't convert '$turnNotation' to cell" }
+        val column = convertColumn(turnNotation[0])
+        val row = convertRow(turnNotation[1])
+        return row to column
+    }
 
-    private fun convertColumn(columnName: Char): Either<String, Int> =
-        if (columnName in 'a'..'h') {
-            Right(columnName.code - 'a'.code + 1)
-        } else {
-            Left("Column '$columnName' doesn't exists")
-        }
+    private fun convertColumn(columnName: Char): Int {
+        require(columnName in 'a'..'h') { "Column '$columnName' doesn't exists" }
+        return columnName.code - 'a'.code + 1
+    }
 
-    private fun convertRow(rowName: Char): Either<String, Int> =
-        if (rowName in '1'..'8') {
-            Right(rowName.code - '1'.code + 1)
-        } else {
-            Left("Row '$rowName' doesn't exists")
-        }
+    private fun convertRow(rowName: Char): Int {
+        require(rowName in '1'..'8') { "Row '$rowName' doesn't exists" }
+        return rowName.code - '1'.code + 1
+    }
 }

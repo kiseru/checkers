@@ -1,8 +1,5 @@
 package ru.kiseru.checkers.service.impl
 
-import arrow.core.Either
-import arrow.core.Either.Right
-import arrow.core.raise.either
 import org.springframework.stereotype.Component
 import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
@@ -40,10 +37,10 @@ class RoomServiceImpl(
         return Room(roomId, board)
     }
 
-    override fun makeTurn(room: Room, user: User, from: String?, to: String?): Either<String, Unit> {
+    override fun makeTurn(room: Room, user: User, from: String?, to: String?) {
         if (room.whitePlayer == null) {
             addPlayer(room, user, Color.WHITE)
-            return Right(Unit)
+            return
         }
 
         if (room.blackPlayer == null) {
@@ -51,24 +48,23 @@ class RoomServiceImpl(
                 addPlayer(room, user, Color.BLACK)
             }
 
-            return Right(Unit)
+            return
         }
 
         if (!isCurrentUserTurn(user, room)) {
-            return Right(Unit)
+            return
         }
 
         if (from == null || to == null) {
-            return Right(Unit)
+            return
         }
 
-        return either { cellNotationConverter.convert(from).bind() to cellNotationConverter.convert(to).bind() }
-            .map { (source, destination) ->
-                val isCanEat = boardService.makeTurn(room.board, user.color, source, destination)
-                if (!isCanEat) {
-                    room.turn = getEnemy(user, room)
-                }
-            }
+        val source = cellNotationConverter.convert(from)
+        val destination = cellNotationConverter.convert(to)
+        val isCanEat = boardService.makeTurn(room.board, user.color, source, destination)
+        if (!isCanEat) {
+            room.turn = getEnemy(user, room)
+        }
     }
 
     override fun addPlayer(room: Room, user: User, color: Color) {
