@@ -1,6 +1,7 @@
 package ru.kiseru.checkers.controller
 
 import jakarta.servlet.http.HttpSession
+import org.slf4j.LoggerFactory
 import java.util.UUID
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -15,51 +16,75 @@ import ru.kiseru.checkers.repository.UserRepository
 import ru.kiseru.checkers.service.RoomService
 
 @Controller
-@RequestMapping("game")
+@RequestMapping("/game")
 class GameController(
     private val boardService: BoardService,
     private val userRepository: UserRepository,
     private val roomService: RoomService,
 ) {
 
+    private val logger = LoggerFactory.getLogger(GameController::class.java)
+
     @GetMapping
     fun getGamePage(
-        @SessionAttribute(required = false) uid: UUID?,
-        @SessionAttribute(required = false) roomId: Int?,
-        @RequestParam(required = false) from: String?,
-        @RequestParam(required = false) to: String?,
+        @SessionAttribute(name = "uid", required = false) uid: UUID?,
+        @SessionAttribute(name = "roomId", required = false) roomId: Int?,
+        @RequestParam(name = "from", required = false) from: String?,
+        @RequestParam(name = "to", required = false) to: String?,
         session: HttpSession,
         model: Model,
     ): String {
         if (uid == null) {
+            logger.warn("Unauthorized access to /game. Missing uid in session.")
             return "redirect:/login"
         }
 
-        val currentUser = userRepository.findUser(uid) ?: return "redirect:/login"
+        val currentUser = userRepository.findUser(uid)
+            ?: run {
+                logger.warn("User with uid=$uid not found in repository.")
+                return "redirect:/login"
+            }
 
         if (roomId == null) {
+            logger.warn("Missing roomId in session for user $uid.")
             return "redirect:/find-room"
         }
 
         val currentRoom = roomService.findOrCreateRoomById(roomId)
+            .also { logger.debug("Retrieved room $roomId for user $uid") }
+
         if (boardService.isGameFinished(currentRoom.board)) {
             val winner = roomService.getTurnOwner(currentRoom)
             session.setAttribute("winner", winner)
+            logger.info("Game in room $roomId finished. Winner: $winner. Redirecting to /finish.")
             return "redirect:/finish"
         }
 
-        roomService.makeTurn(currentRoom, currentUser, from, to)
+        if (from != null && to != null) {
+            try {
+                roomService.makeTurn(currentRoom, currentUser, from, to)
+                logger.info("User $uid made move from $from to $to in room $roomId.")
+            } catch (e: Exception) {
+                logger.error("Invalid move by user $uid: $from → $to. Reason: ${e.message}")
+                model.addAttribute("error", "Invalid move: ${e.message}")
+            }
+        }
+
         initModel(model, currentUser, currentRoom)
+        logger.info("Rendering game page for room $roomId, user $uid.")
         return "game"
     }
 
     private fun initModel(model: Model, user: User, room: Room) {
-        model.addAttribute("board", room.board.board)
-        model.addAttribute("firstPlayer", room.whitePlayer)
-        model.addAttribute("secondPlayer", room.blackPlayer)
-        val turn = roomService.getTurnOwner(room)
-        model.addAttribute("turn", turn)
-        model.addAttribute("room", room)
-        model.addAttribute("login", user.name)
+        model.addAllAttributes(
+            mapOf(
+                "board" to room.board.board,
+                "firstPlayer" to room.whitePlayer,
+                "secondPlayer" to room.blackPlayer,
+                "turn" to roomService.getTurnOwner(room),
+                "room" to room,
+                "login" to user.name
+            )
+        )
     }
 }
