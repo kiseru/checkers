@@ -49,7 +49,6 @@ class GameController(
         }
 
         roomService.makeTurn(currentRoom, currentUser, from, to)
-            .fold({ throw IllegalArgumentException(it) }, { it })
         initModel(model, currentUser, currentRoom)
         return "game"
     }
