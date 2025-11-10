@@ -37,7 +37,7 @@ class RoomServiceImpl(
         return Room(roomId, board)
     }
 
-    override fun makeTurn(room: Room, user: User, from: String, to: String) {
+    override fun makeTurn(room: Room, user: User, from: String?, to: String?) {
         if (room.whitePlayer == null) {
             addPlayer(room, user, Color.WHITE)
             return
@@ -52,6 +52,10 @@ class RoomServiceImpl(
         }
 
         if (!isCurrentUserTurn(user, room)) {
+            return
+        }
+
+        if (from == null || to == null) {
             return
         }
 

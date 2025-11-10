@@ -39,5 +39,5 @@ interface RoomService {
      * @param from местоположение пешки, которую необходимо передвинуть
      * @param to местополжение, куда необходимо передвинуть пешку
      */
-    fun makeTurn(room: Room, user: User, from: String, to: String)
+    fun makeTurn(room: Room, user: User, from: String?, to: String?)
 }

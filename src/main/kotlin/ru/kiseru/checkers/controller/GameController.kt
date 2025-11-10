@@ -60,14 +60,12 @@ class GameController(
             return "redirect:/finish"
         }
 
-        if (from != null && to != null) {
-            try {
-                roomService.makeTurn(currentRoom, currentUser, from, to)
-                logger.info("User $uid made move from $from to $to in room $roomId.")
-            } catch (e: Exception) {
-                logger.error("Invalid move by user $uid: $from → $to. Reason: ${e.message}")
-                model.addAttribute("error", "Invalid move: ${e.message}")
-            }
+        try {
+            roomService.makeTurn(currentRoom, currentUser, from, to)
+            logger.info("User $uid made move from $from to $to in room $roomId.")
+        } catch (e: Exception) {
+            logger.error("Invalid move by user $uid: $from → $to. Reason: ${e.message}")
+            model.addAttribute("error", "Invalid move: ${e.message}")
         }
 
         initModel(model, currentUser, currentRoom)
