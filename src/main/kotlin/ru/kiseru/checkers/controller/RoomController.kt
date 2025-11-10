@@ -14,13 +14,14 @@ import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.service.BoardSearchByRoomIdService
 import ru.kiseru.checkers.controller.dto.BoardDto
 import ru.kiseru.checkers.controller.dto.PieceDto
-import kotlin.concurrent.thread
+import java.util.concurrent.ExecutorService
 
 @RequestMapping("/room")
 @RestController
 class RoomController(
     private val boardService: BoardService,
     private val boardSearchByRoomIdService: BoardSearchByRoomIdService,
+    private val executor: ExecutorService,
 ) {
 
     private val logger = LoggerFactory.getLogger(RoomController::class.java)
@@ -50,7 +51,7 @@ class RoomController(
                 }
             }
 
-        thread(start = true) {
+        executor.submit {
             try {
                 boardService.waitNewVersion(board, version)
                 val pieces = board.piecesCoordinates()
