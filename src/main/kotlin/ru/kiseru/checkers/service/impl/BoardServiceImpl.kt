@@ -36,7 +36,7 @@ class BoardServiceImpl : BoardService {
         }
 
         lock.withLock {
-            if (version == board.version) {
+            while (version == board.version) {
                 condition.await()
             }
         }
