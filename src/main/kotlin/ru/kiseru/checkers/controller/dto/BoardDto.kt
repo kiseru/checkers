@@ -1,6 +1,6 @@
 package ru.kiseru.checkers.controller.dto
 
 data class BoardDto(
-    var version: Int,
-    var pieces: Sequence<PieceDto>,
+    val version: Int,
+    val pieces: Sequence<PieceDto>,
 )
