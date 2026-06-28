@@ -61,7 +61,8 @@ class RoomServiceImpl(
 
         val source = cellNotationConverter.convert(from)
         val destination = cellNotationConverter.convert(to)
-        val isCanEat = boardService.makeTurn(room.board, user.color, source, destination)
+        val userColor = user.color ?: throw IllegalStateException("User ${user.id} has no color assigned")
+        val isCanEat = boardService.makeTurn(room.board, userColor, source, destination)
         if (!isCanEat) {
             room.turn = getEnemy(user, room)
         }

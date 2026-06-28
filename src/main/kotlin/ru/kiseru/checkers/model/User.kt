@@ -5,9 +5,8 @@ import java.util.UUID
 data class User(
     val id: UUID,
     val name: String,
+    var color: Color? = null,
 ) {
-
-    lateinit var color: Color
 
     override fun toString(): String =
         name
