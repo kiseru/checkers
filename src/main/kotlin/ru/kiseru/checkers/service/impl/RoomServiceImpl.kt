@@ -10,6 +10,7 @@ import ru.kiseru.checkers.model.User
 import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.service.RoomService
+import java.util.concurrent.ConcurrentHashMap
 import java.util.UUID
 
 @Component
@@ -20,15 +21,20 @@ class RoomServiceImpl(
     private val boardInitializer: BoardInitializer,
 ) : RoomService {
 
-    override fun findOrCreateRoomById(roomId: Int): Room {
-        val room = roomRepository.findRoom(roomId)
-        if (room != null) {
-            return room
-        }
+    private val roomLocks = ConcurrentHashMap<Int, Any>()
 
-        val newRoom = createRoom(roomId)
-        roomRepository.save(newRoom)
-        return newRoom
+    override fun findOrCreateRoomById(roomId: Int): Room {
+        val lock = roomLocks.computeIfAbsent(roomId) { Any() }
+        synchronized(lock) {
+            val room = roomRepository.findRoom(roomId)
+            if (room != null) {
+                return room
+            }
+
+            val newRoom = createRoom(roomId)
+            roomRepository.save(newRoom)
+            return newRoom
+        }
     }
 
     private fun createRoom(roomId: Int): Room {
@@ -38,33 +44,35 @@ class RoomServiceImpl(
     }
 
     override fun makeTurn(room: Room, user: User, from: String?, to: String?) {
-        if (room.whitePlayer == null) {
-            addPlayer(room, user, Color.WHITE)
-            return
-        }
-
-        if (room.blackPlayer == null) {
-            if (room.whitePlayer?.id != user.id) {
-                addPlayer(room, user, Color.BLACK)
+        synchronized(room) {
+            if (room.whitePlayer == null) {
+                addPlayer(room, user, Color.WHITE)
+                return
             }
 
-            return
-        }
+            if (room.blackPlayer == null) {
+                if (room.whitePlayer?.id != user.id) {
+                    addPlayer(room, user, Color.BLACK)
+                }
 
-        if (!isCurrentUserTurn(user, room)) {
-            return
-        }
+                return
+            }
 
-        if (from == null || to == null) {
-            return
-        }
+            if (!isCurrentUserTurn(user, room)) {
+                return
+            }
 
-        val source = cellNotationConverter.convert(from)
-        val destination = cellNotationConverter.convert(to)
-        val userColor = user.color ?: throw IllegalStateException("User ${user.id} has no color assigned")
-        val isCanEat = boardService.makeTurn(room.board, userColor, source, destination)
-        if (!isCanEat) {
-            room.turn = getEnemy(user, room)
+            if (from == null || to == null) {
+                return
+            }
+
+            val source = cellNotationConverter.convert(from)
+            val destination = cellNotationConverter.convert(to)
+            val userColor = user.color ?: throw IllegalStateException("User ${user.id} has no color assigned")
+            val isCanEat = boardService.makeTurn(room.board, userColor, source, destination)
+            if (!isCanEat) {
+                room.turn = getEnemy(user, room)
+            }
         }
     }
 
