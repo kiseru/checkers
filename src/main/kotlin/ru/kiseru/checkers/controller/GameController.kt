@@ -47,7 +47,7 @@ class GameController(
 
         if (roomId == null) {
             logger.warn("Missing roomId in session for user $uid.")
-            return "redirect:/find-room"
+            return "redirect:/room/create"
         }
 
         val currentRoom = roomService.findOrCreateRoomById(roomId)
