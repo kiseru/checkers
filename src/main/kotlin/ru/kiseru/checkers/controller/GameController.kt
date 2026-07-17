@@ -13,6 +13,7 @@ import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.model.Room
 import ru.kiseru.checkers.model.User
+import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.repository.UserRepository
 import ru.kiseru.checkers.service.RoomService
 
@@ -21,6 +22,7 @@ import ru.kiseru.checkers.service.RoomService
 class GameController(
     private val boardService: BoardService,
     private val userRepository: UserRepository,
+    private val roomRepository: RoomRepository,
     private val roomService: RoomService,
 ) {
 
@@ -29,7 +31,7 @@ class GameController(
     @GetMapping
     fun getGamePage(
         @SessionAttribute(name = "uid", required = false) uid: UUID?,
-        @SessionAttribute(name = "roomId", required = false) roomId: Int?,
+        @SessionAttribute(name = "roomId", required = false) roomId: UUID?,
         @SessionAttribute(name = "color", required = false) color: String?,
         @RequestParam(name = "from", required = false) from: String?,
         @RequestParam(name = "to", required = false) to: String?,
@@ -52,7 +54,11 @@ class GameController(
             return "redirect:/room/create"
         }
 
-        val currentRoom = roomService.findOrCreateRoomById(roomId)
+        val currentRoom = roomRepository.findRoom(roomId)
+            ?: run {
+                logger.warn("Room $roomId not found for user $uid.")
+                return "redirect:/room/create"
+            }
             .also { logger.debug("Retrieved room $roomId for user $uid") }
 
         if (boardService.isGameFinished(currentRoom.board)) {

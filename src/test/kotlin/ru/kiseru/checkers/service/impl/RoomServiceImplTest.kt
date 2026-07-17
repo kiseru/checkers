@@ -8,8 +8,10 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
+import org.mockito.kotlin.verify
 import ru.kiseru.checkers.converter.CellNotationConverter
 import ru.kiseru.checkers.model.Board
 import ru.kiseru.checkers.initializer.BoardInitializer
@@ -19,6 +21,7 @@ import ru.kiseru.checkers.model.User
 import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.service.BoardService
 import java.util.UUID
+import org.mockito.kotlin.doNothing
 
 @ExtendWith(MockitoExtension::class)
 class RoomServiceImplTest {
@@ -43,7 +46,7 @@ class RoomServiceImplTest {
     fun `addPlayerTurn test`(color: Color) {
         // given
         val board = Board(UUID.randomUUID())
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         val user = User(UUID.randomUUID(), "name")
 
         // when
@@ -72,7 +75,7 @@ class RoomServiceImplTest {
         val whitePlayer = User(UUID.randomUUID(), "white player")
         val blackPlayer = User(UUID.randomUUID(), "black player")
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
         room.turn = color
@@ -92,7 +95,7 @@ class RoomServiceImplTest {
     fun `makeTurn test when white player is not assigned`() {
         // given
         val board = Board(UUID.randomUUID())
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         val user = User(UUID.randomUUID(), "name")
         user.color = Color.WHITE
 
@@ -112,7 +115,7 @@ class RoomServiceImplTest {
         val user = User(UUID.randomUUID(), "name")
         user.color = Color.WHITE
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = user
 
         val sourceCell = "a1"
@@ -144,7 +147,7 @@ class RoomServiceImplTest {
 
         val blackPlayer = User(UUID.randomUUID(), "black player")
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
 
         // when
@@ -165,7 +168,7 @@ class RoomServiceImplTest {
 
         val blackPlayer = User(UUID.randomUUID(), "black player")
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
 
@@ -187,7 +190,7 @@ class RoomServiceImplTest {
 
         val blackPlayer = User(UUID.randomUUID(), "black player")
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
 
@@ -209,7 +212,7 @@ class RoomServiceImplTest {
 
         val blackPlayer = User(UUID.randomUUID(), "black player")
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
 
@@ -234,7 +237,7 @@ class RoomServiceImplTest {
         val blackPlayer = User(UUID.randomUUID(), "black player")
         blackPlayer.color = Color.BLACK
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
         room.turn = color
@@ -279,7 +282,7 @@ class RoomServiceImplTest {
         val blackPlayer = User(UUID.randomUUID(), "black player")
         blackPlayer.color = Color.BLACK
 
-        val room = Room(1, board)
+        val room = Room(UUID.randomUUID(), "test-room", board)
         room.whitePlayer = whitePlayer
         room.blackPlayer = blackPlayer
         room.turn = color
@@ -309,35 +312,17 @@ class RoomServiceImplTest {
     }
 
     @Test
-    fun `findOrCreateRoomById test when room exists`() {
+    fun `createRoom test`() {
         // given
-        val board = Board(UUID.randomUUID())
-
-        val roomId = 1
-        val room = Room(roomId, board)
-
-        given { roomRepository.findRoom(roomId) }
-            .willReturn(room)
+        val roomName = "my-room"
+        doNothing().`when`(boardInitializer).initialize(any())
 
         // when
-        val actual = underTest.findOrCreateRoomById(roomId)
+        val actual = underTest.createRoom(roomName)
 
         // then
-        assertThat(actual).isSameAs(room)
-    }
-
-    @Test
-    fun `findOrCreateRoomById test when room doesn't exist`() {
-        // given
-        val roomId = 1
-
-        given { roomRepository.findRoom(roomId) }
-            .willReturn(null)
-
-        // when
-        val actual = underTest.findOrCreateRoomById(roomId)
-
-        // then
-        assertThat(actual.id).isSameAs(roomId)
+        assertThat(actual.name).isEqualTo(roomName)
+        assertThat(actual.id).isNotNull
+        verify(roomRepository).save(actual)
     }
 }

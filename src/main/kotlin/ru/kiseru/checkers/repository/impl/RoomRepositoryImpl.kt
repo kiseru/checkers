@@ -1,5 +1,6 @@
 package ru.kiseru.checkers.repository.impl
 
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.springframework.stereotype.Component
 import ru.kiseru.checkers.model.Room
@@ -8,9 +9,9 @@ import ru.kiseru.checkers.repository.RoomRepository
 @Component
 class RoomRepositoryImpl : RoomRepository {
 
-    private val roomStorage: MutableMap<Int, Room> = ConcurrentHashMap()
+    private val roomStorage: MutableMap<UUID, Room> = ConcurrentHashMap()
 
-    override fun findRoom(roomId: Int): Room? =
+    override fun findRoom(roomId: UUID): Room? =
         roomStorage[roomId]
 
     override fun save(room: Room) {

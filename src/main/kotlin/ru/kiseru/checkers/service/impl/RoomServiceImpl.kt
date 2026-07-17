@@ -10,7 +10,6 @@ import ru.kiseru.checkers.model.User
 import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.service.RoomService
-import java.util.concurrent.ConcurrentHashMap
 import java.util.UUID
 
 @Component
@@ -21,29 +20,16 @@ class RoomServiceImpl(
     private val boardInitializer: BoardInitializer,
 ) : RoomService {
 
-    private val roomLocks = ConcurrentHashMap<Int, Any>()
-
     override fun getAvailableRooms(): List<Room> =
         roomRepository.findRoomsWithAvailableSlot()
 
-    override fun findOrCreateRoomById(roomId: Int): Room {
-        val lock = roomLocks.computeIfAbsent(roomId) { Any() }
-        synchronized(lock) {
-            val room = roomRepository.findRoom(roomId)
-            if (room != null) {
-                return room
-            }
-
-            val newRoom = createRoom(roomId)
-            roomRepository.save(newRoom)
-            return newRoom
-        }
-    }
-
-    private fun createRoom(roomId: Int): Room {
+    override fun createRoom(name: String): Room {
+        val roomId = UUID.randomUUID()
         val board = Board(UUID.randomUUID())
         boardInitializer.initialize(board)
-        return Room(roomId, board)
+        val room = Room(roomId, name, board)
+        roomRepository.save(room)
+        return room
     }
 
     override fun makeTurn(room: Room, user: User, from: String?, to: String?) {

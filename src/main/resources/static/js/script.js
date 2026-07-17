@@ -7,7 +7,7 @@ for (let cell of cells) {
 
 const checkedCells = [];
 
-const roomId = +id.textContent;
+const roomId = id.textContent.trim();
 subscribe(roomId, 0);
 
 function createMoveHandler(cell) {
@@ -68,6 +68,7 @@ function onCellUnchecked(cell) {
 }
 
 async function subscribe(roomId, version) {
+    console.log(roomId)
     try {
         const response = await fetch(`/room/${roomId}/board?version=${version}`);
         if (response.status === 502) {

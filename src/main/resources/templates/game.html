@@ -37,9 +37,10 @@
             <div class="d-grid gap-2">
                 <div class="card">
                     <div class="card-body">
+                        <p class="d-none"><span id="id" th:text="${room.id}"></span></p>
                         <p class="card-text">Игрок: <span id="login" th:text="${login}"></span></p>
                         <p class="card-text">Ход: <span th:text="${turn}"></span></p>
-                        <p class="card-text">Комната: <span id="id" th:text="${room.getId()}"></span></p>
+                        <p class="card-text">Комната: <span th:text="${room.name}"></span></p>
                     </div>
                 </div>
 

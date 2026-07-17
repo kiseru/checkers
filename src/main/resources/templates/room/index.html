@@ -36,7 +36,7 @@
                     <table class="table table-hover mb-0">
                         <thead>
                         <tr>
-                            <th scope="col">ID комнаты</th>
+                            <th scope="col">Название</th>
                             <th scope="col">Белые</th>
                             <th scope="col">Чёрные</th>
                             <th scope="col"></th>
@@ -44,7 +44,7 @@
                         </thead>
                         <tbody>
                         <tr th:each="room : ${rooms}">
-                            <td th:text="${room.id}" class="align-middle fw-bold"></td>
+                            <td th:text="${room.name}" class="align-middle fw-bold"></td>
                             <td class="align-middle">
                                 <span th:if="${room.whitePlayer != null}" th:text="${room.whitePlayer}" class="badge bg-dark">Player</span>
                                 <span th:unless="${room.whitePlayer != null}" class="badge bg-success">Свободно</span>

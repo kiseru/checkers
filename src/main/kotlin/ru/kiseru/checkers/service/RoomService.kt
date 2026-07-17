@@ -14,12 +14,12 @@ interface RoomService {
     fun getAvailableRooms(): List<Room>
 
     /**
-     * Находит комнату по ее идентификатору или создает новую если комнаты с таким идентификатором нет.
+     * Создаёт новую комнату с указанным названием и автоматически сгенерированным UUID.
      *
-     * @param roomId идентификатор комнаты
-     * @return комната
+     * @param name название комнаты
+     * @return созданная комната
      */
-    fun findOrCreateRoomById(roomId: Int): Room
+    fun createRoom(name: String): Room
 
     /**
      * Добавляет игрока в комнату.

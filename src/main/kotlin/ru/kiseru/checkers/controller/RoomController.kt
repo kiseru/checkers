@@ -66,25 +66,23 @@ class RoomController(
         }
 
     @PostMapping("/create")
-    fun findRoom(
-        @RequestParam("roomId") roomId: Int?,
+    fun createRoom(
+        @RequestParam("name") name: String?,
         @RequestParam("color") color: String?,
         @SessionAttribute("uid") uid: UUID?,
         session: HttpSession,
     ): String {
         if (uid == null) {
-            logger.warn("Unauthorized attempt to join room. Missing uid in session.")
+            logger.warn("Unauthorized attempt to create room. Missing uid in session.")
             return "redirect:/login"
         }
 
-        logger.info("User $uid attempting to join room with roomId=$roomId")
-
-        val validatedRoomId = roomId ?: run {
-            logger.error("Missing roomId parameter in request for user $uid")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Room ID is required")
+        val validatedName = name?.takeIf { it.isNotBlank() } ?: run {
+            logger.error("Missing or empty room name in request for user $uid")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Room name is required")
         }
 
-        logger.debug("Validated room=$validatedRoomId for user $uid")
+        logger.info("User $uid creating room with name='$validatedName'")
 
         val selectedColor = try {
             color?.let { Color.valueOf(it.uppercase()) } ?: Color.WHITE
@@ -93,18 +91,19 @@ class RoomController(
             Color.WHITE
         }
 
-        logger.info("User $uid selected color $selectedColor for room $validatedRoomId")
+        val room = roomService.createRoom(validatedName)
+        logger.info("User $uid created room ${room.id} with name='$validatedName'")
 
-        session.setAttribute("roomId", validatedRoomId)
+        session.setAttribute("roomId", room.id)
         session.setAttribute("color", selectedColor.name)
-        logger.info("User $uid successfully joined room $validatedRoomId. Stored in session with sessionId=${session.id}")
+        logger.info("User $uid successfully created and joined room ${room.id}. Stored in session with sessionId=${session.id}")
 
         return "redirect:/game"
     }
 
     @PostMapping("/{roomId}/join")
     fun joinRoom(
-        @PathVariable("roomId") roomId: Int,
+        @PathVariable("roomId") roomId: UUID,
         @SessionAttribute("uid") uid: UUID?,
         session: HttpSession,
     ): String {
@@ -149,7 +148,7 @@ class RoomController(
     @ResponseBody
     @GetMapping("{roomId}/board")
     fun getRoomBoard(
-        @PathVariable("roomId") roomId: Int,
+        @PathVariable("roomId") roomId: UUID,
         @RequestParam("version") version: Int,
     ): DeferredResult<BoardDto> {
         val room = roomRepository.findRoom(roomId)
