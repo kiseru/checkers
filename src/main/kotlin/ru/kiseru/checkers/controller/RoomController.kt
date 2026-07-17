@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.SessionAttribute
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
 import ru.kiseru.checkers.model.Color
+import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.utils.getCellCaption
-import ru.kiseru.checkers.service.BoardSearchByRoomIdService
 import ru.kiseru.checkers.controller.dto.BoardDto
 import ru.kiseru.checkers.controller.dto.PieceDto
 import java.util.*
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
 
 @RequestMapping("/room")
 @Controller
 class RoomController(
     private val boardService: BoardService,
-    private val boardSearchByRoomIdService: BoardSearchByRoomIdService,
+    private val roomRepository: RoomRepository,
     private val executor: ExecutorService,
 ) {
 
@@ -85,27 +86,32 @@ class RoomController(
         @PathVariable("roomId") roomId: Int,
         @RequestParam("version") version: Int,
     ): DeferredResult<BoardDto> {
-        val board = boardSearchByRoomIdService.find(roomId)
+        val room = roomRepository.findRoom(roomId)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 "Room with ID $roomId not found",
             )
 
+        val board = synchronized(room) {
+            room.board
+        }
+
         logger.debug("Found board for room $roomId, current version: ${board.version}")
 
         val result = DeferredResult<BoardDto>(15000)
-            .also {
-                it.onTimeout {
-                    logger.warn("Request timeout for room $roomId, version $version")
-                    it.setErrorResult(ResponseStatusException(HttpStatus.REQUEST_TIMEOUT))
-                }
-                it.onError { e ->
-                    logger.error("Error processing request for room $roomId: ${e.message}", e)
-                    it.setErrorResult(ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"))
-                }
-            }
+        var future: Future<*>? = null
 
-        executor.submit {
+        result.onTimeout {
+            logger.warn("Request timeout for room $roomId, version $version")
+            future?.cancel(true)
+            result.setErrorResult(ResponseStatusException(HttpStatus.REQUEST_TIMEOUT))
+        }
+        result.onError { e ->
+            logger.error("Error processing request for room $roomId: ${e.message}", e)
+            result.setErrorResult(ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"))
+        }
+
+        future = executor.submit {
             try {
                 boardService.waitNewVersion(board, version)
                 val pieces = board.piecesCoordinates()
@@ -119,6 +125,7 @@ class RoomController(
                             type = piece.pieceStrategy.type,
                         )
                     }
+                    .toList()
 
                 val boardDto = BoardDto(
                     version = board.version,
@@ -129,7 +136,7 @@ class RoomController(
                 result.setResult(boardDto)
             } catch (e: InterruptedException) {
                 logger.warn("Request interrupted for room $roomId", e)
-                result.setErrorResult(ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR))
+                Thread.currentThread().interrupt()
             } catch (e: Exception) {
                 logger.error("Unexpected error for room $roomId: ${e.message}", e)
                 result.setErrorResult(

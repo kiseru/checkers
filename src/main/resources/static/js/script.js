@@ -82,7 +82,7 @@ async function subscribe(roomId, version) {
             await subscribe(roomId, board.version);
         }
     } catch (e) {
-        if (e.message = "Game finished") {
+        if (e.message === "Game finished") {
             window.location = "/game"
         }
     }
