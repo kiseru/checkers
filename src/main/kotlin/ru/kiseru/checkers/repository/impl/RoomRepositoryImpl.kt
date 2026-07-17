@@ -17,4 +17,9 @@ class RoomRepositoryImpl : RoomRepository {
         val roomId = room.id
         roomStorage[roomId] = room
     }
+
+    override fun findRoomsWithAvailableSlot(): List<Room> =
+        roomStorage.values.filter { room ->
+            room.whitePlayer == null || room.blackPlayer == null
+        }
 }

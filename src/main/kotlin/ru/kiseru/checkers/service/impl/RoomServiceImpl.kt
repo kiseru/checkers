@@ -23,6 +23,9 @@ class RoomServiceImpl(
 
     private val roomLocks = ConcurrentHashMap<Int, Any>()
 
+    override fun getAvailableRooms(): List<Room> =
+        roomRepository.findRoomsWithAvailableSlot()
+
     override fun findOrCreateRoomById(roomId: Int): Room {
         val lock = roomLocks.computeIfAbsent(roomId) { Any() }
         synchronized(lock) {

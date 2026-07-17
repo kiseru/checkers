@@ -43,6 +43,6 @@ class LoginController(
         httpSession.setAttribute("uid", user.id)
         logger.info("Session created for user $login with uid=${user.id}")
 
-        return "redirect:/room/create"
+        return "redirect:/room"
     }
 }

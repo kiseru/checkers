@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.SessionAttribute
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
 import ru.kiseru.checkers.model.Color
+import ru.kiseru.checkers.model.User
 import ru.kiseru.checkers.repository.RoomRepository
+import ru.kiseru.checkers.repository.UserRepository
 import ru.kiseru.checkers.service.BoardService
+import ru.kiseru.checkers.service.RoomService
 import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.controller.dto.BoardDto
 import ru.kiseru.checkers.controller.dto.PieceDto
@@ -28,10 +32,28 @@ import java.util.concurrent.Future
 class RoomController(
     private val boardService: BoardService,
     private val roomRepository: RoomRepository,
+    private val roomService: RoomService,
+    private val userRepository: UserRepository,
     private val executor: ExecutorService,
 ) {
 
     private val logger = LoggerFactory.getLogger(RoomController::class.java)
+
+    @GetMapping
+    fun getRoomListPage(
+        @SessionAttribute uid: UUID?,
+        model: Model,
+    ): String {
+        if (uid == null) {
+            logger.warn("Unauthorized access to /rooms page. Redirecting to login.")
+            return "redirect:/login"
+        }
+
+        logger.info("User $uid accessed /rooms page.")
+        val availableRooms = roomService.getAvailableRooms()
+        model.addAttribute("rooms", availableRooms)
+        return "room/index"
+    }
 
     @GetMapping("/create")
     fun getCreateRoomPage(@SessionAttribute uid: UUID?): String =
@@ -76,6 +98,50 @@ class RoomController(
         session.setAttribute("roomId", validatedRoomId)
         session.setAttribute("color", selectedColor.name)
         logger.info("User $uid successfully joined room $validatedRoomId. Stored in session with sessionId=${session.id}")
+
+        return "redirect:/game"
+    }
+
+    @PostMapping("/{roomId}/join")
+    fun joinRoom(
+        @PathVariable("roomId") roomId: Int,
+        @SessionAttribute("uid") uid: UUID?,
+        session: HttpSession,
+    ): String {
+        if (uid == null) {
+            logger.warn("Unauthorized attempt to join room. Missing uid in session.")
+            return "redirect:/login"
+        }
+
+        logger.info("User $uid attempting to join room $roomId from room list.")
+
+        val room = roomRepository.findRoom(roomId)
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Room with ID $roomId not found",
+            )
+
+        val user = userRepository.findUser(uid)
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "User not found",
+            )
+
+        synchronized(room) {
+            val availableColor = when {
+                room.whitePlayer == null -> Color.WHITE
+                room.blackPlayer == null -> Color.BLACK
+                else -> throw ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Room $roomId is already full",
+                )
+            }
+
+            roomService.addPlayer(room, user, availableColor)
+            session.setAttribute("roomId", roomId)
+            session.setAttribute("color", availableColor.name)
+            logger.info("User $uid joined room $roomId as $availableColor")
+        }
 
         return "redirect:/game"
     }

@@ -7,5 +7,7 @@ interface RoomRepository {
     fun findRoom(roomId: Int): Room?
 
     fun save(room: Room)
+
+    fun findRoomsWithAvailableSlot(): List<Room>
 }
 
