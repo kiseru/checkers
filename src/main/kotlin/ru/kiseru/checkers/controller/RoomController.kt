@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.SessionAttribute
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
+import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.utils.getCellCaption
 import ru.kiseru.checkers.service.BoardSearchByRoomIdService
@@ -44,6 +45,7 @@ class RoomController(
     @PostMapping("/create")
     fun findRoom(
         @RequestParam("roomId") roomId: Int?,
+        @RequestParam("color") color: String?,
         @SessionAttribute("uid") uid: UUID?,
         session: HttpSession,
     ): String {
@@ -61,7 +63,17 @@ class RoomController(
 
         logger.debug("Validated room=$validatedRoomId for user $uid")
 
+        val selectedColor = try {
+            color?.let { Color.valueOf(it.uppercase()) } ?: Color.WHITE
+        } catch (e: IllegalArgumentException) {
+            logger.warn("Invalid color value '$color' for user $uid, defaulting to WHITE")
+            Color.WHITE
+        }
+
+        logger.info("User $uid selected color $selectedColor for room $validatedRoomId")
+
         session.setAttribute("roomId", validatedRoomId)
+        session.setAttribute("color", selectedColor.name)
         logger.info("User $uid successfully joined room $validatedRoomId. Stored in session with sessionId=${session.id}")
 
         return "redirect:/game"

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.SessionAttribute
+import ru.kiseru.checkers.model.Color
 import ru.kiseru.checkers.service.BoardService
 import ru.kiseru.checkers.model.Room
 import ru.kiseru.checkers.model.User
@@ -29,6 +30,7 @@ class GameController(
     fun getGamePage(
         @SessionAttribute(name = "uid", required = false) uid: UUID?,
         @SessionAttribute(name = "roomId", required = false) roomId: Int?,
+        @SessionAttribute(name = "color", required = false) color: String?,
         @RequestParam(name = "from", required = false) from: String?,
         @RequestParam(name = "to", required = false) to: String?,
         session: HttpSession,
@@ -58,6 +60,18 @@ class GameController(
             session.setAttribute("winner", winner)
             logger.info("Game in room $roomId finished. Winner: $winner. Redirecting to /finish.")
             return "redirect:/finish"
+        }
+
+        // Assign player to selected color if not yet assigned
+        if (currentUser.color == null && color != null) {
+            val selectedColor = try {
+                Color.valueOf(color.uppercase())
+            } catch (e: IllegalArgumentException) {
+                logger.warn("Invalid color session value '$color' for user $uid, defaulting to WHITE")
+                Color.WHITE
+            }
+            roomService.addPlayer(currentRoom, currentUser, selectedColor)
+            logger.info("User $uid assigned to color $selectedColor in room $roomId.")
         }
 
         try {

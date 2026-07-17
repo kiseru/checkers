@@ -45,16 +45,8 @@ class RoomServiceImpl(
 
     override fun makeTurn(room: Room, user: User, from: String?, to: String?) {
         synchronized(room) {
-            if (room.whitePlayer == null) {
-                addPlayer(room, user, Color.WHITE)
-                return
-            }
-
-            if (room.blackPlayer == null) {
-                if (room.whitePlayer?.id != user.id) {
-                    addPlayer(room, user, Color.BLACK)
-                }
-
+            if (user.color == null && room.blackPlayer == null && room.whitePlayer?.id != user.id) {
+                addPlayer(room, user, Color.BLACK)
                 return
             }
 

@@ -94,12 +94,13 @@ class RoomServiceImplTest {
         val board = Board(UUID.randomUUID())
         val room = Room(1, board)
         val user = User(UUID.randomUUID(), "name")
+        user.color = Color.WHITE
 
         // when
         underTest.makeTurn(room, user, "a1", "b1")
 
         // then
-        assertThat(room.whitePlayer).isSameAs(user)
+        assertThat(room.whitePlayer).isNull()
         assertThat(room.blackPlayer).isNull()
         assertThat(room.turn).isEqualTo(Color.WHITE)
     }
@@ -109,17 +110,29 @@ class RoomServiceImplTest {
         // given
         val board = Board(UUID.randomUUID())
         val user = User(UUID.randomUUID(), "name")
+        user.color = Color.WHITE
 
         val room = Room(1, board)
         room.whitePlayer = user
 
+        val sourceCell = "a1"
+        val destinationCell = "b1"
+        val source = 1 to 1
+        val destination = 2 to 1
+        given(cellNotationConverter.convert(eq(sourceCell)))
+            .willReturn(source)
+        given(cellNotationConverter.convert(eq(destinationCell)))
+            .willReturn(destination)
+        given(boardService.makeTurn(eq(board), eq(Color.WHITE), eq(source), eq(destination)))
+            .willReturn(false)
+
         // when
-        underTest.makeTurn(room, user, "a1", "b1")
+        underTest.makeTurn(room, user, sourceCell, destinationCell)
 
         // then
         assertThat(room.whitePlayer).isSameAs(user)
         assertThat(room.blackPlayer).isNull()
-        assertThat(room.turn).isEqualTo(Color.WHITE)
+        assertThat(room.turn).isEqualTo(Color.BLACK)
     }
 
     @Test
