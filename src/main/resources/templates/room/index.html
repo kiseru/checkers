@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Checkers beta 1.0</title>
     <link href="/styles/main.css" rel="stylesheet">
@@ -21,13 +21,13 @@
     <div class="row justify-content-center">
         <div class="col-8">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3>Available Rooms</h3>
-                <a href="/room/create" class="btn btn-success">Create Game</a>
+                <h3>Доступные комнаты</h3>
+                <a href="/room/create" class="btn btn-success">Создать игру</a>
             </div>
 
             <div class="card" th:if="${#lists.isEmpty(rooms)}">
                 <div class="card-body text-center">
-                    <p class="text-muted mb-0">No available rooms</p>
+                    <p class="text-muted mb-0">Нет доступных комнат</p>
                 </div>
             </div>
 
@@ -36,9 +36,9 @@
                     <table class="table table-hover mb-0">
                         <thead>
                         <tr>
-                            <th scope="col">Room ID</th>
-                            <th scope="col">White Player</th>
-                            <th scope="col">Black Player</th>
+                            <th scope="col">ID комнаты</th>
+                            <th scope="col">Белые</th>
+                            <th scope="col">Чёрные</th>
                             <th scope="col"></th>
                         </tr>
                         </thead>
@@ -47,15 +47,15 @@
                             <td th:text="${room.id}" class="align-middle fw-bold"></td>
                             <td class="align-middle">
                                 <span th:if="${room.whitePlayer != null}" th:text="${room.whitePlayer}" class="badge bg-dark">Player</span>
-                                <span th:unless="${room.whitePlayer != null}" class="badge bg-success">Free</span>
+                                <span th:unless="${room.whitePlayer != null}" class="badge bg-success">Свободно</span>
                             </td>
                             <td class="align-middle">
                                 <span th:if="${room.blackPlayer != null}" th:text="${room.blackPlayer}" class="badge bg-dark">Player</span>
-                                <span th:unless="${room.blackPlayer != null}" class="badge bg-success">Free</span>
+                                <span th:unless="${room.blackPlayer != null}" class="badge bg-success">Свободно</span>
                             </td>
                             <td class="align-middle text-end">
                                 <form method="post" th:action="@{'/room/' + ${room.id} + '/join'}" style="display: inline;">
-                                    <button type="submit" class="btn btn-primary btn-sm">Join</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Присоединиться</button>
                                 </form>
                             </td>
                         </tr>

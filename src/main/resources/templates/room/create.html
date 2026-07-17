@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Checkers beta 1.0</title>
     <link href="/styles/main.css" rel="stylesheet">
@@ -24,32 +24,32 @@
                 <div class="card-body">
                     <form method="post" action="/room/create">
                         <div class="mb-3">
-                            <h4 class="text-center">Enter room ID</h4>
+                            <h4 class="text-center">Введите ID комнаты</h4>
                         </div>
 
                         <div class="mb-3">
-                            <label for="room-id" class="form-label">Room ID</label>
-                            <input type="number" name="roomId" class="form-control" id="room-id" placeholder="Room ID">
+                            <label for="room-id" class="form-label">ID комнаты</label>
+                            <input type="number" name="roomId" class="form-control" id="room-id" placeholder="ID комнаты">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Choose your color</label>
+                            <label class="form-label">Выберите цвет</label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="color" id="color-white" value="WHITE" checked>
-                                    <label class="form-check-label" for="color-white">White</label>
+                                    <label class="form-check-label" for="color-white">Белые</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="color" id="color-black" value="BLACK">
-                                    <label class="form-check-label" for="color-black">Black</label>
+                                    <label class="form-check-label" for="color-black">Чёрные</label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Create or Find</button>
+                            <button type="submit" class="btn btn-primary">Создать или найти</button>
 
-                            <a href="/login" class="btn btn-outline-primary" role="button">Back</a>
+                            <a href="/login" class="btn btn-outline-primary" role="button">Назад</a>
                         </div>
                     </form>
                 </div>

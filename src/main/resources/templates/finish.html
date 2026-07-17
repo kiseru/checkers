@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Checkers beta 1.0</title>
     <link href="/styles/main.css" rel="stylesheet">
@@ -22,9 +22,9 @@
         <div class="col-4">
             <div class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><span th:text="${session.winner}"></span> win!</h5>
+                    <h5 class="card-title">Победитель: <span th:text="${session.winner}"></span></h5>
 
-                    <a href="/" class="btn btn-primary">Play again</a>
+                    <a href="/" class="btn btn-primary">Играть снова</a>
                 </div>
             </div>
         </div>

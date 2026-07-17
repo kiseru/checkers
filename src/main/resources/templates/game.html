@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Checkers beta 1.0</title>
     <link href="/styles/main.css" rel="stylesheet">
@@ -37,16 +37,16 @@
             <div class="d-grid gap-2">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">Login: <span id="login" th:text="${login}"></span></p>
-                        <p class="card-text">Turn: <span th:text="${turn}"></span></p>
-                        <p class="card-text">Room ID: <span id="id" th:text="${room.getId()}"></span></p>
+                        <p class="card-text">Игрок: <span id="login" th:text="${login}"></span></p>
+                        <p class="card-text">Ход: <span th:text="${turn}"></span></p>
+                        <p class="card-text">Комната: <span id="id" th:text="${room.getId()}"></span></p>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">White: <span th:text="${firstPlayer}"></span></p>
-                        <p class="card-text">Black: <span th:text="${secondPlayer}"></span></p>
+                        <p class="card-text">Белые: <span th:text="${firstPlayer}"></span></p>
+                        <p class="card-text">Чёрные: <span th:text="${secondPlayer}"></span></p>
                     </div>
                 </div>
             </div>
