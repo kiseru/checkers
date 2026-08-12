@@ -49,5 +49,33 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"
 ></script>
+<script>
+    const LOGIN_STORAGE_KEY = 'lastLogin';
+    const loginForm = document.querySelector('form[action="/login"]');
+    const loginInput = document.getElementById('log-in');
+
+    // Восстановить сохранённый логин при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            const savedLogin = localStorage.getItem(LOGIN_STORAGE_KEY);
+            if (savedLogin && loginInput) {
+                loginInput.value = savedLogin;
+            }
+        } catch (e) {
+            // localStorage недоступен — пропускаем восстановление без ошибок
+        }
+    });
+
+    // Сохранить логин при отправке формы
+    if (loginForm && loginInput) {
+        loginForm.addEventListener('submit', function () {
+            try {
+                localStorage.setItem(LOGIN_STORAGE_KEY, loginInput.value);
+            } catch (e) {
+                // localStorage недоступен — пропускаем сохранение без ошибок
+            }
+        });
+    }
+</script>
 </body>
 </html>
