@@ -2,23 +2,19 @@ package ru.kiseru.checkers.controller
 
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.SessionAttribute
 import org.springframework.web.context.request.async.DeferredResult
 import org.springframework.web.server.ResponseStatusException
-import java.util.Base64
 import ru.kiseru.checkers.model.Color
-import ru.kiseru.checkers.model.User
 import ru.kiseru.checkers.repository.RoomRepository
 import ru.kiseru.checkers.repository.UserRepository
 import ru.kiseru.checkers.service.BoardService
@@ -89,7 +85,7 @@ class RoomController(
 
         val selectedColor = try {
             color?.let { Color.valueOf(it.uppercase()) } ?: Color.WHITE
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             logger.warn("Invalid color value '$color' for user $uid, defaulting to WHITE")
             Color.WHITE
         }
@@ -153,22 +149,7 @@ class RoomController(
     fun getRoomBoard(
         @PathVariable("roomId") roomId: UUID,
         @RequestParam("version") version: Int,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String,
     ): DeferredResult<BoardDto> {
-        val login = extractLoginFromAuthorization(authorization)
-            ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Missing or malformed Authorization header",
-            )
-
-        val user = userRepository.findUserByName(login)
-            ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "User not found",
-            )
-
-        logger.debug("User ${user.name} requesting board for room $roomId")
-
         val room = roomRepository.findRoom(roomId)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
@@ -230,20 +211,4 @@ class RoomController(
 
         return result
     }
-
-    private fun extractLoginFromAuthorization(authorization: String): String? =
-        try {
-            val scheme = authorization.substringBefore(' ').trim()
-            val encoded = authorization.substringAfter(' ').trim()
-            if (scheme.equals("Basic", ignoreCase = true) && encoded.isNotEmpty()) {
-                val decoded = String(Base64.getDecoder().decode(encoded), Charsets.UTF_8)
-                decoded.substringBefore(':')
-            } else {
-                logger.warn("Malformed Authorization header: missing 'Basic' scheme or empty credentials")
-                null
-            }
-        } catch (e: IllegalArgumentException) {
-            logger.warn("Failed to decode Authorization header: ${e.message}")
-            null
-        }
 }

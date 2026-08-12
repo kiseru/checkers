@@ -74,7 +74,7 @@ function base64EncodeUtf8(value) {
 async function subscribe(roomId, version) {
     console.log(roomId)
     try {
-        const auth = "Basic " + base64EncodeUtf8(login.textContent.trim());
+        const auth = "Basic " + base64EncodeUtf8(login.textContent.trim() + ":");
         const response = await fetch(`/room/${roomId}/board?version=${version}`, {
             headers: {
                 "Authorization": auth,
