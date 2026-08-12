@@ -67,10 +67,19 @@ function onCellUnchecked(cell) {
     cellElement.classList.remove("cell_checked");
 }
 
+function base64EncodeUtf8(value) {
+    return btoa(unescape(encodeURIComponent(value)));
+}
+
 async function subscribe(roomId, version) {
     console.log(roomId)
     try {
-        const response = await fetch(`/room/${roomId}/board?version=${version}`);
+        const auth = "Basic " + base64EncodeUtf8(login.textContent.trim());
+        const response = await fetch(`/room/${roomId}/board?version=${version}`, {
+            headers: {
+                "Authorization": auth,
+            }
+        });
         if (response.status === 502) {
             await subscribe(roomId, version);
         } else if (response.status !== 200) {
